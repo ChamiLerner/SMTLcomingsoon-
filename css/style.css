@@ -141,12 +141,13 @@ h1,h2,p,body {
  
 }
 .com-text{ 
+  padding-bottom: initial;
    padding-right: 10px;
 }
 
 .com-text h1 {
   text-align:right;
-  font-size: 60px;
+  font-size: 80px;
   font-weight: 300;
   line-height: 1;
   letter-spacing: -1px;
