@@ -1,259 +1,276 @@
 /* ============================================================
-   נתוני הטיול — נפלאות הדולומיטים · יורוטריפ 2026
+   נפלאות הדולומיטים · יורוטריפ 2026
    15–22 ביולי · 10 מבוגרים + 7 ילדים
    ------------------------------------------------------------
-   קל לעריכה: כל יום הוא אובייקט אחד ברשימה.
-   status:  confirmed = ✓ מאושר · pending = ● ממתין · none = ללא הזמנה
-   kids:true  = פעילות מומלצת לנוער / ילדים
-   tentative:true = תכנון ראשוני, לעדכון (ימים 21–22)
+   מבנה קריא לעריכה. כל יום = אובייקט אחד.
+   schedule[]  לוח זמנים עם שעות (time). שעות המסומנות "משוער" ניתנות לעדכון.
+   dining      אופציות לאכול (lunch = מספר אופציות, dinner = ההזמנה)
+   stops[]     שווה עצירה: תצפית 👀 · קפה ☕ · גלידה 🍦
+   know[]      מה חשוב לדעת
+   status:     ok = ✓ מאושר · pending = ● ממתין · none
+   q:          טקסט לחיפוש ב-Google Maps (כשאין קואורדינטות)
    ============================================================ */
 window.TRIP = {
   title: "נפלאות הדולומיטים",
   subtitle: "יורוטריפ 2026",
   dates: "15–22 ביולי 2026",
-  adults: 10,
-  kids: 7,
-  emergency: "112",
+  adults: 10, kids: 7, emergency: "112",
   lodging: [
-    { name: "Ciasa de Munt Lifestyle Living", city: "קורוורה (Corvara)", nights: "15–19 ביולי",
-      addr: "Str. Rütort 3, 39033 Corvara in Badia (BZ)", phone: "+39 0471 836213",
-      coords: [46.5506, 11.8730] },
-    { name: "Hotel Villa Argentina", city: "קורטינה (Pocol)", nights: "19–22 ביולי",
-      addr: "Loc. Pocol, I-32043 Cortina d'Ampezzo (BL)", phone: "+39 0436 5641",
-      coords: [46.5169, 12.1160] }
+    { name: "Ciasa de Munt Lifestyle Living", city: "קורוורה", nights: "15–19 ביולי",
+      addr: "Str. Rütort 3, Corvara in Badia (BZ)", phone: "+39 0471 836213", coords: [46.5506, 11.8730] },
+    { name: "Hotel Villa Argentina", city: "קורטינה · Pocol", nights: "19–22 ביולי",
+      addr: "Loc. Pocol, Cortina d'Ampezzo (BL)", phone: "+39 0436 5641", coords: [46.5169, 12.1160] }
   ]
 };
 
 window.TRIP_DATA = [
-  /* ---------- יום 1 · רביעי 15.7 ---------- */
+  /* ===== יום 1 · רביעי 15.7 ===== */
   {
     date: "2026-07-15", day: "רביעי", n: 1,
-    title: "מסע אל הדולומיטים",
-    place: "גנואה → קורוורה",
-    base: "קורוורה",
-    image: "arrival.jpg",
-    coords: [46.5506, 11.8730],
-    summary: "יום נסיעה מלא · רובו באוטוסטרדה",
-    departure: "אחרי ארוחת הבוקר באונייה",
-    difficulty: null,
-    tags: ["נסיעה", "נמל גנואה", "עצירת צהריים"],
-    drive: {
-      from: "נמל גנואה", to: "Corvara in Badia · 1,568 מ׳",
-      km: 485, time: "5:41",
-      legs: [
-        { title: "חלק א׳ · גנואה → בורגטו", km: 270, time: "2:43" },
-        { title: "חלק ב׳ · בורגטו → קורוורה", km: 252, time: "2:55" }
-      ]
-    },
-    plan: [
-      { icon: "⚓", time: "בוקר", name: "עגינה בנמל גנואה",
-        desc: "עיר הולדתו של כריסטופר קולומבוס. אחרי ארוחת הבוקר יורדים מהאונייה ועולים על הרכבים." },
-      { icon: "🍝", name: "עצירת צהריים · בורגטו סול מינצ׳ו", meta: "כשעה–שעה וחצי",
-        desc: "עיירה ציורית על נהר מינצ׳ו — בתי אבן, טחנות מים וגשר ויסקונטי מהמאה ה־14. אוכלים במסעדת San Marco (~100 מ׳ מהחניה) ומטיילים בסמטאות.",
-        coords: [45.4064, 10.7350], booking: "רוני מטפל בהזמנה — לתזכר שבוע מראש" },
-      { icon: "🏔️", name: "המשך הנסיעה אל הדולומיטים המערביים",
-        desc: "נופי צפון איטליה משני צידי הכביש, עד למלון בקורוורה — שם נשהה ארבעה לילות." }
+    title: "מסע אל הדולומיטים", place: "גנואה → קורוורה", base: "קורוורה",
+    image: "arrival.jpg", coords: [46.5506, 11.8730], hotel: 0,
+    summary: "יום נסיעה · 485 ק״מ, רובו באוטוסטרדה, עם עצירת צהריים קסומה",
+    schedule: [
+      { time: "08:00", kind: "boat", title: "ארוחת בוקר וירידה בנמל גנואה", note: "עיר הולדתו של קולומבוס · יורדים מהאונייה לרכבים", tsoft: true },
+      { time: "09:00", kind: "drive", title: "יציאה — חלק א׳: גנואה → בורגטו", note: "270 ק״מ · ~2:43", tsoft: true },
+      { time: "12:30", kind: "food", title: "צהריים בבורגטו סול מינצ׳ו", note: "מסעדת San Marco, ~100 מ׳ מהחניה · כ־1–1.5 ש׳", q: "Ristorante San Marco, Borghetto sul Mincio", book: "רוני מטפל בהזמנה — לתזכר שבוע מראש", tsoft: true },
+      { time: "14:00", kind: "drive", title: "חלק ב׳: בורגטו → קורוורה", note: "252 ק״מ · ~2:55 · נופי צפון איטליה", tsoft: true },
+      { time: "17:30", kind: "checkin", title: "צ׳ק־אין בקורוורה", note: "Ciasa de Munt · 4 לילות", coords: [46.5506, 11.8730], tsoft: true },
+      { time: "ערב", kind: "free", title: "ארוחת ערב חופשית / במלון", note: "יום ארוך — ערב רגוע להתאקלם" }
     ],
-    dinner: { name: "עצמאית / מזדמנת במלון", status: "none" },
-    lodging: 0,
-    packing: "דרכונים, מטענים לרכב, חטיפים לדרך ובקבוקי מים",
-    tips: ["הנסיעה ארוכה — לתכנן עצירות קצרות", "מומלץ למלא דלק לפני עליית ההרים"]
+    dining: {
+      lunch: [{ name: "San Marco, בורגטו", note: "עצירת הצהריים המתוכננת על נהר מינצ׳ו", q: "Ristorante San Marco, Borghetto sul Mincio" }],
+      dinner: { name: "חופשי / במלון", status: "none" }
+    },
+    stops: [
+      { icon: "📸", name: "בורגטו סול מינצ׳ו", note: "אחת העיירות היפות באיטליה — טחנות מים וגשר ויסקונטי מהמאה ה־14. שווה טיול קצר בסמטאות אחרי הצהריים.", q: "Borghetto sul Mincio" }
+    ],
+    know: [
+      "יום נסיעה ארוך — למלא דלק לפני עליית ההרים ולתכנן עצירות קצרות.",
+      "השעות משוערות ותלויות בשעת הירידה מהאונייה.",
+      "דרכונים וחטיפים לדרך בהישג יד."
+    ],
+    pack: "דרכונים · מטענים לרכב · מים וחטיפים לדרך"
   },
 
-  /* ---------- יום 2 · חמישי 16.7 ---------- */
+  /* ===== יום 2 · חמישי 16.7 ===== */
   {
     date: "2026-07-16", day: "חמישי", n: 2,
-    title: "רכבל Col Alt + פארק חבלים",
-    place: "קורוורה",
-    base: "קורוורה",
-    image: "col-alt.jpg",
-    coords: [46.5486, 11.8746],
-    summary: "בוקר רגוע ברכבל · אחה״צ אדרנלין לנוער",
-    departure: "בוקר — ברגל ממרכז הכפר",
-    difficulty: "קל",
-    tags: ["רכבל", "נוער", "אופניים"],
-    plan: [
-      { icon: "🚠", name: "רכבל Col Alt", meta: "קל · הליכה נינוחה · כרטיס במקום",
-        desc: "הרכבל יוצא ממרכז קורוורה אל אחו פתוח ותצפית רחבה על גוש הסֶלָה — היכרות ראשונה ורגועה עם הנוף.",
-        coords: [46.5486, 11.8746] },
-      { icon: "🧗", name: "פארק חבלים · Adventure Park Colfosco", meta: "2–3 שעות · בינוני · ~10 דק׳ מקורוורה", kids: true,
-        desc: "פארק אתגרי בין צמרות העצים — אומגות ארוכות (Zip-lines), גשרים מתנדנדים, רשתות ומכשולים תלויים. מושלם לנוער שמחפש אדרנלין. פתוח 10:00–19:00.",
-        coords: [46.5583, 11.8869], booking: "מומלץ להזמין כרטיסים מראש בקיץ", equip: "נעליים נוחות להליכה" },
-      { icon: "🚵", name: "אופציה: פארקי Movimënt", meta: "מבוגרים €38 · נוער €30.30", kids: true,
-        desc: "מתחם פעילות בגובה מעל 2,000 מ׳ (בין קורוורה, לה וילה וסן קסיאנו): מסלולי Freeride ו־Dirt לאופניים, קיר טיפוס, מסלולי גולף קטנים ומשחקי שיווי משקל. עולים ברכבלים Piz Boè / Col Alto. פתוח 08:30–17:30.",
-        coords: [46.5333, 11.8667], url: "https://www.moviment.it/", booking: "מומלץ להזמין מראש בקיץ" }
+    title: "רכבל Col Alt + פארק חבלים", place: "קורוורה", base: "קורוורה",
+    image: "col-alt.jpg", coords: [46.5486, 11.8746], hotel: 0, difficulty: "קל",
+    summary: "בוקר רגוע ברכבל מעל הכפר · אחה״צ אדרנלין לנוער",
+    schedule: [
+      { time: "09:30", kind: "cable", title: "רכבל Col Alt ממרכז הכפר", note: "עולים לאחו פתוח ותצפית על גוש הסֶלָה · כרטיס במקום · הליכה נינוחה", coords: [46.5486, 11.8746] },
+      { time: "12:30", kind: "food", title: "צהריים ברפוג׳ו בהר", note: "Rifugio Col Alt בתחנה העליונה או Piz Boé Alpine Lounge (נוף לסאסונגר)", q: "Rifugio Col Alt Corvara" },
+      { time: "14:00", kind: "kids", title: "פארק חבלים · Colfosco", note: "אומגות, גשרים מתנדנדים ומכשולים בין העצים · פתוח 10:00–19:00 · ~10 דק׳ מהכפר", coords: [46.5583, 11.8869], book: "מומלץ להזמין כרטיסים מראש בקיץ", kids: true },
+      { time: "19:30", kind: "food", title: "ארוחת ערב · Adlerkeller", note: "Str. Col Alt 24 · ✓ מאושר", coords: [46.5490, 11.8770], status: "ok" }
     ],
-    dinner: { name: "Adlerkeller", time: "19:30", status: "confirmed",
-      addr: "Str. Col Alt 24, Corvara in Badia (BZ)", phone: "+39 329 712 7354", coords: [46.5490, 11.8770] },
-    lodging: 0,
-    packing: "נעליים נוחות, שכבה חמה לרכבל, מים וכובע",
-    tips: ["שתי אופציות לאחה״צ — לבחור לפי מצב הרוח של הילדים"]
+    dining: {
+      lunch: [
+        { name: "Rifugio Col Alt", note: "בתחנה העליונה של הרכבל — נוח ועם נוף", q: "Rifugio Col Alt Corvara" },
+        { name: "Piz Boé Alpine Lounge", note: "2,200 מ׳, חלונות ענק לסאסונגר (מומלץ להזמין)", q: "Piz Boe Alpine Lounge Corvara" }
+      ],
+      dinner: { name: "Adlerkeller", time: "19:30", status: "ok",
+        addr: "Str. Col Alt 24, Corvara", phone: "+39 329 712 7354", coords: [46.5490, 11.8770] }
+    },
+    stops: [
+      { icon: "🚵", name: "אופציה: פארקי Movimënt", note: "מעל 2,000 מ׳ — מסלולי אופניים, קיר טיפוס ומשחקי איזון. מבוגרים €38 · נוער €30.30. פתוח 08:30–17:30.", q: "Moviment Piz La Ila Alta Badia", kids: true },
+      { icon: "🍦", name: "גלידה: Table Café / Da Ricky", note: "שתי כתובות אהובות בקורוורה לגלידה ומאפים ביתיים.", q: "Table Cafe Patisserie Gelateria Corvara" }
+    ],
+    know: [
+      "רכבלים באזור פועלים בערך 08:30–16:45 — לתכנן לפי זה.",
+      "פארק החבלים: נעליים סגורות נוחות, וכדאי להזמין מראש בקיץ.",
+      "שתי אופציות לאחה״צ (חבלים / Movimënt) — לבחור לפי מצב הרוח של הילדים."
+    ],
+    pack: "נעליים סגורות · שכבה חמה לרכבל · מים וכובע"
   },
 
-  /* ---------- יום 3 · שישי 17.7 ---------- */
+  /* ===== יום 3 · שישי 17.7 ===== */
   {
     date: "2026-07-17", day: "שישי", n: 3,
-    title: "אגם ברייס + מגלשת סן קנדידו",
-    place: "קורוורה → אגם ברייס → סן קנדידו",
-    base: "קורוורה",
-    image: "braies.jpg",
-    gallery: ["funbob.jpg"],
-    coords: [46.6947, 12.0855],
-    summary: "פנינת הטורקיז של הדולומיטים · אחה״צ אקשן לנוער",
-    departure: "יציאה מהמלון 09:30 · להגיע לברייס לפני 09:00",
-    difficulty: "קל",
-    tags: ["אגם", "שייט", "מגלשה", "נוער"],
-    plan: [
-      { icon: "🛶", name: "אגם ברייס · Lago di Braies", meta: "הקפה ~3.5 ק״מ · כשעה · קל",
-        desc: "פנינת הטורקיז של הדולומיטים — מים צלולים מוקפים פסגות תלולות (ובראשן Seekofel) שמשתקפות על פניהם. הקפת האגם על שביל נוח, עם אופציה לשייט בסירות משוט מעץ (לא ניתן להזמין מראש).",
-        coords: [46.6947, 12.0855], booking: "חובה להזמין חניה מראש באתר — חודשים קודם! האתר מוצף בקיץ", equip: "נעליים נוחות להליכה" },
-      { icon: "🛷", name: "מגלשת Funbob · סן קנדידו (Innichen)", meta: "~30 דק׳ מברייס · קל", kids: true,
-        desc: "עיירה אלגנטית סמוך לגבול אוסטריה — מדרחוב צבעוני ובתי קפה. רכבל Haunold למעלה, וירידה ב־Funbob (Alpine Coaster) על מסילת מתכת ארוכה ומהירה במורדות Monte Baranci. ירצו לעשות זאת פעמיים!",
-        coords: [46.7326, 12.2789], booking: "רכבל Haunold — אין צורך להזמין" },
-      { icon: "🏰", name: "אופציה בדרך חזרה: ברוניקו (Bruneck)", meta: "עמק פוסטריה",
-        desc: "עיירה מימי הביניים בדרום טירול, למרגלות הדולומיטים, עם טירת ברוניקו מהמאה ה־13.",
-        coords: [46.7961, 11.9366] }
+    title: "אגם ברייס + מגלשת סן קנדידו", place: "קורוורה → ברייס → סן קנדידו", base: "קורוורה",
+    image: "braies.jpg", gallery: ["funbob.jpg"], coords: [46.6947, 12.0855], hotel: 0, difficulty: "קל",
+    summary: "פנינת הטורקיז של הדולומיטים בבוקר · אקשן לנוער אחה״צ",
+    schedule: [
+      { time: "07:30", kind: "drive", title: "יציאה מוקדמת מהמלון", note: "~1:15 לאגם דרך ברוניקו · המטרה: להגיע לפני 09:00", tsoft: true },
+      { time: "08:45", kind: "hike", title: "הקפת אגם ברייס", note: "~3.5 ק״מ · כשעה · שביל נוח · אופציה לשייט בסירת עץ", coords: [46.6947, 12.0855] },
+      { time: "11:30", kind: "drive", title: "נסיעה לסן קנדידו (Innichen)", note: "~30–45 דק׳ · עמק פוסטריה", tsoft: true },
+      { time: "12:30", kind: "food", title: "צהריים במדרחוב סן קנדידו", note: "עיירה אלגנטית סמוך לגבול אוסטריה", q: "San Candido Innichen center" },
+      { time: "14:00", kind: "kids", title: "מגלשת Funbob · Haunold", note: "רכבל Haunold למעלה, ירידה במגלשת הרים מהירה על מסילת מתכת · ירצו פעמיים!", coords: [46.7326, 12.2789], kids: true },
+      { time: "16:00", kind: "sight", title: "אופציה בדרך חזרה: ברוניקו", note: "עיירה מימי הביניים עם טירה מהמאה ה־13", coords: [46.7961, 11.9366], tsoft: true },
+      { time: "19:00", kind: "food", title: "ארוחת ערב · Pizzeria Fornella", note: "Str. Rütort 1 · ללא צורך בהזמנה", coords: [46.5503, 11.8735], status: "none" }
     ],
-    dinner: { name: "Pizzeria Fornella", status: "none", note: "ללא צורך בהזמנה",
-      addr: "Str. Rütort 1, Corvara in Badia (BZ)", phone: "+39 0471 168 2432", coords: [46.5503, 11.8735] },
-    lodging: 0,
-    packing: "נעליים נוחות, כובע, מים ומצלמה",
-    tips: ["חובה חניה מוזמנת מראש בברייס", "להגיע מוקדם — האגם מתמלא לקראת הצהריים"]
+    dining: {
+      lunch: [
+        { name: "מדרחוב סן קנדידו", note: "בתי קפה ומסעדות לאורך Via P.P. Rainer", q: "Via Peter Paul Rainer San Candido" },
+        { name: "Loacker Café Heinfels", note: "בדרך — קפה וקינוחים של לואקר (כיף לילדים)", q: "Loacker Cafe Heinfels" }
+      ],
+      dinner: { name: "Pizzeria Fornella", status: "none", note: "ללא הזמנה",
+        addr: "Str. Rütort 1, Corvara", phone: "+39 0471 168 2432", coords: [46.5503, 11.8735] }
+    },
+    stops: [
+      { icon: "⛪", name: "כנסיית Stiftskirche", note: "כנסייה רומנסקית מרשימה משנת 1143 במרכז סן קנדידו.", q: "Stiftskirche San Candido" },
+      { icon: "🍦", name: "גלידה במדרחוב סן קנדידו", note: "כמה גלאטריות ביתיות באזור ההולכי־רגל — עצירה מושלמת אחרי המגלשה.", q: "gelato San Candido Innichen" }
+    ],
+    know: [
+      "⚠️ אגם ברייס 2026: העמק סגור 09:00–16:00 (1.7–15.9). חובה הזמנת חניה מראש ב-prags.bz, או להגיע לפני 09:00.",
+      "שייט הסירות בתור בלבד (אי אפשר להזמין) — ~20€ לאדם בסירה משותפת, ותורים של 1–2 ש׳ בשיא. להגיע מוקדם!",
+      "רכבל Haunold ל-Funbob — אין צורך להזמין."
+    ],
+    pack: "נעליים נוחות · כובע ומצלמה · מעיל דק (קריר ליד האגם בבוקר)"
   },
 
-  /* ---------- יום 4 · שבת 18.7 ---------- */
+  /* ===== יום 4 · שבת 18.7 ===== */
   {
     date: "2026-07-18", day: "שבת", n: 4,
-    title: "Seceda + Alpe di Siusi",
-    place: "קורוורה → אורטיזיי (דרך Gardena Pass)",
-    base: "קורוורה",
-    image: "corvara.jpg",
-    coords: [46.5772, 11.6740],
+    title: "Seceda + Alpe di Siusi", place: "קורוורה → אורטיזיי", base: "קורוורה",
+    image: "corvara.jpg", coords: [46.5772, 11.6740], hotel: 0, difficulty: "קל",
     summary: "רכס המצוקים המצולם בדולומיטים + האחו האלפיני הגדול באירופה",
-    departure: "בוקר · ~40 דק׳ דרך מעבר Gardena Pass",
-    difficulty: "קל",
-    tags: ["רכבל", "רכס", "אחו אלפיני", "E-Bike"],
-    plan: [
-      { icon: "⛰️", name: "רכבל Seceda", meta: "הליכת רכס קצרה · קל · כרטיס במקום",
-        desc: "הנסיעה במעבר Gardena Pass היא חוויה בפני עצמה — כביש מתפתל בין פסגות. למעלה ב־Seceda נפתח רכס המצוקים המחודדים, אחד הנופים הדרמטיים והמצולמים ביותר בדולומיטים.",
-        coords: [46.5772, 11.6740], booking: "אפשר גם להזמין מראש" },
-      { icon: "🌼", name: "Alpe di Siusi · Seiser Alm", meta: "צהריים–אחה״צ · קל · מ־1,850 עד ~2,015 מ׳",
-        desc: "האחו האלפיני הגבוה והגדול ביותר באירופה. עולים ברכבל ל־Compatsch — כרי דשא אינסופיים, פרחי קיץ, מרמיטות וצבאים, ופסגות (סקיילאר, Sassolungo, Sassopiatto) מסביב. אווירה אלפינית שלווה ותרבות לאדינית.",
-        coords: [46.5416, 11.6209] },
-      { icon: "🚴", name: "אופציה: אורטיזיי — E-Bike + גילוף עץ", meta: "עמק גארדנה · קל", kids: true,
-        desc: "בעיירה הלאדינית אורטיזיי: גלריות גילוף עץ (מסורת בת מאות שנים) — ART 52 במרכז הקונגרסים (כניסה חופשית 09:00–22:00). אקשן לנוער: בתחנה העליונה אפשר לשכור אופני הרים חשמליים ולרכוב במרחבים הפתוחים.",
-        coords: [46.5766, 11.6710] }
+    schedule: [
+      { time: "08:30", kind: "drive", title: "יציאה דרך מעבר Gardena", note: "~40 דק׳ · כביש מתפתל ומרהיב · עצירת תצפית בדרך", tsoft: true },
+      { time: "09:30", kind: "cable", title: "רכבל Seceda (מאורטיזיי)", note: "הליכת רכס קצרה מול המצוקים המחודדים — הנוף המצולם בדולומיטים", coords: [46.5772, 11.6740], book: "אפשר להזמין כרטיס מראש" },
+      { time: "12:30", kind: "food", title: "צהריים ברפוג׳ו בהר", note: "Baita Curona (Seceda) או Gostner Schwaige (Alpe di Siusi)", q: "Baita Curona Seceda", book: "רפוג׳ואים מתמלאים ביולי — להזמין מראש" },
+      { time: "14:00", kind: "activity", title: "Alpe di Siusi · Seiser Alm", note: "האחו האלפיני הגדול באירופה — כרי דשא, מרמיטות ופסגות מסביב", coords: [46.5416, 11.6209] },
+      { time: "16:30", kind: "kids", title: "אופציה: אורטיזיי — E-Bike / גילוף עץ", note: "אופני הרים חשמליים בתחנה העליונה, וגלריות גילוף עץ בעיירה", coords: [46.5766, 11.6710], kids: true },
+      { time: "19:30", kind: "food", title: "ארוחת ערב · Ristorante Zirm", note: "Str. Col Alt 95 · ✓ מאושר (עם אנצו)", coords: [46.5470, 11.8790], status: "ok" }
     ],
-    dinner: { name: "Ristorante Zirm", time: "19:30", status: "confirmed", note: "עם אנצו",
-      addr: "Str. Col Alt 95, Corvara in Badia (BZ)", phone: "+39 0471 833894", coords: [46.5470, 11.8790] },
-    lodging: 0,
-    packing: "נעליים נוחות, שכבה חמה, משקפי שמש וקרם הגנה",
-    tips: ["המעבר Gardena Pass מתפתל — למי שרגיש לסחרחורת", "לתכנן את שני הרכבלים באותו יום"]
+    dining: {
+      lunch: [
+        { name: "Baita Curona (Seceda)", note: "מגש הבית: גבינות, שפק וקמינוורצן מהחווה של המשפחה", q: "Baita Curona Seceda" },
+        { name: "Gostner Schwaige (Alpe di Siusi)", note: "מפורסמת על מרק החציר, גבינות מקומיות ושטרודל תפוחים", q: "Gostner Schwaige Alpe di Siusi" }
+      ],
+      dinner: { name: "Ristorante Zirm", time: "19:30", status: "ok", note: "עם אנצו",
+        addr: "Str. Col Alt 95, Corvara", phone: "+39 0471 833894", coords: [46.5470, 11.8790] }
+    },
+    stops: [
+      { icon: "👀", name: "תצפית Ju de Frara / Dantercepies", note: "עצירת תצפית קלאסית במעבר Gardena — Sella, Sassolungo ופסגות Cir.", q: "Ju de Frara Passo Gardena" },
+      { icon: "🎨", name: "גלריית גילוף עץ ART 52", note: "אורטיזיי — מסורת בת מאות שנים · כניסה חופשית 09:00–22:00.", q: "ART 52 Ortisei" },
+      { icon: "🍦", name: "Pasticceria Langgartner", note: "אורטיזיי — גלידה, אפוגאטו, שטרודל ומאפים.", q: "Pasticceria Langgartner Ortisei" }
+    ],
+    know: [
+      "יום עם שני רכבלים (Seceda ואז Alpe di Siusi) — לתכנן ולצאת בזמן.",
+      "רפוג׳ואים לצהריים מתמלאים ביולי — כדאי להזמין מראש.",
+      "המעבר Gardena מתפתל — למי שרגיש לסחרחורת."
+    ],
+    pack: "נעליים נוחות · שכבה חמה · משקפי שמש וקרם הגנה"
   },
 
-  /* ---------- יום 5 · ראשון 19.7 ---------- */
+  /* ===== יום 5 · ראשון 19.7 ===== */
   {
     date: "2026-07-19", day: "ראשון", n: 5,
-    title: "מעבר פלצרגו + רכבל לאגאזוי",
-    place: "קורוורה → קורטינה",
-    base: "קורטינה",
-    image: "lagazuoi.jpg",
-    coords: [46.5192, 12.0093],
-    summary: "מעבר לקורטינה · תצפית 360° ומנהרות מלחמת העולם הראשונה",
-    departure: "צ׳ק־אאוט מקורוורה · צ׳ק־אין בקורטינה",
-    difficulty: "קל–בינוני",
-    tags: ["מעבר החלפה", "רכבל", "מנהרות", "אגם"],
-    drive: { from: "קורוורה", to: "קורטינה · דרך מעבר פלצרגו (2,105 מ׳)", km: 31.5, time: "0:46" },
-    plan: [
-      { icon: "🚠", name: "מעבר פלצרגו + רכבל Lagazuoi", meta: "כמה שעות · קל–בינוני · כרטיס במקום",
-        desc: "אחד ממעברי ההרים המרשימים בדולומיטים (2,105 מ׳). מהמעבר עולה רכבל אל Piccolo Lagazuoi — תצפית 360° (סאס פורדוי, טופנה, קריסטלו), מערכת מנהרות ועמדות ירי משוחזרות מהמלחמה, ובקתת הרים עם אוכל איטלקי־אלפיני.",
-        coords: [46.5187, 12.0000], equip: "נעליים נוחות + שכבה חמה — קר למעלה!" },
-      { icon: "💧", name: "עיקוף: אגם מיזורינה", meta: "~שעה · קל · טיילת סביב האגם",
-        desc: "אחד האגמים הפוטוגניים בדולומיטים (1,754 מ׳), סמוך לכניסה לטרה צ׳ימה. מוקף פסגות מרהיבות שיוצרות השתקפויות מושלמות במים השקטים.",
-        coords: [46.5817, 12.2536] }
+    title: "מעבר פלצרגו + רכבל לאגאזוי", place: "קורוורה → קורטינה", base: "קורטינה",
+    image: "lagazuoi.jpg", coords: [46.5192, 12.0093], hotel: 1, difficulty: "קל–בינוני",
+    summary: "מעבר מלון לקורטינה · תצפית 360° ומנהרות מלחמת העולם הראשונה",
+    schedule: [
+      { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מקורוורה", note: "לארוז הכל — עוברים מלון", tsoft: true },
+      { time: "09:30", kind: "drive", title: "נסיעה דרך מעבר פלצרגו", note: "31.5 ק״מ · ~46 דק׳ · המעבר בגובה 2,105 מ׳", tsoft: true },
+      { time: "10:00", kind: "cable", title: "רכבל Lagazuoi", note: "ל-Piccolo Lagazuoi · תצפית 360°, מנהרות ועמדות מהמלחמה · כרטיס במקום", coords: [46.5187, 12.0000], book: "שכבה חמה — קר למעלה גם בקיץ!" },
+      { time: "13:00", kind: "food", title: "צהריים ב-Rifugio Lagazuoi", note: "אחת מבקתות ההרים היפות בדולומיטים · אוכל איטלקי־אלפיני", q: "Rifugio Lagazuoi" },
+      { time: "15:00", kind: "activity", title: "עיקוף אגם מיזורינה", note: "טיילת סביב אגם פוטוגני (~1 ש׳) · השתקפויות מושלמות", coords: [46.5817, 12.2536] },
+      { time: "16:30", kind: "checkin", title: "צ׳ק־אין בקורטינה", note: "Hotel Villa Argentina, Pocol", coords: [46.5169, 12.1160], tsoft: true },
+      { time: "ערב", kind: "food", title: "ארוחת ערב · 5 Torri", note: "Largo delle Poste 13 · ● ממתין לאישור", coords: [46.5405, 12.1357], status: "pending" }
     ],
-    dinner: { name: "5 Torri Ristorante Pizzeria", status: "pending", note: "ממתינים לאישור",
-      addr: "Largo delle Poste 13, Cortina d'Ampezzo (BL)", phone: "+39 0436 866301", coords: [46.5405, 12.1357] },
-    lodging: 1,
-    packing: "שכבה חמה, נעליים נוחות ומצלמה — יום של תצפיות",
-    tips: ["לארוז את החדר לפני היציאה — עוברים מלון", "קר ברכבל למעלה גם בקיץ"]
+    dining: {
+      lunch: [{ name: "Rifugio Lagazuoi", note: "בתחנה העליונה — נוף ואוכל הרים", q: "Rifugio Lagazuoi" }],
+      dinner: { name: "5 Torri Ristorante Pizzeria", status: "pending", note: "ממתין לאישור",
+        addr: "Largo delle Poste 13, Cortina", phone: "+39 0436 866301", coords: [46.5405, 12.1357] }
+    },
+    stops: [
+      { icon: "👀", name: "עצירת תצפית במעבר פלצרגו", note: "אחד ממעברי ההרים היפים בדולומיטים (2,105 מ׳) — עוצרים לצילום.", q: "Passo Falzarego" },
+      { icon: "💧", name: "אגם Limides (הליכה קצרה)", note: "למי שיש זמן — אגם קטן עם השתקפות פסגת Tofana, ממש ליד המעבר.", q: "Lago di Limides Falzarego" }
+    ],
+    know: [
+      "יום מעבר בין מלונות — לארוז את החדר לפני היציאה.",
+      "קר מאוד למעלה ברכבל גם בקיץ — שכבה חמה חובה.",
+      "לאשר סופית את ההזמנה ב-5 Torri (ממתין)."
+    ],
+    pack: "שכבה חמה · נעליים נוחות · מצלמה — יום של תצפיות"
   },
 
-  /* ---------- יום 6 · שני 20.7 ---------- */
+  /* ===== יום 6 · שני 20.7 ===== */
   {
     date: "2026-07-20", day: "שני", n: 6,
-    title: "טרק אגם סוראפיס",
-    place: "קורטינה · Passo Tre Croci",
-    base: "קורטינה",
-    image: "sorapis.jpg",
-    coords: [46.5289, 12.2178],
-    summary: "האתגר הגדול · אגם בצבע תכלת־חלב מהפנט",
-    departure: "כל היום · ~15 דק׳ לחניית הפתיחה",
-    difficulty: "בינונית פלוס",
-    tags: ["טרק", "אתגר", "נוער", "כבלי אחיזה"],
-    plan: [
-      { icon: "🥾", name: "טרק Lago di Sorapis", meta: "~12 ק״מ הלוך־חזור · 4–5 שעות · בינונית+", kids: true,
-        desc: "טרק אל אגם בצבע תכלת־חלב מהפנט, מוסתר בין צוקים — לא ניתן להגיע אליו ברכבל. יש מדפים על צלע ההר עם כבלי מתכת לאחיזה. מסלול הרפתקני ומאתגר, הישג מעולה וכיף גדול ללכת יחד כקבוצה — מושלם לנוער 13–17.",
-        coords: [46.5822, 12.1897], booking: "לא צריך להזמין", equip: "נעליים נוחות להליכה, מים וכובע" },
-      { icon: "🚡", name: "אלטרנטיבה למבוגרים: Freccia nel Cielo", meta: "קורטינה",
-        desc: "למי שמעדיף יום רגוע — רכבל Freccia nel Cielo מקורטינה אל תצפיות הרים, ללא הטרק המאתגר.",
-        coords: [46.5380, 12.1300] }
+    title: "טרק אגם סוראפיס", place: "קורטינה · Passo Tre Croci", base: "קורטינה",
+    image: "sorapis.jpg", coords: [46.5289, 12.2178], hotel: 1, difficulty: "בינונית פלוס",
+    summary: "האתגר הגדול — אגם בצבע תכלת־חלב מהפנט, מוסתר בין צוקים",
+    schedule: [
+      { time: "07:30", kind: "drive", title: "יציאה מוקדמת", note: "~15 דק׳ לחניית הפתיחה ב-Passo Tre Croci · המסלול מתמלא", coords: [46.5822, 12.1897], tsoft: true },
+      { time: "08:00", kind: "hike", title: "תחילת טרק Lago di Sorapis", note: "~12 ק״מ הלוך־חזור · 4–5 שעות · קטעים צרים עם כבלי מתכת לאחיזה", coords: [46.5822, 12.1897] },
+      { time: "13:00", kind: "food", title: "צהריים ליד האגם", note: "מהתרמיל, או ב-Rifugio Vandelli ליד האגם", q: "Rifugio Vandelli Sorapis" },
+      { time: "16:00", kind: "hike", title: "חזרה לחניה", note: "אותו מסלול חזרה" },
+      { time: "19:30", kind: "food", title: "ארוחת ערב · Chalet Tofane", note: "Località Lacedel 1 · ✓ מאושר (עם פביו)", coords: [46.5330, 12.1170], status: "ok" }
     ],
-    dinner: { name: "Chalet Tofane — Restaurant · Pizzeria · Bar", time: "19:30", status: "confirmed", note: "עם פביו",
-      addr: "Località Lacedel 1, Cortina d'Ampezzo (BL)", phone: "+39 0436 863026", coords: [46.5330, 12.1170] },
-    lodging: 1,
-    packing: "נעליים טובות לטרק, הרבה מים, כובע, חטיפים וקרם הגנה",
-    tips: ["המסלול מאתגר — קטעים צרים עם כבלי מתכת", "לצאת מוקדם ולקחת מספיק מים לכל הקבוצה"]
+    dining: {
+      lunch: [{ name: "Rifugio Vandelli", note: "בקתה ליד האגם — או פשוט כריכים מהתרמיל בנוף", q: "Rifugio Vandelli Sorapis" }],
+      dinner: { name: "Chalet Tofane — Restaurant · Pizzeria · Bar", time: "19:30", status: "ok", note: "עם פביו",
+        addr: "Località Lacedel 1, Cortina", phone: "+39 0436 863026", coords: [46.5330, 12.1170] }
+    },
+    stops: [
+      { icon: "🚡", name: "אלטרנטיבה למבוגרים: Freccia nel Cielo", note: "למי שמעדיף יום רגוע — רכבל מקורטינה לתצפיות, בלי הטרק המאתגר.", q: "Freccia nel Cielo Cortina" },
+      { icon: "🍦", name: "Gelateria Al Soler", note: "בקורטינה — נחשבת מהגלידות הכי טובות בדולומיטים (טעמי עונה). מגיע אחרי הטרק!", q: "Gelateria Al Soler Cortina" }
+    ],
+    know: [
+      "המסלול מאתגר — קטעים צרים עם כבלי מתכת. לא מומלץ למי שסובל מגובה/סחרחורת.",
+      "לצאת מוקדם, לקחת הרבה מים לכל הקבוצה, כובע ונעליים טובות.",
+      "מבוגרים שלא רוצים את הטרק — אלטרנטיבת Freccia nel Cielo."
+    ],
+    pack: "נעליים לטרק · הרבה מים · כובע · חטיפים · קרם הגנה"
   },
 
-  /* ---------- יום 7 · שלישי 21.7 · תכנון ראשוני ---------- */
+  /* ===== יום 7 · שלישי 21.7 · תכנון ראשוני ===== */
   {
     date: "2026-07-21", day: "שלישי", n: 7,
-    title: "טרה צ׳ימה די לאוורדו",
-    place: "קורטינה · Tre Cime di Lavaredo",
-    base: "קורטינה",
-    image: "tre-cime.jpg",
-    coords: [46.6186, 12.3050],
-    summary: "שלוש הפסגות המפורסמות בדולומיטים",
-    departure: "בוקר · דרך אגם מיזורינה (כביש אגרה לרפוג׳ו אאורונצו)",
-    difficulty: "קל–בינוני",
-    tentative: true,
-    tags: ["טרק מעגלי", "נוף איקוני", "רפוג׳ואים"],
-    plan: [
-      { icon: "🏔️", name: "מסלול מעגלי סביב טרה צ׳ימה", meta: "~10 ק״מ · 3–4 שעות · קל–בינוני",
-        desc: "המסלול הקלאסי והמפורסם ביותר בדולומיטים סביב שלוש הפסגות המחודדות, עם רפוג׳ואים (Lavaredo, Locatelli) לעצירת אוכל ותצפית. מתחילים מרפוג׳ו אאורונצו.",
-        coords: [46.6186, 12.3050], equip: "נעליים נוחות, שכבה חמה ומים" }
+    title: "טרה צ׳ימה די לאוורדו", place: "קורטינה · Tre Cime", base: "קורטינה",
+    image: "tre-cime.jpg", coords: [46.6186, 12.3050], hotel: 1, difficulty: "קל–בינוני", tentative: true,
+    summary: "המסלול המעגלי המפורסם ביותר בדולומיטים — שלוש הפסגות",
+    schedule: [
+      { time: "08:00", kind: "drive", title: "יציאה דרך מיזורינה", note: "כביש אגרה לרפוג׳ו אאורונצו · שער האגרה צפונית לאגם Antorno", tsoft: true },
+      { time: "09:00", kind: "hike", title: "מסלול מעגלי סביב טרה צ׳ימה", note: "~10 ק״מ · 3–4 שעות · קל–בינוני · רפוג׳ואים בדרך", coords: [46.6186, 12.3050] },
+      { time: "12:30", kind: "food", title: "צהריים ב-Rifugio Locatelli", note: "הבקתה עם הנוף הקלאסי לשלוש הפסגות", q: "Rifugio Locatelli Tre Cime" },
+      { time: "ערב", kind: "food", title: "ארוחת ערב", note: "לעדכון", status: "none" }
     ],
-    dinner: { name: "לעדכון", status: "none", note: "טרם נקבע" },
-    lodging: 1,
-    packing: "נעליים טובות, שכבה חמה, מים וחטיפים",
-    tips: ["יום זה בתכנון ראשוני — ניתן לעדכן בקובץ trip-data.js", "כביש האגרה לרפוג׳ו אאורונצו מתמלא — להגיע מוקדם"]
+    dining: {
+      lunch: [
+        { name: "Rifugio Locatelli (Dreizinnenhütte)", note: "הנוף הכי מפורסם לטרה צ׳ימה", q: "Rifugio Locatelli Tre Cime" },
+        { name: "Rifugio Lavaredo", note: "קרוב לרפוג׳ו אאורונצו — עצירה נוחה בתחילת המסלול", q: "Rifugio Lavaredo" }
+      ],
+      dinner: { name: "לעדכון", status: "none", note: "טרם נקבע" }
+    },
+    stops: [
+      { icon: "💧", name: "אגם מיזורינה", note: "בדרך — אגם אלפיני פוטוגני עם השתקפויות. שווה עצירה קצרה.", q: "Lago di Misurina" }
+    ],
+    know: [
+      "✏️ יום בתכנון ראשוני — ניתן לעדכן.",
+      "⚠️ כביש האגרה לרפוג׳ו אאורונצו: חובה הזמנה מראש (slot ל-12 ש׳) באתר auronzo.info · ~€40 לרכב. להזמין מוקדם — מתמלא.",
+      "להגיע מוקדם — החניה (700 מקום) מתמלאת בשיא."
+    ],
+    pack: "נעליים נוחות · שכבה חמה · מים וחטיפים"
   },
 
-  /* ---------- יום 8 · רביעי 22.7 · תכנון ראשוני ---------- */
+  /* ===== יום 8 · רביעי 22.7 · תכנון ראשוני ===== */
   {
     date: "2026-07-22", day: "רביעי", n: 8,
-    title: "פרידה מהדולומיטים · ונציה",
-    place: "קורטינה → ונציה",
-    base: "בדרך הביתה",
-    image: "venice.jpg",
-    coords: [45.4408, 12.3155],
-    summary: "צ׳ק־אאוט ונסיעה חזרה · עצירה בוונציה",
-    departure: "אחרי צ׳ק־אאוט מהמלון",
-    difficulty: null,
-    tentative: true,
-    tags: ["נסיעה", "ונציה", "יום אחרון"],
-    drive: { from: "קורטינה", to: "ונציה", km: 162, time: "2:00" },
-    plan: [
-      { icon: "🚗", name: "צ׳ק־אאוט ונסיעה לונציה", meta: "~2 שעות",
-        desc: "פרידה מהדולומיטים ונסיעה דרומה אל ונציה." },
-      { icon: "🚤", name: "ונציה", meta: "יום אחרון",
-        desc: "עצירה בעיר התעלות לפני המשך המסע חזרה. כיכר סן מרקו, גשר הריאלטו וסמטאות ונציה.",
-        coords: [45.4342, 12.3388] }
+    title: "פרידה מהדולומיטים · ונציה", place: "קורטינה → ונציה", base: "בדרך הביתה",
+    image: "venice.jpg", coords: [45.4408, 12.3155], hotel: null, tentative: true,
+    summary: "צ׳ק־אאוט ונסיעה חזרה · עצירה בעיר התעלות",
+    schedule: [
+      { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מהמלון", note: "לארוז הכל · דרכונים במקום נגיש", tsoft: true },
+      { time: "09:30", kind: "drive", title: "נסיעה לונציה", note: "~162 ק״מ · ~2 שעות", tsoft: true },
+      { time: "12:00", kind: "sight", title: "ונציה", note: "כיכר סן מרקו, גשר הריאלטו וסמטאות התעלות", coords: [45.4342, 12.3388], tsoft: true },
+      { time: "אחה״צ", kind: "drive", title: "המשך המסע חזרה", note: "לבדוק שעת הגעה נדרשת ליעד הסופי" }
     ],
-    dinner: { name: "לעדכון", status: "none", note: "טרם נקבע" },
-    lodging: null,
-    packing: "לארוז הכל · דרכונים במקום נגיש",
-    tips: ["יום זה בתכנון ראשוני — ניתן לעדכן בקובץ trip-data.js", "לבדוק שעת הגעה נדרשת ליעד הסופי"]
+    dining: {
+      lunch: [{ name: "בקארו / טרטוריה בוונציה", note: "צ׳יקטי (טפאס ונציאני) ליד ריאלטו", q: "bacaro cicchetti Rialto Venice" }],
+      dinner: { name: "לעדכון", status: "none", note: "טרם נקבע" }
+    },
+    stops: [
+      { icon: "🍦", name: "גלידה בוונציה", note: "עצירת גלידה בסמטאות לפני המשך הדרך.", q: "gelato Venice San Marco" }
+    ],
+    know: [
+      "✏️ יום בתכנון ראשוני — ניתן לעדכן.",
+      "ברכב לוונציה: החניה בפריפריה (Tronchetto / Piazzale Roma) — העיר להולכי רגל בלבד.",
+      "לבדוק שעת הגעה נדרשת ליעד הסופי / לטיסה."
+    ],
+    pack: "לארוז הכל · דרכונים · מים ליום החם"
   }
 ];

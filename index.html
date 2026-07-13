@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#12313d">
-<meta name="description" content="נפלאות הדולומיטים · יורוטריפ 2026 — כל המסלול, מזג האוויר, הזמנות ושוברים במקום אחד.">
+<meta name="theme-color" content="#101413">
+<meta name="description" content="נפלאות הדולומיטים · יורוטריפ 2026 — לוח זמנים יומי, המלצות אוכל, תצפיות, מזג אוויר, שוברים.">
 <title>נפלאות הדולומיטים · 2026</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
@@ -18,53 +18,37 @@
 
 <header class="topbar">
   <div class="brand">
-    <span class="logo">⛰</span>
-    <div>
-      <strong>נפלאות הדולומיטים</strong>
-      <small>15–22 ביולי · 10 מבוגרים + 7 ילדים</small>
-    </div>
+    <strong>נפלאות הדולומיטים</strong>
+    <small>15–22 ביולי 2026</small>
   </div>
   <button id="installBtn" class="install-btn" hidden>הוספה למסך הבית</button>
 </header>
 
 <main>
-  <!-- היום -->
   <section id="today" class="view active"></section>
 
-  <!-- כל הימים -->
   <section id="days" class="view">
-    <div class="page-title"><small>כל המסלול · 8 ימים</small><h1>הטיול שלנו</h1></div>
+    <div class="page-title"><span class="eyebrow">כל המסלול · 8 ימים</span><h1>הטיול שלנו</h1></div>
     <div id="daysList" class="days-list"></div>
   </section>
 
-  <!-- שוברים -->
   <section id="vouchers" class="view">
-    <div class="page-title"><small>פתיחה בלחיצה</small><h1>שוברים והזמנות</h1></div>
+    <div class="page-title"><span class="eyebrow">פתיחה בלחיצה</span><h1>שוברים</h1></div>
     <div id="voucherList"></div>
   </section>
 
-  <!-- מידע -->
   <section id="info" class="view">
-    <div class="page-title"><small>כל מה שצריך</small><h1>מידע שימושי</h1></div>
+    <div class="page-title"><span class="eyebrow">כל מה שצריך</span><h1>מידע</h1></div>
     <div id="infoContent"></div>
   </section>
 </main>
 
 <nav class="tabbar">
-  <button data-view="today" class="active"><span class="ic">☀️</span><span>היום</span></button>
-  <button data-view="days"><span class="ic">🗓️</span><span>כל הימים</span></button>
-  <button data-view="vouchers"><span class="ic">🎟️</span><span>שוברים</span></button>
-  <button data-view="info"><span class="ic">ⓘ</span><span>מידע</span></button>
+  <button data-view="today" class="active"><span class="ic">☀︎</span><span class="lb">היום</span></button>
+  <button data-view="days"><span class="ic">❖</span><span class="lb">הימים</span></button>
+  <button data-view="vouchers"><span class="ic">🎟</span><span class="lb">שוברים</span></button>
+  <button data-view="info"><span class="ic">ⓘ</span><span class="lb">מידע</span></button>
 </nav>
-
-<!-- גיליון פרטים -->
-<div id="sheet" class="sheet" aria-hidden="true">
-  <div class="sheet-card">
-    <div class="sheet-grip"></div>
-    <button class="close" aria-label="סגירה" onclick="closeSheet()">×</button>
-    <div id="sheetContent"></div>
-  </div>
-</div>
 
 <script src="trip-data.js"></script>
 <script src="app.js"></script>
