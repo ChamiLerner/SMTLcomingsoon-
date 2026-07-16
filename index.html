@@ -32,6 +32,11 @@
     <div id="daysList" class="days-list"></div>
   </section>
 
+  <section id="expenses" class="view">
+    <div class="page-title"><span class="eyebrow">חלוקה הוגנת</span><h1>קופה משותפת</h1></div>
+    <div id="expensesBody"></div>
+  </section>
+
   <section id="vouchers" class="view">
     <div class="page-title"><span class="eyebrow">פתיחה בלחיצה</span><h1>שוברים</h1></div>
     <div id="voucherList"></div>
@@ -48,6 +53,7 @@
 <nav class="tabbar">
   <button data-view="today" class="active"><span class="ic">☀︎</span><span class="lb">היום</span></button>
   <button data-view="days"><span class="ic">❖</span><span class="lb">הימים</span></button>
+  <button data-view="expenses"><span class="ic">💰</span><span class="lb">קופה</span></button>
   <button data-view="vouchers"><span class="ic">🎟</span><span class="lb">שוברים</span></button>
   <button data-view="info"><span class="ic">ⓘ</span><span class="lb">מידע</span></button>
 </nav>
@@ -55,5 +61,6 @@
 <script src="trip-data.js"></script>
 <script src="places.js"></script>
 <script src="app.js"></script>
+<script src="expenses.js"></script>
 </body>
 </html>

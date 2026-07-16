@@ -235,4 +235,62 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .dt-story p{font-size:14px;color:#cdd6e0;line-height:1.7}
 .dt-tips{margin-top:18px}
 
+/* ---------- Expenses / קופה משותפת ---------- */
+#expensesBody{padding-bottom:8px}
+.exp-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.exp-tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 6px;text-align:center}
+.exp-tile b{display:block;font-size:20px;font-weight:800}
+.exp-tile span{font-size:11px;color:var(--muted)}
+.exp-people{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.exp-chip{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line2);border-radius:999px;padding:7px 8px 7px 13px;font-size:13px;font-weight:600}
+.exp-chip .x{border:0;background:rgba(255,255,255,.08);color:var(--muted);width:20px;height:20px;border-radius:50%;font-size:15px;line-height:1;cursor:pointer}
+.exp-addp{border:1px dashed var(--line2);background:none;color:var(--accent);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer}
+.exp-hint{color:var(--muted);font-size:12.5px}
+.exp-newbtn{width:100%;margin-top:16px;cursor:pointer;border:0}
+
+/* form */
+.exp-form{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px;margin-top:12px}
+.exp-input{width:100%;background:#0e151d;border:1px solid var(--line2);border-radius:12px;padding:12px 14px;color:var(--text);font-size:15px;margin-bottom:10px}
+.exp-input::placeholder{color:var(--faint)}
+.exp-input:focus{outline:none;border-color:var(--accent)}
+.exp-flabel{font-size:12px;font-weight:750;color:var(--muted);margin:12px 2px 8px;display:flex;align-items:center;gap:8px}
+.exp-mini{border:1px solid var(--line2);background:none;color:var(--muted);border-radius:999px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer}
+.exp-cats,.exp-choose{display:flex;flex-wrap:wrap;gap:8px}
+.exp-cat,.exp-payer,.exp-part{border:1px solid var(--line2);background:var(--glass);color:var(--text);border-radius:999px;padding:8px 13px;font-size:13px;font-weight:650;cursor:pointer}
+.exp-cat.sel,.exp-payer.sel,.exp-part.sel{background:var(--accentW);border-color:rgba(52,224,161,.5);color:var(--accent)}
+.exp-fbtns{display:flex;gap:9px;margin-top:16px}
+.exp-fbtns .go{flex:1;cursor:pointer;border:0}
+.exp-fbtns .btn{flex:0 0 auto;padding:0 18px;cursor:pointer}
+
+/* list */
+.exp-list{display:flex;flex-direction:column;gap:10px}
+.exp-item{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px}
+.exp-ic{flex:none;width:38px;height:38px;border-radius:11px;background:var(--accentW);display:flex;align-items:center;justify-content:center;font-size:19px}
+.exp-main{flex:1;min-width:0}
+.exp-row1{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.exp-row1 b{font-size:15px;font-weight:680}
+.exp-amt{font-weight:800;color:var(--accent);white-space:nowrap}
+.exp-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.exp-sub b{color:var(--text)}
+.exp-parts{font-size:11.5px;color:var(--faint);margin-top:3px;overflow:hidden;text-overflow:ellipsis}
+.exp-actions{display:flex;flex-direction:column;gap:6px;flex:none}
+.exp-empty{color:var(--muted);font-size:13.5px;text-align:center;padding:20px 10px;background:var(--card);border:1px dashed var(--line2);border-radius:14px}
+
+/* balance + settlement */
+.exp-bal{display:flex;justify-content:space-between;gap:10px;padding:11px 2px;border-bottom:1px solid var(--line);font-size:14px}
+.exp-bal:last-child{border-bottom:0}
+.exp-bal-v{font-weight:750}
+.exp-bal-v.up{color:var(--accent)} .exp-bal-v.down{color:var(--pending)} .exp-bal-v.even{color:var(--muted)}
+.exp-settle{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin-bottom:8px;font-size:14px}
+.exp-settle .s-mid{color:var(--muted);font-size:12.5px}
+.exp-settle-a{margin-inline-start:auto;font-weight:800;color:var(--accent)}
+.exp-hint,.exp-note{color:var(--muted);font-size:12px;line-height:1.5}
+.exp-note{margin:16px 2px 2px;text-align:center}
+.exp-foot{display:flex;gap:9px;margin-top:18px}
+.exp-foot .btn{flex:1;cursor:pointer}
+.btn.ghost.danger{color:#ff8f8f;border-color:rgba(255,107,107,.3)}
+
+/* narrower tabs for 5 items */
+.tabbar button{min-width:56px}
+
 @media(min-width:480px){ .focus-big{font-size:52px} .page-title h1{font-size:32px} }
