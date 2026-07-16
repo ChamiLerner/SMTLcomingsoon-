@@ -105,7 +105,7 @@ window.TRIP_DATA = [
       { time: "16:00", kind: "food", title: "לואקר — קפה, קינוח וקניות", note: "בית הקפה והחנות של לואקר · כיף גדול לילדים 🍫", q: "Loacker Moserhof Café Heinfels", place: "loacker", leg: { from: "סן קנדידו", km: 10, min: 12 } },
       { time: "18:00", kind: "checkin", title: "חזרה למלון", note: "18:00–18:30 · זמן להתרענן", coords: [46.5506, 11.8730], place: "ciasademunt", leg: { from: "לואקר", km: 78, min: 85 }, tsoft: true },
       { time: "19:00", kind: "food", title: "ארוחת ערב (טרם נקבע)", note: "TBD · זמן משוער", status: "none", tsoft: true },
-      { time: "21:00", kind: "bar", title: "Ice Club Alta Badia", note: "בר/מועדון בקורוורה · Str. Burjé 3 (במרחק הליכה מהמלון)", q: "Ice Club Alta Badia Corvara in Badia" }
+      { time: "21:00", kind: "ice", title: "Ice Club — החלקה על הקרח", note: "אצטדיון הקרח המקורה של קורוורה · החלקה, בר ופיצריה · Str. Burjé 3 (במרחק הליכה)", q: "Ice Club Alta Badia Corvara in Badia", place: "iceclub" }
     ],
     dining: {
       lunch: [
