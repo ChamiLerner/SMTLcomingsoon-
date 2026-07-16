@@ -98,16 +98,13 @@ window.TRIP_DATA = [
       { time: "14:00", kind: "food", title: "ארוחת צהריים", note: "בסן קנדידו · מסעדות ובתי קפה במדרחוב", coords: [46.7326, 12.2789], place: "sancandido" },
       { time: "15:15", kind: "sight", title: "סיבוב קצר במרכז סן קנדידו", note: "מדרחוב צבעוני, כנסיית Stiftskirche והרים ברקע", coords: [46.7326, 12.2789], place: "sancandido" },
       { time: "16:00", kind: "food", title: "לואקר — קפה, קינוח וקניות", note: "בית הקפה והחנות של לואקר · כיף גדול לילדים 🍫", q: "Loacker Moserhof Café Heinfels", place: "loacker" },
-      { time: "18:00", kind: "checkin", title: "חזרה למלון", note: "18:00–18:30 · זמן להתרענן לפני הערב", coords: [46.5506, 11.8730], place: "ciasademunt", tsoft: true },
-      { time: "19:30", kind: "food", title: "ארוחת ערב · Pizzeria Fornella", note: "Str. Rütort 1 · ללא צורך בהזמנה", coords: [46.5503, 11.8735], place: "fornella", status: "none" }
+      { time: "18:00", kind: "checkin", title: "חזרה למלון", note: "18:00–18:30 · זמן להתרענן", coords: [46.5506, 11.8730], place: "ciasademunt", tsoft: true }
     ],
     dining: {
       lunch: [
-        { name: "מדרחוב סן קנדידו", note: "בתי קפה ומסעדות לאורך Via P.P. Rainer", q: "Via Peter Paul Rainer San Candido" },
-        { name: "Loacker Café Heinfels", note: "בדרך — קפה וקינוחים של לואקר (כיף לילדים)", q: "Loacker Cafe Heinfels" }
-      ],
-      dinner: { name: "Pizzeria Fornella", status: "none", note: "ללא הזמנה",
-        addr: "Str. Rütort 1, Corvara", phone: "+39 0471 168 2432", coords: [46.5503, 11.8735] }
+        { name: "Restaurant Pizzeria Haunold", note: "סן קנדידו · פיצה ומטבח מקומי", q: "Restaurant Pizzeria Haunold San Candido" },
+        { name: "Central Theater Café", note: "סן קנדידו · בית קפה נעים במרכז", q: "Central Theater Cafe San Candido Innichen" }
+      ]
     },
     stops: [
       { icon: "⛪", name: "כנסיית Stiftskirche", note: "כנסייה רומנסקית מרשימה משנת 1143 במרכז סן קנדידו.", q: "Stiftskirche San Candido" },

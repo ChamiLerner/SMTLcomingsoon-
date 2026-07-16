@@ -1,11 +1,12 @@
 /* Service Worker — עבודה אופליין על ההר */
-const CACHE = "dolomites-2026-v8";
+const CACHE = "dolomites-2026-v9";
 const ASSETS = [
   "./", "index.html", "styles.css", "app.js", "trip-data.js", "places.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/favicon-32.png",
   "assets/arrival.jpg", "assets/col-alt.jpg", "assets/braies.jpg", "assets/funbob.jpg",
   "assets/corvara.jpg", "assets/lagazuoi.jpg", "assets/sorapis.jpg", "assets/tre-cime.jpg", "assets/venice.jpg",
-  "assets/braies-boats.jpg", "assets/sancandido.jpg", "assets/haunold.jpg", "assets/loacker.jpg"
+  "assets/braies-boats.jpg", "assets/sancandido.jpg", "assets/haunold.jpg", "assets/loacker.jpg",
+  "assets/braies-path.jpg", "assets/coaster.jpg"
 ];
 
 self.addEventListener("install", e => {

@@ -30,4 +30,9 @@
 - **assets/venice.jpg** — Martin Falbisoner · CC BY-SA 4.0  
   <https://commons.wikimedia.org/wiki/File:Panorama_of_Canal_Grande_and_Ponte_di_Rialto,_Venice_-_September_2017.jpg>
 
+- **assets/coaster.jpg** — Asurnipal · CC BY-SA 4.0  
+  <https://commons.wikimedia.org/wiki/File:Innsbruck-Rollbob-summer_toboggan_run-03ASD.jpg>
+- **assets/braies-path.jpg** — Luca Bravo lucabravo · CC0  
+  <https://commons.wikimedia.org/wiki/File:Boathouse_on_a_mountain_lake_(Unsplash).jpg>
+
 האפליקציה עצמה, האייקונים והטקסטים נוצרו במיוחד לטיול הזה.

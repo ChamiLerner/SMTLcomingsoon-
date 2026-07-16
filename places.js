@@ -7,7 +7,7 @@ window.PLACES = {
   /* ---------- יום 3 ---------- */
   "braies": {
     title: "אגם ברייס", sub: "Lago di Braies · Pragser Wildsee",
-    gallery: ["braies.jpg", "braies-boats.jpg"],
+    gallery: ["braies.jpg", "braies-boats.jpg", "braies-path.jpg"],
     about: [
       "פנינת הטורקיז המפורסמת של הדולומיטים — מים צלולים בצבע אמרלד, מוקפים במצוקים תלולים (ובראשם Seekofel) שמשתקפים על פני האגם.",
       "שביל קל ונוח מקיף את האגם (~3.5 ק״מ, כשעה). על הגדה הצפונית משכירים סירות משוט מעץ לשיט משותף — אחת התמונות הכי מזוהות של האזור."
@@ -28,7 +28,7 @@ window.PLACES = {
   },
   "funbob": {
     title: "מגלשת Funbob · סן קנדידו", sub: "Haunold · Alpine Coaster",
-    gallery: ["funbob.jpg", "haunold.jpg"],
+    gallery: ["coaster.jpg", "funbob.jpg", "haunold.jpg"],
     about: [
       "אקשן לנוער בעיירה סן קנדידו (Innichen): עולים ברכבל Haunold, ויורדים ב-Funbob — מגלשת הרים (Alpine Coaster) על מסילת מתכת ארוכה ומהירה במורדות מונטה בָּרָנצ׳י.",
       "הנוף מסביב הוא פסגות ה-Dreischusterspitze המרשימות. אטרקציה כיפית שירצו לעשות פעמיים."
