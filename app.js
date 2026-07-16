@@ -118,16 +118,25 @@ function weatherAlert(kind, pp, code, wind, time) {
   const heavyRain = code === 65 || code === 82 || pp >= 70;
   const windy = wind >= 38, veryWindy = wind >= 50;
   const outdoor = OUTDOOR.includes(kind);
-  if (storm) return { sev: "high", msg: `⛈️ ייתכנו סופות רעמים בסביבות ${time}${kind === "cable" ? " — ייתכנו סגירות ברכבל" : " — כדאי להיערך / לשקול לו״ז"}` };
-  if (kind === "cable" && veryWindy) return { sev: "high", msg: `💨 רוח חזקה מאוד (~${wind} קמ״ש) בסביבות ${time} — ייתכנו הגבלות/סגירות ברכבל` };
+  if (storm) return { sev: "high", type: "storm", msg: `⛈️ ייתכנו סופות רעמים בסביבות ${time}${kind === "cable" ? " — ייתכנו סגירות ברכבל" : " — כדאי להיערך / לשקול לו״ז"}` };
+  if (kind === "cable" && veryWindy) return { sev: "high", type: "wind", msg: `💨 רוח חזקה מאוד (~${wind} קמ״ש) בסביבות ${time} — ייתכנו הגבלות/סגירות ברכבל` };
   if (outdoor) {
-    if (kind === "cable" && windy) return { sev: "med", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time} — ייתכנו הגבלות ברכבל` };
-    if (rain) return { sev: "med", msg: `🌧️ סיכוי גשם${pp ? ` ~${pp}%` : ""} בסביבות ${time} — קחו מעיל/שכבה` };
-    if (windy) return { sev: "med", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time}` };
+    if (kind === "cable" && windy) return { sev: "med", type: "wind", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time} — ייתכנו הגבלות ברכבל` };
+    if (rain) return { sev: "med", type: "rain", msg: `🌧️ סיכוי גשם${pp ? ` ~${pp}%` : ""} בסביבות ${time} — קחו מעיל/שכבה` };
+    if (windy) return { sev: "med", type: "wind", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time}` };
   } else if (heavyRain) {
-    return { sev: "med", msg: `🌧️ גשם חזק צפוי בסביבות ${time}` };
+    return { sev: "med", type: "rain", msg: `🌧️ גשם חזק צפוי בסביבות ${time}` };
   }
   return null;
+}
+function weatherSummary(byType) {
+  const parts = [];
+  if (byType.storm && byType.storm.length) parts.push(`⛈️ סופות: ${byType.storm.join(", ")}`);
+  if (byType.rain && byType.rain.length) parts.push(`🌧️ גשם: ${byType.rain.join(", ")}`);
+  if (byType.wind && byType.wind.length) parts.push(`💨 רוח: ${byType.wind.join(", ")}`);
+  if (!parts.length) return "";
+  const sev = (byType.storm && byType.storm.length) ? "high" : "med";
+  return `<div class="wx-summary ${sev}"><b>שימו לב למזג האוויר</b> · ${parts.join(" · ")}</div>`;
 }
 async function loadActivityWeather(d) {
   const items = (d.schedule || []).map((x, i) => ({ x, i, m: parseMin(x.time) })).filter(o => o.m != null);
@@ -141,6 +150,7 @@ async function loadActivityWeather(d) {
     const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 8000);
     const w = await (await fetch(url, { signal: ctrl.signal })).json(); clearTimeout(to);
     const arr = Array.isArray(w) ? w : [w];
+    const byType = { storm: [], rain: [], wind: [] };
     for (const o of items) {
       const res = arr[locIndex[o.loc]]; if (!res || !res.hourly) continue;
       const H = res.hourly, hr = Math.min(23, Math.round(o.m / 60));
@@ -149,7 +159,10 @@ async function loadActivityWeather(d) {
       const al = weatherAlert(o.x.kind, pp, code, wind, o.x.time);
       const el = document.getElementById(`wa-${d.date}-${o.i}`);
       if (el && al) el.innerHTML = `<div class="wx-alert ${al.sev}">${esc(al.msg)}</div>`;
+      if (al && byType[al.type] && !byType[al.type].includes(o.x.time)) byType[al.type].push(o.x.time);
     }
+    const sumEl = document.getElementById("wxSummary");
+    if (sumEl) sumEl.innerHTML = weatherSummary(byType);
   } catch (e) { /* אין קליטה — בלי התראות */ }
 }
 
@@ -236,6 +249,7 @@ function renderToday() {
   $("#today").innerHTML = `${chipsHTML()}<div class="wrap">
     <div class="daymeta"><span class="eyebrow">יום ${d.n} · ${esc(fmtDate(d.date))}</span><span class="wx" id="wx">מזג אוויר…</span></div>
     ${focusHTML(d)}
+    <div id="wxSummary"></div>
     ${tent}
     <div class="section"><div class="section-label">כל היום · לפי שעות</div><div class="timeline">${(d.schedule || []).map((x, i) => scheduleItem(x, i, d.date)).join("")}</div></div>
     ${diningSection(d)}

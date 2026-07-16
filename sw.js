@@ -1,5 +1,5 @@
 /* Service Worker — עבודה אופליין על ההר */
-const CACHE = "dolomites-2026-v7";
+const CACHE = "dolomites-2026-v8";
 const ASSETS = [
   "./", "index.html", "styles.css", "app.js", "trip-data.js", "places.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/favicon-32.png",
