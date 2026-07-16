@@ -26,7 +26,7 @@ const nowMin = () => { const n = new Date(); return n.getHours() * 60 + n.getMin
 function tripPhase() { const t = todayISO(); if (t < DAYS[0].date) return "before"; if (t > DAYS[DAYS.length - 1].date) return "after"; return "during"; }
 const daysUntilStart = () => { const now = new Date(); now.setHours(0, 0, 0, 0); return Math.round((new Date(DAYS[0].date + "T00:00") - now) / 864e5); };
 
-const KIND_ICON = { drive:"🚗", cable:"🚠", hike:"🥾", walk:"🚶", activity:"🎯", food:"🍽️", kids:"🎢", checkin:"🏨", boat:"⚓", sight:"⛪", free:"✨", view:"👀" };
+const KIND_ICON = { drive:"🚗", cable:"🚠", hike:"🥾", walk:"🚶", activity:"🎯", food:"🍽️", kids:"🎢", checkin:"🏨", boat:"⚓", sight:"⛪", free:"✨", view:"👀", bar:"🍸" };
 const STATUS = { ok:{d:"ok",t:"מאושר"}, pending:{d:"pending",t:"ממתין לאישור"}, none:{d:"none",t:""} };
 
 let selected = DAYS.find(d => d.date === todayISO()) || DAYS[0];
