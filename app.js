@@ -106,7 +106,51 @@ function scheduleItem(x, i, dayDate) {
     <button class="chip-link primary" onclick="openDetail('${dayDate}',${i})">פרטים ותמונות ›</button>
     ${nav ? `<a class="chip-link" target="_blank" rel="noopener" href="${nav}">📍 ניווט</a>` : ""}</div>`;
   return `<div class="tl-item"><div class="tl-time ${x.tsoft ? "soft" : ""}"><span class="tl-dot"></span>${esc(x.time)}</div>
-    <div class="tl-body"><div class="tl-title"><span class="tl-ic">${ic}</span>${esc(x.title)}${kids}${st}</div>${note}${book}${acts}</div></div>`;
+    <div class="tl-body"><div class="tl-title"><span class="tl-ic">${ic}</span>${esc(x.title)}${kids}${st}</div>${note}${book}<div class="wx-slot" id="wa-${dayDate}-${i}"></div>${acts}</div></div>`;
+}
+
+/* ---------- התראות מזג אוויר לכל פעילות (לפי שעה ומיקום) ---------- */
+const OUTDOOR = ["hike", "boat", "cable", "kids", "activity", "sight", "view", "walk"];
+const RAIN_CODES = [51, 53, 55, 61, 63, 65, 66, 67, 80, 81, 82];
+function weatherAlert(kind, pp, code, wind, time) {
+  const storm = code >= 95;
+  const rain = RAIN_CODES.includes(code) || pp >= 50;
+  const heavyRain = code === 65 || code === 82 || pp >= 70;
+  const windy = wind >= 38, veryWindy = wind >= 50;
+  const outdoor = OUTDOOR.includes(kind);
+  if (storm) return { sev: "high", msg: `⛈️ ייתכנו סופות רעמים בסביבות ${time}${kind === "cable" ? " — ייתכנו סגירות ברכבל" : " — כדאי להיערך / לשקול לו״ז"}` };
+  if (kind === "cable" && veryWindy) return { sev: "high", msg: `💨 רוח חזקה מאוד (~${wind} קמ״ש) בסביבות ${time} — ייתכנו הגבלות/סגירות ברכבל` };
+  if (outdoor) {
+    if (kind === "cable" && windy) return { sev: "med", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time} — ייתכנו הגבלות ברכבל` };
+    if (rain) return { sev: "med", msg: `🌧️ סיכוי גשם${pp ? ` ~${pp}%` : ""} בסביבות ${time} — קחו מעיל/שכבה` };
+    if (windy) return { sev: "med", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time}` };
+  } else if (heavyRain) {
+    return { sev: "med", msg: `🌧️ גשם חזק צפוי בסביבות ${time}` };
+  }
+  return null;
+}
+async function loadActivityWeather(d) {
+  const items = (d.schedule || []).map((x, i) => ({ x, i, m: parseMin(x.time) })).filter(o => o.m != null);
+  if (!items.length) return;
+  const key = c => `${c[0].toFixed(3)},${c[1].toFixed(3)}`;
+  const locs = [], locIndex = {};
+  for (const o of items) { const c = o.x.coords || d.coords; const k = key(c); if (!(k in locIndex)) { locIndex[k] = locs.length; locs.push(c); } o.loc = k; }
+  try {
+    const lat = locs.map(c => c[0]).join(","), lon = locs.map(c => c[1]).join(",");
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=precipitation_probability,weather_code,wind_speed_10m&timezone=auto&start_date=${d.date}&end_date=${d.date}`;
+    const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 8000);
+    const w = await (await fetch(url, { signal: ctrl.signal })).json(); clearTimeout(to);
+    const arr = Array.isArray(w) ? w : [w];
+    for (const o of items) {
+      const res = arr[locIndex[o.loc]]; if (!res || !res.hourly) continue;
+      const H = res.hourly, hr = Math.min(23, Math.round(o.m / 60));
+      let idx = H.time.findIndex(t => t.endsWith(`T${pad(hr)}:00`)); if (idx < 0) idx = hr;
+      const pp = (H.precipitation_probability || [])[idx] ?? 0, code = (H.weather_code || [])[idx] ?? 0, wind = Math.round((H.wind_speed_10m || [])[idx] ?? 0);
+      const al = weatherAlert(o.x.kind, pp, code, wind, o.x.time);
+      const el = document.getElementById(`wa-${d.date}-${o.i}`);
+      if (el && al) el.innerHTML = `<div class="wx-alert ${al.sev}">${esc(al.msg)}</div>`;
+    }
+  } catch (e) { /* אין קליטה — בלי התראות */ }
 }
 
 /* ---------- Place detail view ---------- */
@@ -201,6 +245,7 @@ function renderToday() {
     <div class="section" style="padding-bottom:6px"><div class="tl-actions"><a class="chip-link" target="_blank" rel="noopener" href="${voucherPath(d.date)}">🎟 שובר היום</a></div></div>
   </div>`;
   loadWeather(d);
+  loadActivityWeather(d);
 }
 
 /* ---------- Days ---------- */
