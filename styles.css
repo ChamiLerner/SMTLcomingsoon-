@@ -190,6 +190,9 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .wx-summary b{font-weight:800}
 .wx-summary.med{color:var(--pending);background:var(--pendingW);border:1px solid rgba(240,178,75,.28)}
 .wx-summary.high{color:#ff8f8f;background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.32)}
+.wx-src{display:block;margin-top:6px;font-size:10.5px;font-weight:500;opacity:.72}
+.rain-sec .row-ic.rain-ic{background:rgba(90,160,255,.14)}
+.rain-sec .section-label{color:#7fb0e6}
 
 /* ---------- weather alert per activity ---------- */
 .wx-slot:empty{display:none}

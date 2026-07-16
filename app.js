@@ -114,20 +114,24 @@ function scheduleItem(x, i, dayDate) {
 /* ---------- התראות מזג אוויר לכל פעילות (לפי שעה ומיקום) ---------- */
 const OUTDOOR = ["hike", "boat", "cable", "kids", "activity", "sight", "view", "walk"];
 const RAIN_CODES = [51, 53, 55, 61, 63, 65, 66, 67, 80, 81, 82];
+const NOALERT = ["checkin", "free"];
 function weatherAlert(kind, pp, code, wind, time) {
+  if (NOALERT.includes(kind)) return null;              // חזרה למלון / ערב חופשי — לא רלוונטי
   const storm = code >= 95;
   const rain = RAIN_CODES.includes(code) || pp >= 50;
   const heavyRain = code === 65 || code === 82 || pp >= 70;
   const windy = wind >= 38, veryWindy = wind >= 50;
   const outdoor = OUTDOOR.includes(kind);
-  if (storm) return { sev: "high", type: "storm", msg: `⛈️ ייתכנו סופות רעמים בסביבות ${time}${kind === "cable" ? " — ייתכנו סגירות ברכבל" : " — כדאי להיערך / לשקול לו״ז"}` };
-  if (kind === "cable" && veryWindy) return { sev: "high", type: "wind", msg: `💨 רוח חזקה מאוד (~${wind} קמ״ש) בסביבות ${time} — ייתכנו הגבלות/סגירות ברכבל` };
+  const ppTxt = pp ? ` ~${pp}%` : "";
+  if (storm) return { sev: "high", type: "storm", msg: `⛈️ ייתכנו סופות רעמים${ppTxt} בסביבות ${time}${kind === "cable" ? " — ייתכנו סגירות ברכבל" : ""}` };
+  if (kind === "drive") return null;                    // נהיגה — רק סופה
+  if (kind === "cable" && veryWindy) return { sev: "high", type: "wind", msg: `💨 רוח חזקה מאוד (~${wind} קמ״ש) בסביבות ${time} — ייתכנו סגירות ברכבל` };
   if (outdoor) {
     if (kind === "cable" && windy) return { sev: "med", type: "wind", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time} — ייתכנו הגבלות ברכבל` };
-    if (rain) return { sev: "med", type: "rain", msg: `🌧️ סיכוי גשם${pp ? ` ~${pp}%` : ""} בסביבות ${time} — קחו מעיל/שכבה` };
+    if (rain) return { sev: "med", type: "rain", msg: `🌧️ לפי התחזית${ppTxt} סיכוי גשם בסביבות ${time} — קחו מעיל/שכבה` };
     if (windy) return { sev: "med", type: "wind", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time}` };
   } else if (heavyRain) {
-    return { sev: "med", type: "rain", msg: `🌧️ גשם חזק צפוי בסביבות ${time}` };
+    return { sev: "med", type: "rain", msg: `🌧️ לפי התחזית${ppTxt} ייתכן גשם בסביבות ${time}` };
   }
   return null;
 }
@@ -138,7 +142,7 @@ function weatherSummary(byType) {
   if (byType.wind && byType.wind.length) parts.push(`💨 רוח: ${byType.wind.join(", ")}`);
   if (!parts.length) return "";
   const sev = (byType.storm && byType.storm.length) ? "high" : "med";
-  return `<div class="wx-summary ${sev}"><b>שימו לב למזג האוויר</b> · ${parts.join(" · ")}</div>`;
+  return `<div class="wx-summary ${sev}"><b>שימו לב למזג האוויר</b> · ${parts.join(" · ")}<span class="wx-src">מבוסס תחזית Open-Meteo · ייתכנו הבדלים מאפליקציות אחרות</span></div>`;
 }
 async function loadActivityWeather(d) {
   const items = (d.schedule || []).map((x, i) => ({ x, i, m: parseMin(x.time) })).filter(o => o.m != null);
@@ -242,6 +246,11 @@ function knowSection(d) {
   if (!(d.know || []).length) return "";
   return `<div class="section"><div class="section-label">טוב לדעת</div><ul class="know">${d.know.map(k => `<li>${esc(k)}</li>`).join("")}</ul></div>`;
 }
+function rainSection(d) {
+  if (!(d.rainPlan || []).length) return "";
+  return `<div class="section rain-sec"><div class="section-label">☔ תוכנית לגשם · חלופות</div>` +
+    d.rainPlan.map(s => `<div class="row"><div class="row-ic rain-ic">${s.icon || "☂️"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p></div>${navUrl(s) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(s)}">📍</a></div>` : ""}</div>`).join("") + `</div>`;
+}
 function checklist(items) { return `<ul class="checklist">${items.map(t => `<li>${esc(t)}</li>`).join("")}</ul>`; }
 function packSection(d) {
   if (!d.pack) return "";
@@ -262,6 +271,7 @@ function renderToday() {
     <div class="section"><div class="section-label">כל היום · לפי שעות</div><div class="timeline">${(d.schedule || []).map((x, i) => scheduleItem(x, i, d.date)).join("")}</div></div>
     ${diningSection(d)}
     ${stopsSection(d)}
+    ${rainSection(d)}
     ${knowSection(d)}
     ${packSection(d)}
     <div class="section" style="padding-bottom:6px"><div class="tl-actions"><a class="chip-link" target="_blank" rel="noopener" href="${voucherPath(d.date)}">🎟 שובר היום</a></div></div>
