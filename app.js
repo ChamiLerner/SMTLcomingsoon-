@@ -19,6 +19,7 @@ const dayNavUrl = d => d.coords ? coordUrl(d.coords) : queryUrl(d.place || d.tit
 const voucherPath = date => `vouchers/${date}.pdf`;
 const telUrl = p => "tel:" + String(p).replace(/[^\d+]/g, "");
 const parseMin = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(t)); return m ? +m[1] * 60 + +m[2] : null; };
+const fmtDur = m => m >= 60 ? `${Math.floor(m / 60)}:${pad(m % 60)} ש׳` : `${m} דק׳`;
 const nowMin = () => { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); };
 
 function tripPhase() { const t = todayISO(); if (t < DAYS[0].date) return "before"; if (t > DAYS[DAYS.length - 1].date) return "after"; return "during"; }
@@ -100,13 +101,14 @@ function scheduleItem(x, i, dayDate) {
   const kids = x.kids ? `<span class="badge-kids">נוער</span>` : "";
   const st = x.status && x.status !== "none" ? `<span class="sdot ${STATUS[x.status].d}"></span>` : "";
   const note = x.note ? `<p class="tl-note">${esc(x.note)}</p>` : "";
+  const leg = x.leg ? `<div class="tl-leg">🚗 מ${esc(x.leg.from)} · ~${esc(x.leg.km)} ק״מ · ${fmtDur(x.leg.min)}</div>` : "";
   const book = x.book ? `<div class="tl-book">ℹ︎ ${esc(x.book)}</div>` : "";
   const nav = navUrl(x);
   const acts = `<div class="tl-actions">
     <button class="chip-link primary" onclick="openDetail('${dayDate}',${i})">פרטים ותמונות ›</button>
     ${nav ? `<a class="chip-link" target="_blank" rel="noopener" href="${nav}">📍 ניווט</a>` : ""}</div>`;
   return `<div class="tl-item"><div class="tl-time ${x.tsoft ? "soft" : ""}"><span class="tl-dot"></span>${esc(x.time)}</div>
-    <div class="tl-body"><div class="tl-title"><span class="tl-ic">${ic}</span>${esc(x.title)}${kids}${st}</div>${note}${book}<div class="wx-slot" id="wa-${dayDate}-${i}"></div>${acts}</div></div>`;
+    <div class="tl-body"><div class="tl-title"><span class="tl-ic">${ic}</span>${esc(x.title)}${kids}${st}</div>${leg}${note}${book}<div class="wx-slot" id="wa-${dayDate}-${i}"></div>${acts}</div></div>`;
 }
 
 /* ---------- התראות מזג אוויר לכל פעילות (לפי שעה ומיקום) ---------- */
@@ -192,6 +194,7 @@ function openDetail(dayDate, idx) {
   const about = (p.about || []).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join("");
   const rec = (p.recommend || []).length ? `<div class="dt-rec"><div class="section-label">💡 מומלץ במקום</div><ul class="know">${p.recommend.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : "";
   const story = p.story ? `<div class="dt-story"><div class="dt-story-h">${esc(p.storyTitle || "📖 קצת רקע")}</div><p>${esc(p.story)}</p></div>` : "";
+  const timing = (p.timing || []).length ? `<div class="dt-timing"><div class="section-label">⏱️ כמה זמן להקדיש</div><div class="dt-facts">${p.timing.map(f => `<div class="dt-fact"><span class="fk">${esc(f.k)}</span><span class="fv">${esc(f.v)}</span></div>`).join("")}</div></div>` : "";
   const facts = (p.facts || []).length ? `<div class="dt-facts">${p.facts.map(f => `<div class="dt-fact"><span class="fk">${esc(f.k)}</span><span class="fv">${esc(f.v)}</span></div>`).join("")}</div>` : "";
   const tips = (p.tips || []).length ? `<div class="dt-tips"><div class="section-label">טיפים</div><ul class="know">${p.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : "";
   $("#detailBody").innerHTML = `
@@ -206,6 +209,7 @@ function openDetail(dayDate, idx) {
       ${btns}
       <div class="dt-about">${about}</div>
       ${rec}
+      ${timing}
       ${story}
       ${facts}${tips}
     </div>`;

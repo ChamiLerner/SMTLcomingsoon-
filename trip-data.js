@@ -93,12 +93,12 @@ window.TRIP_DATA = [
     summary: "פנינת הטורקיז של הדולומיטים בבוקר · אקשן לנוער אחה״צ",
     schedule: [
       { time: "09:00", kind: "drive", title: "יציאה מהמלון", note: "יוצאים לכיוון אגם ברייס", coords: [46.5506, 11.8730], place: "ciasademunt" },
-      { time: "10:15", kind: "boat", title: "אגם ברייס", note: "10:15–12:15 · שיט בסירות (אם התור סביר) + זמן להליכה קצרה סביב האגם למי שרוצה", coords: [46.6947, 12.0855], place: "braies" },
-      { time: "12:45", kind: "kids", title: "FunBob בסן קנדידו", note: "רכבל Haunold ומגלשת הרים מהירה על מסילת מתכת · ירצו פעמיים!", coords: [46.7326, 12.2789], place: "funbob", kids: true },
+      { time: "10:15", kind: "boat", title: "אגם ברייס", note: "10:15–12:15 · שיט בסירות (אם התור סביר) + זמן להליכה קצרה סביב האגם למי שרוצה", coords: [46.6947, 12.0855], place: "braies", leg: { from: "המלון", km: 48, min: 65 } },
+      { time: "12:45", kind: "kids", title: "FunBob בסן קנדידו", note: "רכבל Haunold ומגלשת הרים מהירה על מסילת מתכת · ירצו פעמיים!", coords: [46.7326, 12.2789], place: "funbob", leg: { from: "ברייס", km: 30, min: 35 }, kids: true },
       { time: "14:00", kind: "food", title: "ארוחת צהריים", note: "בסן קנדידו · מסעדות ובתי קפה במדרחוב", coords: [46.7326, 12.2789], place: "sancandido" },
       { time: "15:15", kind: "sight", title: "סיבוב קצר במרכז סן קנדידו", note: "מדרחוב צבעוני, כנסיית Stiftskirche והרים ברקע", coords: [46.7326, 12.2789], place: "sancandido" },
-      { time: "16:00", kind: "food", title: "לואקר — קפה, קינוח וקניות", note: "בית הקפה והחנות של לואקר · כיף גדול לילדים 🍫", q: "Loacker Moserhof Café Heinfels", place: "loacker" },
-      { time: "18:00", kind: "checkin", title: "חזרה למלון", note: "18:00–18:30 · זמן להתרענן", coords: [46.5506, 11.8730], place: "ciasademunt", tsoft: true }
+      { time: "16:00", kind: "food", title: "לואקר — קפה, קינוח וקניות", note: "בית הקפה והחנות של לואקר · כיף גדול לילדים 🍫", q: "Loacker Moserhof Café Heinfels", place: "loacker", leg: { from: "סן קנדידו", km: 10, min: 12 } },
+      { time: "18:00", kind: "checkin", title: "חזרה למלון", note: "18:00–18:30 · זמן להתרענן", coords: [46.5506, 11.8730], place: "ciasademunt", leg: { from: "לואקר", km: 78, min: 85 }, tsoft: true }
     ],
     dining: {
       lunch: [
@@ -111,6 +111,7 @@ window.TRIP_DATA = [
       { icon: "🍦", name: "גלידה במדרחוב סן קנדידו", note: "כמה גלאטריות ביתיות באזור ההולכי־רגל — עצירה מושלמת אחרי המגלשה.", q: "gelato San Candido Innichen" }
     ],
     know: [
+      "⛽ מומלץ לתדלק לפני היציאה (בקורוורה) או בברוניקו בדרך — בעמקים יש פחות תחנות דלק.",
       "⚠️ אגם ברייס 2026: העמק סגור 09:00–16:00 (1.7–15.9). חובה הזמנת חניה מראש ב-prags.bz, או להגיע לפני 09:00.",
       "שייט הסירות בתור בלבד (אי אפשר להזמין) — ~20€ לאדם בסירה משותפת, ותורים של 1–2 ש׳ בשיא. להגיע מוקדם!",
       "רכבל Haunold ל-Funbob — אין צורך להזמין."
