@@ -41,6 +41,7 @@ async function loadWeather(d) {
     const w = await (await fetch(url, { signal: ctrl.signal })).json(); clearTimeout(to);
     const dd = w.daily, hi = Math.round(dd.temperature_2m_max[0]), rain = dd.precipitation_probability_max[0] ?? 0, emoji = wcode(dd.weather_code[0]);
     el.textContent = (isToday && w.current) ? `${emoji} ${Math.round(w.current.temperature_2m)}° · גשם ${rain}%` : `${emoji} מקס׳ ${hi}° · גשם ${rain}%`;
+    updateRainTop(d, rain);
   } catch (e) { el.textContent = "מזג אוויר עם קליטה"; }
 }
 
@@ -101,14 +102,17 @@ function scheduleItem(x, i, dayDate) {
   const kids = x.kids ? `<span class="badge-kids">נוער</span>` : "";
   const st = x.status && x.status !== "none" ? `<span class="sdot ${STATUS[x.status].d}"></span>` : "";
   const note = x.note ? `<p class="tl-note">${esc(x.note)}</p>` : "";
-  const leg = x.leg ? `<div class="tl-leg">🚗 מ${esc(x.leg.from)} · ~${esc(x.leg.km)} ק״מ · ${fmtDur(x.leg.min)}</div>` : "";
   const book = x.book ? `<div class="tl-book">ℹ︎ ${esc(x.book)}</div>` : "";
   const nav = navUrl(x);
   const acts = `<div class="tl-actions">
     <button class="chip-link primary" onclick="openDetail('${dayDate}',${i})">פרטים ותמונות ›</button>
     ${nav ? `<a class="chip-link" target="_blank" rel="noopener" href="${nav}">📍 ניווט</a>` : ""}</div>`;
   return `<div class="tl-item"><div class="tl-time ${x.tsoft ? "soft" : ""}"><span class="tl-dot"></span>${esc(x.time)}</div>
-    <div class="tl-body"><div class="tl-title"><span class="tl-ic">${ic}</span>${esc(x.title)}${kids}${st}</div>${leg}${note}${book}<div class="wx-slot" id="wa-${dayDate}-${i}"></div>${acts}</div></div>`;
+    <div class="tl-body"><div class="tl-title"><span class="tl-ic">${ic}</span>${esc(x.title)}${kids}${st}</div>${note}${book}<div class="wx-slot" id="wa-${dayDate}-${i}"></div>${acts}</div></div>`;
+}
+function legConnector(x) {
+  if (!x.leg) return "";
+  return `<div class="tl-travel"><span class="tl-travel-track"></span><span class="tl-travel-txt">🚗 נסיעה · ~${esc(x.leg.km)} ק״מ · ${fmtDur(x.leg.min)}</span></div>`;
 }
 
 /* ---------- התראות מזג אוויר לכל פעילות (לפי שעה ומיקום) ---------- */
@@ -246,10 +250,22 @@ function knowSection(d) {
   if (!(d.know || []).length) return "";
   return `<div class="section"><div class="section-label">טוב לדעת</div><ul class="know">${d.know.map(k => `<li>${esc(k)}</li>`).join("")}</ul></div>`;
 }
+function rainRowsHTML(d) {
+  return d.rainPlan.map(s => `<div class="row"><div class="row-ic rain-ic">${s.icon || "☂️"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p></div>${navUrl(s) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(s)}">📍</a></div>` : ""}</div>`).join("");
+}
 function rainSection(d) {
   if (!(d.rainPlan || []).length) return "";
-  return `<div class="section rain-sec"><div class="section-label">☔ תוכנית לגשם · חלופות</div>` +
-    d.rainPlan.map(s => `<div class="row"><div class="row-ic rain-ic">${s.icon || "☂️"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p></div>${navUrl(s) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(s)}">📍</a></div>` : ""}</div>`).join("") + `</div>`;
+  return `<div class="section rain-sec" id="rainNormal"><div class="section-label">☔ תוכנית לגשם · חלופות</div>${rainRowsHTML(d)}</div>`;
+}
+function updateRainTop(d, pct) {
+  const top = document.getElementById("rainTop"), normal = document.getElementById("rainNormal");
+  if (!top) return;
+  if (pct >= 60 && (d.rainPlan || []).length) {
+    top.innerHTML = `<div class="rain-top"><div class="rain-top-h">☔ צפוי יום גשום${pct ? ` · ~${pct}% גשם` : ""} — חלופות מקורות מוכנות</div>${rainRowsHTML(d)}</div>`;
+    if (normal) normal.style.display = "none";
+  } else {
+    top.innerHTML = ""; if (normal) normal.style.display = "";
+  }
 }
 function checklist(items) { return `<ul class="checklist">${items.map(t => `<li>${esc(t)}</li>`).join("")}</ul>`; }
 function packSection(d) {
@@ -267,8 +283,9 @@ function renderToday() {
     <div class="daymeta"><span class="eyebrow">יום ${d.n} · ${esc(fmtDate(d.date))}</span><span class="wx" id="wx">מזג אוויר…</span></div>
     ${focusHTML(d)}
     <div id="wxSummary"></div>
+    <div id="rainTop"></div>
     ${tent}
-    <div class="section"><div class="section-label">כל היום · לפי שעות</div><div class="timeline">${(d.schedule || []).map((x, i) => scheduleItem(x, i, d.date)).join("")}</div></div>
+    <div class="section"><div class="section-label">כל היום · לפי שעות</div><div class="timeline">${(d.schedule || []).map((x, i) => legConnector(x) + scheduleItem(x, i, d.date)).join("")}</div></div>
     ${diningSection(d)}
     ${stopsSection(d)}
     ${rainSection(d)}
