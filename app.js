@@ -190,6 +190,8 @@ function openDetail(dayDate, idx) {
     ${navHref ? `<a class="btn-nav" target="_blank" rel="noopener" href="${navHref}">📍 ניווט</a>` : ""}
     ${p.url ? `<a class="btn-link" target="_blank" rel="noopener" href="${esc(p.url)}">🔗 ${esc(p.urlLabel || "אתר")}</a>` : ""}</div>`;
   const about = (p.about || []).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join("");
+  const rec = (p.recommend || []).length ? `<div class="dt-rec"><div class="section-label">💡 מומלץ במקום</div><ul class="know">${p.recommend.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : "";
+  const story = p.story ? `<div class="dt-story"><div class="dt-story-h">${esc(p.storyTitle || "📖 קצת רקע")}</div><p>${esc(p.story)}</p></div>` : "";
   const facts = (p.facts || []).length ? `<div class="dt-facts">${p.facts.map(f => `<div class="dt-fact"><span class="fk">${esc(f.k)}</span><span class="fv">${esc(f.v)}</span></div>`).join("")}</div>` : "";
   const tips = (p.tips || []).length ? `<div class="dt-tips"><div class="section-label">טיפים</div><ul class="know">${p.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : "";
   $("#detailBody").innerHTML = `
@@ -203,6 +205,8 @@ function openDetail(dayDate, idx) {
       ${p.sub ? `<p class="dt-sub">${esc(p.sub)}</p>` : ""}
       ${btns}
       <div class="dt-about">${about}</div>
+      ${rec}
+      ${story}
       ${facts}${tips}
     </div>`;
   const el = $("#detail"); el.classList.add("open"); el.setAttribute("aria-hidden", "false");
