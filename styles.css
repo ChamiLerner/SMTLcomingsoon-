@@ -195,6 +195,7 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .wx-summary b{font-weight:800}
 .wx-summary.med{color:var(--pending);background:var(--pendingW);border:1px solid rgba(240,178,75,.28)}
 .wx-summary.high{color:#ff8f8f;background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.32)}
+.wx-summary.low{color:#8db8ee;background:rgba(90,160,255,.1);border:1px solid rgba(90,160,255,.24)}
 .wx-src{display:block;margin-top:6px;font-size:10.5px;font-weight:500;opacity:.72}
 .rain-sec .row-ic.rain-ic,.rain-top .row-ic.rain-ic{background:rgba(90,160,255,.14)}
 .rain-sec .section-label{color:#7fb0e6}
@@ -209,6 +210,7 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .wx-src a{color:inherit;text-decoration:underline;font-weight:700}
 .wx-alert.med{color:var(--pending);background:var(--pendingW);border:1px solid rgba(240,178,75,.28)}
 .wx-alert.high{color:#ff8f8f;background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.32)}
+.wx-alert.low{color:#8db8ee;background:rgba(90,160,255,.1);border:1px solid rgba(90,160,255,.22)}
 
 /* ---------- checklist ---------- */
 .checklist{list-style:none;margin:0;padding:0}

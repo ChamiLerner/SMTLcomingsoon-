@@ -38,11 +38,12 @@ async function loadWeather(d) {
   const el = $("#wx"); if (!el) return;
   const [lat, lon] = d.coords, isToday = d.date === todayISO();
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&timezone=auto&start_date=${d.date}&end_date=${d.date}`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,weather_code&timezone=auto&start_date=${d.date}&end_date=${d.date}`;
     const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 7000);
     const w = await (await fetch(url, { signal: ctrl.signal })).json(); clearTimeout(to);
-    const dd = w.daily, hi = Math.round(dd.temperature_2m_max[0]), rain = dd.precipitation_probability_max[0] ?? 0, emoji = wcode(dd.weather_code[0]);
-    el.textContent = (isToday && w.current) ? `${emoji} ${Math.round(w.current.temperature_2m)}° · עד ${rain}% גשם` : `${emoji} מקס׳ ${hi}° · עד ${rain}% גשם`;
+    const dd = w.daily, hi = Math.round(dd.temperature_2m_max[0]), rain = dd.precipitation_probability_max[0] ?? 0, sum = dd.precipitation_sum?.[0] ?? 0, emoji = wcode(dd.weather_code[0]);
+    const tstr = (isToday && w.current) ? `${Math.round(w.current.temperature_2m)}°` : `מקס׳ ${hi}°`;
+    el.textContent = `${emoji} ${tstr} · ${dayVerdict(rain, sum)}`;
   } catch (e) { el.textContent = "מזג אוויר · הקישו לתחזית"; }
 }
 
@@ -118,37 +119,47 @@ function legConnector(x) {
 
 /* ---------- התראות מזג אוויר לכל פעילות (לפי שעה ומיקום) ---------- */
 const OUTDOOR = ["hike", "boat", "cable", "kids", "activity", "sight", "view", "walk"];
-const RAIN_CODES = [51, 53, 55, 61, 63, 65, 66, 67, 80, 81, 82];
 const NOALERT = ["checkin", "free"];
-function weatherAlert(kind, pp, code, wind, time) {
+// דירוג לפי הסתברות + כמות בפועל (מ״מ): 3=כנראה · 2=ייתכנו ממטרים · 1=סיכוי קטן
+function rainLevel(pp, mm) {
+  if (mm >= 1.5 || (pp >= 70 && mm >= 0.6)) return 3;
+  if (pp >= 50 || mm >= 0.3) return 2;
+  if (pp >= 25) return 1;
+  return 0;
+}
+const LEVEL = {
+  3: { cat: "probably", ic: "🌧️", label: "כנראה יירד גשם", tip: " — קחו מעיל", sev: "high" },
+  2: { cat: "showers", ic: "🌦️", label: "ייתכנו ממטרים", tip: " — כדאי מעיל דק/שכבה", sev: "med" },
+  1: { cat: "small", ic: "🌤️", label: "סיכוי קטן לגשם", tip: "", sev: "low" }
+};
+function dayVerdict(pp, sum) {
+  if (sum >= 3 || (pp >= 70 && sum >= 1)) return "כנראה גשם";
+  if (pp >= 50 || sum >= 0.5) return "ייתכנו ממטרים";
+  if (pp >= 30) return "סיכוי קטן לגשם";
+  return "יבש בעיקר";
+}
+function weatherAlert(kind, pp, mm, code, wind, time) {
   if (NOALERT.includes(kind)) return null;              // חזרה למלון / ערב חופשי — לא רלוונטי
-  const storm = code >= 95;
-  const rain = RAIN_CODES.includes(code) || pp >= 50;
-  const heavyRain = code === 65 || code === 82 || pp >= 70;
-  const windy = wind >= 38, veryWindy = wind >= 50;
-  const outdoor = OUTDOOR.includes(kind);
-  const ppTxt = pp ? ` ~${pp}%` : "";
-  if (storm) return { sev: "high", type: "storm", msg: `⛈️ ייתכנו סופות רעמים${ppTxt} בסביבות ${time}${kind === "cable" ? " — ייתכנו סגירות ברכבל" : ""}` };
+  const storm = code >= 95, windy = wind >= 38, veryWindy = wind >= 50, outdoor = OUTDOOR.includes(kind);
+  if (storm) return { sev: "high", cat: "storm", msg: `🌩️ ייתכנו רעמים בסביבות ${time}${kind === "cable" ? " — ייתכנו סגירות ברכבל" : ""}` };
   if (kind === "drive") return null;                    // נהיגה — רק סופה
-  if (kind === "cable" && veryWindy) return { sev: "high", type: "wind", msg: `💨 רוח חזקה מאוד (~${wind} קמ״ש) בסביבות ${time} — ייתכנו סגירות ברכבל` };
-  if (outdoor) {
-    if (kind === "cable" && windy) return { sev: "med", type: "wind", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time} — ייתכנו הגבלות ברכבל` };
-    if (rain) return { sev: "med", type: "rain", msg: `🌧️ לפי התחזית${ppTxt} סיכוי גשם בסביבות ${time} — קחו מעיל/שכבה` };
-    if (windy) return { sev: "med", type: "wind", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time}` };
-  } else if (heavyRain) {
-    return { sev: "med", type: "rain", msg: `🌧️ לפי התחזית${ppTxt} ייתכן גשם בסביבות ${time}` };
+  if (kind === "cable" && veryWindy) return { sev: "high", cat: "wind", msg: `💨 רוח חזקה מאוד (~${wind} קמ״ש) בסביבות ${time} — ייתכנו סגירות ברכבל` };
+  const lv = rainLevel(pp, mm);
+  if (lv && (outdoor || lv >= 3)) {
+    const L = LEVEL[lv];
+    const nums = `(${pp || 0}%${mm >= 0.1 ? ` · ~${mm < 1 ? mm.toFixed(1) : Math.round(mm)} מ״מ` : " · ללא כמות"})`;
+    return { sev: L.sev, cat: L.cat, msg: `${L.ic} ${L.label} בסביבות ${time} ${nums}${L.tip}` };
   }
+  if (kind === "cable" && windy) return { sev: "med", cat: "wind", msg: `💨 רוח חזקה (~${wind} קמ״ש) בסביבות ${time}` };
   return null;
 }
-function weatherSummary(byType, coords) {
-  const parts = [];
-  if (byType.storm && byType.storm.length) parts.push(`⛈️ סופות: ${byType.storm.join(", ")}`);
-  if (byType.rain && byType.rain.length) parts.push(`🌧️ גשם: ${byType.rain.join(", ")}`);
-  if (byType.wind && byType.wind.length) parts.push(`💨 רוח: ${byType.wind.join(", ")}`);
+function weatherSummary(byCat, coords) {
+  const order = [["storm", "🌩️ רעמים"], ["probably", "🌧️ כנראה גשם"], ["showers", "🌦️ ייתכנו ממטרים"], ["small", "🌤️ סיכוי קטן"], ["wind", "💨 רוח"]];
+  const parts = order.filter(([k]) => (byCat[k] || []).length).map(([k, lbl]) => `${lbl}: ${byCat[k].join(", ")}`);
   if (!parts.length) return "";
-  const sev = (byType.storm && byType.storm.length) ? "high" : "med";
+  const sev = ((byCat.storm || []).length || (byCat.probably || []).length) ? "high" : (byCat.showers || []).length ? "med" : "low";
   const link = coords ? ` · השוו: <a target="_blank" rel="noopener" href="${forecastUrl(coords)}">meteoblue</a> · <a target="_blank" rel="noopener" href="${weatherComUrl(coords)}">weather.com</a>` : "";
-  return `<div class="wx-summary ${sev}"><b>שימו לב למזג האוויר</b> · ${parts.join(" · ")}<span class="wx-src">האחוזים הם שיא הסיכוי במהלך היום (Open-Meteo)${link}</span></div>`;
+  return `<div class="wx-summary ${sev}"><b>מזג האוויר היום</b> · ${parts.join(" · ")}<span class="wx-src">מבוסס הסתברות + כמות גשם בפועל (Open-Meteo)${link}</span></div>`;
 }
 async function loadActivityWeather(d) {
   const items = (d.schedule || []).map((x, i) => ({ x, i, m: parseMin(x.time) })).filter(o => o.m != null);
@@ -158,23 +169,23 @@ async function loadActivityWeather(d) {
   for (const o of items) { const c = o.x.coords || d.coords; o.coords = c; const k = key(c); if (!(k in locIndex)) { locIndex[k] = locs.length; locs.push(c); } o.loc = k; }
   try {
     const lat = locs.map(c => c[0]).join(","), lon = locs.map(c => c[1]).join(",");
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=precipitation_probability,weather_code,wind_speed_10m&timezone=auto&start_date=${d.date}&end_date=${d.date}`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=precipitation_probability,precipitation,weather_code,wind_speed_10m&timezone=auto&start_date=${d.date}&end_date=${d.date}`;
     const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 8000);
     const w = await (await fetch(url, { signal: ctrl.signal })).json(); clearTimeout(to);
     const arr = Array.isArray(w) ? w : [w];
-    const byType = { storm: [], rain: [], wind: [] };
+    const byCat = { storm: [], probably: [], showers: [], small: [], wind: [] };
     for (const o of items) {
       const res = arr[locIndex[o.loc]]; if (!res || !res.hourly) continue;
       const H = res.hourly, hr = Math.min(23, Math.round(o.m / 60));
       let idx = H.time.findIndex(t => t.endsWith(`T${pad(hr)}:00`)); if (idx < 0) idx = hr;
-      const pp = (H.precipitation_probability || [])[idx] ?? 0, code = (H.weather_code || [])[idx] ?? 0, wind = Math.round((H.wind_speed_10m || [])[idx] ?? 0);
-      const al = weatherAlert(o.x.kind, pp, code, wind, o.x.time);
+      const pp = (H.precipitation_probability || [])[idx] ?? 0, mm = (H.precipitation || [])[idx] ?? 0, code = (H.weather_code || [])[idx] ?? 0, wind = Math.round((H.wind_speed_10m || [])[idx] ?? 0);
+      const al = weatherAlert(o.x.kind, pp, mm, code, wind, o.x.time);
       const el = document.getElementById(`wa-${d.date}-${o.i}`);
       if (el && al) el.innerHTML = `<a class="wx-alert ${al.sev}" target="_blank" rel="noopener" href="${forecastUrl(o.coords)}">${esc(al.msg)} <span class="wx-more">תחזית ›</span></a>`;
-      if (al && byType[al.type] && !byType[al.type].includes(o.x.time)) byType[al.type].push(o.x.time);
+      if (al && byCat[al.cat] && !byCat[al.cat].includes(o.x.time)) byCat[al.cat].push(o.x.time);
     }
     const sumEl = document.getElementById("wxSummary");
-    if (sumEl) sumEl.innerHTML = weatherSummary(byType, d.coords);
+    if (sumEl) sumEl.innerHTML = weatherSummary(byCat, d.coords);
   } catch (e) { /* אין קליטה — בלי התראות */ }
 }
 
