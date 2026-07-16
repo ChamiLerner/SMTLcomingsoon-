@@ -73,6 +73,13 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .focus-note{margin:6px 0 0;font-size:13.5px;color:#cbd5e1}
 .go{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:16px;background:var(--grad);color:#04160f;font-weight:800;font-size:15px}
 .go:active{transform:scale(.985)}
+/* two-button navigation (Google Maps + Waze) */
+.nav-row{display:flex;gap:9px;margin-top:16px}
+.nav-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;min-height:50px;border-radius:15px;font-weight:800;font-size:14.5px}
+.nav-btn.gmaps{background:var(--grad);color:#04160f}
+.nav-btn.waze{background:#33ccff;color:#04283a}
+.nav-btn:active{transform:scale(.985)}
+.icon-btn.waze-mini{background:#33ccff;color:#04283a;border-color:#33ccff;font-weight:900;font-size:12.5px}
 
 /* ---------- Next strip ---------- */
 .next{display:flex;align-items:center;gap:10px;margin:12px 0 0;background:var(--accentW);border:1px solid rgba(52,224,161,.22);border-radius:16px;padding:12px 14px}

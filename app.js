@@ -16,6 +16,23 @@ const coordUrl = c => `https://www.google.com/maps/search/?api=1&query=${c[0]},$
 const queryUrl = q => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
 const navUrl = o => o && o.coords ? coordUrl(o.coords) : (o && o.q ? queryUrl(o.q) : null);
 const dayNavUrl = d => d.coords ? coordUrl(d.coords) : queryUrl(d.place || d.title);
+/* ---------- ניווט לפי שם מקום · Google Maps + Waze ---------- */
+const encq = q => encodeURIComponent(q);
+const gmapsUrl = q => `https://www.google.com/maps/dir/?api=1&destination=${encq(q)}`;
+const wazeUrl = q => `https://www.waze.com/ul?q=${encq(q)}&navigate=yes`;
+function navName(o, day) {
+  if (!o) return null;
+  if (o.q) return o.q;
+  const p = o.place && window.PLACES && PLACES[o.place];
+  if (p && (p.navq || p.q)) return p.navq || p.q;
+  const nm = o.title || o.name;
+  if (nm) return `${nm}${day && day.base ? ", " + day.base : ""}, Italy`;
+  if (o.coords) return `${o.coords[0]},${o.coords[1]}`;
+  return null;
+}
+function navBig(q) { return q ? `<div class="nav-row"><a class="nav-btn gmaps" target="_blank" rel="noopener" href="${gmapsUrl(q)}">🗺️ Google Maps</a><a class="nav-btn waze" target="_blank" rel="noopener" href="${wazeUrl(q)}">Waze</a></div>` : ""; }
+function navChips(q) { return q ? `<a class="chip-link" target="_blank" rel="noopener" href="${gmapsUrl(q)}">🗺️ Maps</a><a class="chip-link" target="_blank" rel="noopener" href="${wazeUrl(q)}">Waze</a>` : ""; }
+function navMini(q) { return q ? `<a class="icon-btn" title="Google Maps" target="_blank" rel="noopener" href="${gmapsUrl(q)}">🗺️</a><a class="icon-btn waze-mini" title="Waze" target="_blank" rel="noopener" href="${wazeUrl(q)}">W</a>` : ""; }
 const voucherPath = date => `vouchers/${date}.pdf`;
 const telUrl = p => "tel:" + String(p).replace(/[^\d+]/g, "");
 const parseMin = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(t)); return m ? +m[1] * 60 + +m[2] : null; };
@@ -68,18 +85,19 @@ function buildFocus(d) {
     const nxt = timed.find(o => o.m > now) || null;
     const head = curr ? curr.x : timed[0].x;
     return { img: d.image, label: curr ? "● עכשיו" : "● מתחילים", big: head.time,
-      title: icon(head) + head.title, note: head.note || "", nav: navUrl(head) || dayNavUrl(d),
+      title: icon(head) + head.title, note: head.note || "", navq: navName(head, d),
       next: (curr ? (nxt && nxt.x) : (timed[1] && timed[1].x)) || null, nextLabel: "הבא" };
   }
   if (phase === "before" && d.date === DAYS[0].date) {
     const n = daysUntilStart();
+    const head0 = timed[0] && timed[0].x || items[0];
     return { img: d.image, label: "✈︎ ליציאה", big: String(n), suf: n === 1 ? "יום" : "ימים",
-      title: `יום 1 · ${d.title}`, note: d.summary || "", nav: dayNavUrl(d),
-      next: timed[0] && timed[0].x || items[0] || null, nextLabel: "מתחילים" };
+      title: `יום 1 · ${d.title}`, note: d.summary || "", navq: navName(head0, d),
+      next: head0 || null, nextLabel: "מתחילים" };
   }
   const head = timed[0] ? timed[0].x : (items[0] || {});
   return { img: d.image, label: "התוכנית", big: head.time || `יום ${d.n}`,
-    title: icon(head) + (head.title || d.title), note: head.note || d.summary || "", nav: navUrl(head) || dayNavUrl(d),
+    title: icon(head) + (head.title || d.title), note: head.note || d.summary || "", navq: navName(head, d),
     next: (timed[1] && timed[1].x) || null, nextLabel: "אחר כך" };
 }
 function focusHTML(d) {
@@ -93,7 +111,7 @@ function focusHTML(d) {
       <div class="focus-big">${esc(f.big)}${suf}</div>
       <h2 class="focus-title">${esc(f.title)}</h2>
       ${f.note ? `<p class="focus-note">${esc(f.note)}</p>` : ""}
-      <a class="go" target="_blank" rel="noopener" href="${f.nav}">📍 ניווט ליעד</a>
+      ${navBig(f.navq)}
     </div>
   </div>${nx}`;
 }
@@ -105,10 +123,10 @@ function scheduleItem(x, i, dayDate) {
   const st = x.status && x.status !== "none" ? `<span class="sdot ${STATUS[x.status].d}"></span>` : "";
   const note = x.note ? `<p class="tl-note">${esc(x.note)}</p>` : "";
   const book = x.book ? `<div class="tl-book">ℹ︎ ${esc(x.book)}</div>` : "";
-  const nav = navUrl(x);
+  const day = DAYS.find(dd => dd.date === dayDate);
   const acts = `<div class="tl-actions">
     <button class="chip-link primary" onclick="openDetail('${dayDate}',${i})">פרטים ותמונות ›</button>
-    ${nav ? `<a class="chip-link" target="_blank" rel="noopener" href="${nav}">📍 ניווט</a>` : ""}</div>`;
+    ${navChips(navName(x, day))}</div>`;
   return `<div class="tl-item"><div class="tl-time ${x.tsoft ? "soft" : ""}"><span class="tl-dot"></span>${esc(x.time)}</div>
     <div class="tl-body"><div class="tl-title"><span class="tl-ic">${ic}</span>${esc(x.title)}${kids}${st}</div>${note}${book}<div class="wx-slot" id="wa-${dayDate}-${i}"></div>${acts}</div></div>`;
 }
@@ -208,10 +226,8 @@ function openDetail(dayDate, idx) {
   const galleryHTML = gallery.length
     ? `<div class="dt-gallery">${gallery.map(g => `<img src="assets/${esc(g)}" alt="" loading="lazy">`).join("")}</div>`
     : `<div class="dt-noimg">${KIND_ICON[item.kind] || "📍"}</div>`;
-  const navHref = p.coords ? coordUrl(p.coords) : (p.q ? queryUrl(p.q) : (item.coords ? coordUrl(item.coords) : (item.q ? queryUrl(item.q) : null)));
-  const btns = `<div class="dt-btns">
-    ${navHref ? `<a class="btn-nav" target="_blank" rel="noopener" href="${navHref}">📍 ניווט</a>` : ""}
-    ${p.url ? `<a class="btn-link" target="_blank" rel="noopener" href="${esc(p.url)}">🔗 ${esc(p.urlLabel || "אתר")}</a>` : ""}</div>`;
+  const q = p.navq || p.q || navName(item, day);
+  const btns = `${navBig(q)}${p.url ? `<div class="dt-btns"><a class="btn-link" target="_blank" rel="noopener" href="${esc(p.url)}">🔗 ${esc(p.urlLabel || "אתר")}</a></div>` : ""}`;
   const about = (p.about || []).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join("");
   const rec = (p.recommend || []).length ? `<div class="dt-rec"><div class="section-label">💡 מומלץ במקום</div><ul class="know">${p.recommend.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : "";
   const story = p.story ? `<div class="dt-story"><div class="dt-story-h">${esc(p.storyTitle || "📖 קצת רקע")}</div><p>${esc(p.story)}</p></div>` : "";
@@ -246,12 +262,12 @@ function diningSection(d) {
     const stag = dn.status && dn.status !== "none" ? `<span class="sdot ${s.d}"></span>` : "";
     const label = dn.status === "ok" ? "✓ מאושר" : dn.status === "pending" ? "● ממתין לאישור" : (dn.note || "");
     const phone = dn.phone ? `<a class="icon-btn" href="${telUrl(dn.phone)}">📞</a>` : "";
-    const nav = navUrl(dn) ? `<a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(dn)}">📍</a>` : "";
-    html += `<div class="dinner-row"><div class="row" style="border:0;padding:0"><div class="row-main"><div class="row-title">🍽️ ${esc(dn.name)}${dn.time ? " · " + esc(dn.time) : ""}${stag}</div><p class="row-note">${esc(label)}${dn.addr ? " · " + esc(dn.addr) : ""}</p></div><div class="row-side">${nav}${phone}</div></div></div>`;
+    const dq = dn.q || (dn.name ? `${dn.name}${dn.addr ? ", " + dn.addr : ""}` : null);
+    html += `<div class="dinner-row"><div class="row" style="border:0;padding:0"><div class="row-main"><div class="row-title">🍽️ ${esc(dn.name)}${dn.time ? " · " + esc(dn.time) : ""}${stag}</div><p class="row-note">${esc(label)}${dn.addr ? " · " + esc(dn.addr) : ""}</p></div><div class="row-side">${navMini(dq)}${phone}</div></div></div>`;
   }
   if ((din.lunch || []).length) {
     html += `<div class="section-label" style="margin-top:6px">אופציות לצהריים</div>`;
-    html += din.lunch.map(l => `<div class="row"><div class="row-ic">🍝</div><div class="row-main"><div class="row-title">${esc(l.name)}</div><p class="row-note">${esc(l.note || "")}</p></div>${navUrl(l) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(l)}">📍</a></div>` : ""}</div>`).join("");
+    html += din.lunch.map(l => `<div class="row"><div class="row-ic">🍝</div><div class="row-main"><div class="row-title">${esc(l.name)}</div><p class="row-note">${esc(l.note || "")}</p></div>${navName(l) ? `<div class="row-side">${navMini(navName(l))}</div>` : ""}</div>`).join("");
   }
   return html ? `<div class="section"><div class="section-label">איפה לאכול</div>${html}</div>` : "";
 }
@@ -263,7 +279,7 @@ function stopsSection(d) {
   if (!(d.stops || []).length) return "";
   return `<div class="section"><div class="section-label">שווה עצירה בדרך</div>` + d.stops.map(s => {
     const meta = metaChips([s.when ? `🕐 ${esc(s.when)}` : "", s.dur ? `⏱️ ${esc(s.dur)}` : "", s.adds ? `🚗 ${esc(s.adds)}` : ""]);
-    return `<div class="row"><div class="row-ic">${s.icon || "📍"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p>${meta}</div>${navUrl(s) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(s)}">📍</a></div>` : ""}</div>`;
+    return `<div class="row"><div class="row-ic">${s.icon || "📍"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p>${meta}</div>${navName(s) ? `<div class="row-side">${navMini(navName(s))}</div>` : ""}</div>`;
   }).join("") + `</div>`;
 }
 function knowSection(d) {
@@ -273,7 +289,7 @@ function knowSection(d) {
 function rainRowsHTML(d) {
   return d.rainPlan.map(s => {
     const meta = metaChips([s.replaces ? `↔︎ במקום ${esc(s.replaces)}` : "", s.hours ? `🕐 ${esc(s.hours)}` : ""]);
-    return `<div class="row"><div class="row-ic rain-ic">${s.icon || "☂️"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p>${meta}</div>${navUrl(s) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(s)}">📍</a></div>` : ""}</div>`;
+    return `<div class="row"><div class="row-ic rain-ic">${s.icon || "☂️"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p>${meta}</div>${navName(s) ? `<div class="row-side">${navMini(navName(s))}</div>` : ""}</div>`;
   }).join("");
 }
 function rainSection(d) {
@@ -327,11 +343,12 @@ function renderVouchers() {
 
 /* ---------- Info ---------- */
 function renderInfo() {
-  const hotels = TRIP.lodging.map(h => `<div class="hotel"><b>${esc(h.name)}</b><p class="row-note">${esc(h.nights)} · ${esc(h.city)} · ${esc(h.addr)}</p><div class="tl-actions"><a class="chip-link" target="_blank" rel="noopener" href="${coordUrl(h.coords)}">📍 ניווט</a><a class="chip-link" href="${telUrl(h.phone)}">📞 ${esc(h.phone)}</a></div></div>`).join("");
+  const hotels = TRIP.lodging.map(h => `<div class="hotel"><b>${esc(h.name)}</b><p class="row-note">${esc(h.nights)} · ${esc(h.city)} · ${esc(h.addr)}</p><div class="tl-actions">${navChips(`${h.name}, ${h.addr}`)}<a class="chip-link" href="${telUrl(h.phone)}">📞 ${esc(h.phone)}</a></div></div>`).join("");
   const restos = DAYS.filter(d => d.dining && d.dining.dinner && d.dining.dinner.phone).map(d => {
     const dn = d.dining.dinner, s = STATUS[dn.status] || STATUS.none;
     const tag = dn.status && dn.status !== "none" ? `<span class="sdot ${s.d}"></span>` : "";
-    return `<div class="row"><div class="row-main"><div class="row-title">${esc(dn.name)}${tag}</div><p class="row-note">יום ${d.n} · ${esc(shortDate(d.date))}${dn.time ? " · " + esc(dn.time) : ""} · ${esc(s.t || dn.note || "")}</p></div><div class="row-side"><a class="icon-btn" href="${telUrl(dn.phone)}">📞</a>${navUrl(dn) ? `<a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(dn)}">📍</a>` : ""}</div></div>`;
+    const rq = dn.q || `${dn.name}${dn.addr ? ", " + dn.addr : ""}`;
+    return `<div class="row"><div class="row-main"><div class="row-title">${esc(dn.name)}${tag}</div><p class="row-note">יום ${d.n} · ${esc(shortDate(d.date))}${dn.time ? " · " + esc(dn.time) : ""} · ${esc(s.t || dn.note || "")}</p></div><div class="row-side"><a class="icon-btn" href="${telUrl(dn.phone)}">📞</a>${navMini(rq)}</div></div>`;
   }).join("");
   $("#infoContent").innerHTML = `
     <div class="info-sec"><div class="section-label">חירום</div><a class="emergency" href="tel:112">🚨 חיוג ל־112</a><p class="subnote" style="text-align:center;margin-top:8px">מספר החירום האירופי · משטרה · אמבולנס · כיבוי אש</p></div>

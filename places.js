@@ -6,6 +6,7 @@
 window.PLACES = {
   /* ================= יום 3 ================= */
   "braies": {
+    navq: "Lago di Braies",
     title: "אגם ברייס", sub: "Lago di Braies · Pragser Wildsee",
     gallery: ["braies.jpg", "braies-boats.jpg", "braies-path.jpg"],
     about: [
@@ -45,6 +46,7 @@ window.PLACES = {
     url: "https://www.prags.bz/en/pragser-wildsee.html", urlLabel: "הזמנת חניה (prags.bz)"
   },
   "funbob": {
+    navq: "Haunold San Candido",
     title: "מגלשת Funbob · סן קנדידו", sub: "Baranci / Haunold · Alpine Coaster",
     gallery: ["coaster.jpg", "funbob.jpg", "haunold.jpg"],
     about: [
@@ -80,6 +82,7 @@ window.PLACES = {
     url: "https://www.dolomiti.it/en/family-and-children/fun-bob-on-the-baranci-in-san-candido", urlLabel: "Fun Bob — מידע רשמי"
   },
   "sancandido": {
+    navq: "San Candido",
     title: "מרכז סן קנדידו", sub: "Innichen · עמק פוסטריה",
     gallery: ["sancandido.jpg", "haunold.jpg"],
     about: [
@@ -128,6 +131,7 @@ window.PLACES = {
     url: "https://www.loacker.com/int/en/cafes/", urlLabel: "בתי הקפה של Loacker"
   },
   "ciasademunt": {
+    navq: "Ciasa de Munt Lifestyle Living Corvara",
     title: "המלון — Ciasa de Munt", sub: "Corvara · Alta Badia",
     gallery: ["corvara.jpg"],
     about: ["מלון הלייף־סטייל שלנו בקורוורה, בלב אזור אלטה באדיה — נקודת המוצא של הימים בדולומיטים המערביים, במרכז הסֶלָה רוֹנדה המפורסמת."],
@@ -169,6 +173,7 @@ window.PLACES = {
     url: "https://www.altabadia.org/en/poi/what-to-do-in-alta-badia/detail/poi/ice-skating-ice-stadium-corvara", urlLabel: "שעות ומידע רשמי"
   },
   "fornella": {
+    navq: "Pizzeria Fornella Corvara",
     title: "Pizzeria Fornella", sub: "Corvara",
     gallery: ["corvara.jpg"],
     about: ["פיצריה נעימה במרכז קורוורה — ללא צורך בהזמנה."],
@@ -181,6 +186,7 @@ window.PLACES = {
 
   /* ================= מקומות מרכזיים · שאר הימים ================= */
   "colalt": {
+    navq: "Col Alt Corvara",
     title: "רכבל Col Alt", sub: "Corvara · Alta Badia",
     gallery: ["col-alt.jpg"],
     about: [
@@ -198,6 +204,7 @@ window.PLACES = {
     coords: [46.5486, 11.8746]
   },
   "colfosco": {
+    navq: "Adventure Park Colfosco",
     title: "פארק חבלים · Colfosco", sub: "Adventure Park", gallery: ["col-alt.jpg"],
     about: ["פארק אתגרי בין צמרות העצים בכפר קולפוסקו הסמוך — אומגות ארוכות (Zip-lines), גשרים מתנדנדים, רשתות ומכשולים תלויים. אדרנלין אמיתי לנוער."],
     recommend: [
@@ -208,6 +215,7 @@ window.PLACES = {
     tips: ["לבדוק גובה/גיל מינימלי למסלולים הגבוהים."], coords: [46.5583, 11.8869]
   },
   "seceda": {
+    navq: "Seceda Ortisei",
     title: "רכבל Seceda", sub: "Val Gardena · 2,500 מ׳", gallery: ["corvara.jpg"],
     about: [
       "אחד הנופים המזוהים ביותר של הדולומיטים: רכס Seceda מסתיים בצוק משופע חד כמו להב, שממנו ״צומחות״ פסגות ה-Odle/Geisler המחודדות.",
@@ -224,6 +232,7 @@ window.PLACES = {
     coords: [46.5772, 11.6740]
   },
   "alpedisiusi": {
+    navq: "Compatsch Alpe di Siusi",
     title: "Alpe di Siusi", sub: "Seiser Alm · האחו הגדול באירופה", gallery: ["corvara.jpg"],
     about: [
       "האחו האלפיני הגבוה והגדול ביותר באירופה (~56 קמ״ר) — כרי דשא מתגלגלים אינסופיים, בקתות עץ, פרות ומרמיטות, ופסגות (סקיילאר, Sassolungo) מסביב לכל עבר.",
@@ -240,6 +249,7 @@ window.PLACES = {
     coords: [46.5416, 11.6209]
   },
   "lagazuoi": {
+    navq: "Passo Falzarego Lagazuoi",
     title: "רכבל Lagazuoi", sub: "Passo Falzarego · 2,778 מ׳", gallery: ["lagazuoi.jpg"],
     about: [
       "מהמעבר עולה רכבל אל פסגת לאגאזוי (2,778 מ׳) — תצפית 360° לאחת הפנורמות היפות בדולומיטים.",
@@ -257,6 +267,7 @@ window.PLACES = {
     coords: [46.5187, 12.0000]
   },
   "misurina": {
+    navq: "Lago di Misurina",
     title: "אגם מיזורינה", sub: "Lago di Misurina · 1,754 מ׳", gallery: ["lagazuoi.jpg"],
     about: [
       "אגם אלפיני קטן ודרמטי, מוקף פסגות (ובראשן טרה צ׳ימה) שיוצרות השתקפויות מושלמות במים השקטים — מהמקומות הפוטוגניים בדולומיטים.",
@@ -273,6 +284,7 @@ window.PLACES = {
     coords: [46.5817, 12.2536]
   },
   "sorapis": {
+    navq: "Passo Tre Croci Cortina",
     title: "טרק אגם סוראפיס", sub: "Lago di Sorapis", gallery: ["sorapis.jpg"],
     about: [
       "טרק אל אגם בצבע תכלת־חלב מהפנט, מוסתר בין צוקים ולא נגיש ברכבל. הצבע הייחודי נובע מ״קמח סלעים״ דק שנסחף מהקרחון.",
@@ -290,6 +302,7 @@ window.PLACES = {
     coords: [46.5822, 12.1897]
   },
   "trecime": {
+    navq: "Rifugio Auronzo Tre Cime",
     title: "טרה צ׳ימה די לאוורדו", sub: "Tre Cime · Drei Zinnen · 2,999 מ׳", gallery: ["tre-cime.jpg"],
     about: [
       "שלוש הפסגות המחודדות — הסמל של הדולומיטים. המסלול המעגלי סביבן (~10 ק״מ) הוא מהמפורסמים באלפים, עם רפוג׳ואים לעצירה ותצפית.",
@@ -308,6 +321,7 @@ window.PLACES = {
     url: "https://www.auronzo.info/en/parking-tre-cime-di-lavaredo/", urlLabel: "הזמנת חניה/אגרה"
   },
   "venice": {
+    navq: "Venezia Tronchetto",
     title: "ונציה", sub: "Venezia · עיר התעלות", gallery: ["venice.jpg"],
     about: [
       "עיר בנויה על 118 איים קטנים המחוברים בגשרים ותעלות, ללא מכוניות — כיכר סן מרקו, גשר הריאלטו וסמטאות אינסופיות.",
