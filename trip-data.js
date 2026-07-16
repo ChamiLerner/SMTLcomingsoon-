@@ -15,6 +15,7 @@ window.TRIP = {
   subtitle: "יורוטריפ 2026",
   dates: "15–22 ביולי 2026",
   adults: 10, kids: 7, emergency: "112",
+  whatsappGroup: "", // קישור הזמנה לקבוצת הוואטסאפ (chat.whatsapp.com/...) — למילוי
   lodging: [
     { name: "Ciasa de Munt Lifestyle Living", city: "קורוורה", nights: "15–19 ביולי",
       addr: "Str. Rütort 3, Corvara in Badia (BZ)", phone: "+39 0471 836213", coords: [46.5506, 11.8730] },

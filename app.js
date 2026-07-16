@@ -350,7 +350,19 @@ function renderInfo() {
     const rq = dn.q || `${dn.name}${dn.addr ? ", " + dn.addr : ""}`;
     return `<div class="row"><div class="row-main"><div class="row-title">${esc(dn.name)}${tag}</div><p class="row-note">יום ${d.n} · ${esc(shortDate(d.date))}${dn.time ? " · " + esc(dn.time) : ""} · ${esc(s.t || dn.note || "")}</p></div><div class="row-side"><a class="icon-btn" href="${telUrl(dn.phone)}">📞</a>${navMini(rq)}</div></div>`;
   }).join("");
+  const waLink = TRIP.whatsappGroup;
+  const waBtn = waLink
+    ? `<a class="emergency wa-btn" target="_blank" rel="noopener" href="${esc(waLink)}">💬 פתיחת קבוצת הוואטסאפ</a>`
+    : `<a class="emergency wa-btn" target="_blank" rel="noopener" href="https://wa.me/">💬 פתיחת וואטסאפ</a>`;
   $("#infoContent").innerHTML = `
+    <div class="info-sec"><div class="section-label">📍 מיקום הקבוצה (Live)</div>
+      ${waBtn}
+      <ol class="wa-steps">
+        <li>נכנסים לקבוצת הוואטסאפ של הטיול.</li>
+        <li>מקישים על 📎 (או +) → <b>מיקום</b> → <b>שיתוף מיקום חי</b>.</li>
+        <li>בוחרים משך — 15 דק׳ / שעה / 8 שעות — וכולם רואים אתכם על מפה אחת.</li>
+      </ol>
+      <p class="subnote">רץ ברקע, חוסך בטרייה, וכל אחד שולט מתי לעצור 🔒</p></div>
     <div class="info-sec"><div class="section-label">חירום</div><a class="emergency" href="tel:112">🚨 חיוג ל־112</a><p class="subnote" style="text-align:center;margin-top:8px">מספר החירום האירופי · משטרה · אמבולנס · כיבוי אש</p></div>
     <div class="info-sec"><div class="section-label">בתי המלון</div>${hotels}</div>
     <div class="info-sec"><div class="section-label">הזמנות למסעדות</div>${restos}</div>

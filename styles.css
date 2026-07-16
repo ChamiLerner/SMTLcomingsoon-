@@ -173,6 +173,10 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .info-sec{padding:18px 0;border-bottom:1px solid var(--line)}
 .info-sec:last-child{border-bottom:0}
 .emergency{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:14px;background:var(--danger);color:#1a0808;font-weight:800;font-size:16px;margin-top:6px}
+.wa-btn{background:#25d366;color:#04220f}
+.wa-steps{margin:12px 4px 0;padding-inline-start:22px;color:#c2ccd8;font-size:13.5px;line-height:1.6}
+.wa-steps li{margin:5px 0}
+.wa-steps b{color:var(--text)}
 .hotel{padding:12px 0;border-bottom:1px solid var(--line)}
 .hotel:last-child{border-bottom:0}
 .hotel b{font-size:14.5px}
