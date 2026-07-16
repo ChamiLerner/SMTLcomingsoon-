@@ -62,7 +62,7 @@ window.TRIP_DATA = [
     schedule: [
       { time: "09:30", kind: "cable", title: "רכבל Col Alt ממרכז הכפר", note: "עולים לאחו פתוח ותצפית על גוש הסֶלָה · כרטיס במקום · הליכה נינוחה", coords: [46.5486, 11.8746], place: "colalt" },
       { time: "12:30", kind: "food", title: "צהריים ברפוג׳ו בהר", note: "Rifugio Col Alt בתחנה העליונה או Piz Boé Alpine Lounge (נוף לסאסונגר)", q: "Rifugio Col Alt Corvara" },
-      { time: "14:00", kind: "kids", title: "פארק חבלים · Colfosco", note: "אומגות, גשרים מתנדנדים ומכשולים בין העצים · פתוח 10:00–19:00 · ~10 דק׳ מהכפר", coords: [46.5583, 11.8869], book: "מומלץ להזמין כרטיסים מראש בקיץ", place: "colfosco", kids: true },
+      { time: "14:00", kind: "kids", title: "פארק חבלים · Colfosco", note: "אומגות, גשרים מתנדנדים ומכשולים בין העצים · פתוח 10:00–19:00 · ~10 דק׳ מהכפר", coords: [46.5583, 11.8869], book: "מומלץ להזמין כרטיסים מראש בקיץ", place: "colfosco", leg: { from: "קורוורה", km: 5, min: 10 }, kids: true },
       { time: "19:30", kind: "food", title: "ארוחת ערב · Adlerkeller", note: "Str. Col Alt 24 · ✓ מאושר", coords: [46.5490, 11.8770], status: "ok" }
     ],
     dining: {
@@ -128,11 +128,11 @@ window.TRIP_DATA = [
     summary: "רכס המצוקים המצולם בדולומיטים + האחו האלפיני הגדול באירופה",
     schedule: [
       { time: "08:30", kind: "drive", title: "יציאה דרך מעבר Gardena", note: "~40 דק׳ · כביש מתפתל ומרהיב · עצירת תצפית בדרך", tsoft: true },
-      { time: "09:30", kind: "cable", title: "רכבל Seceda (מאורטיזיי)", note: "הליכת רכס קצרה מול המצוקים המחודדים — הנוף המצולם בדולומיטים", coords: [46.5772, 11.6740], book: "אפשר להזמין כרטיס מראש", place: "seceda" },
+      { time: "09:30", kind: "cable", title: "רכבל Seceda (מאורטיזיי)", note: "הליכת רכס קצרה מול המצוקים המחודדים — הנוף המצולם בדולומיטים", coords: [46.5772, 11.6740], book: "אפשר להזמין כרטיס מראש", place: "seceda", leg: { from: "קורוורה", km: 28, min: 40 } },
       { time: "12:30", kind: "food", title: "צהריים ברפוג׳ו בהר", note: "Baita Curona (Seceda) או Gostner Schwaige (Alpe di Siusi)", q: "Baita Curona Seceda", book: "רפוג׳ואים מתמלאים ביולי — להזמין מראש" },
       { time: "14:00", kind: "activity", title: "Alpe di Siusi · Seiser Alm", note: "האחו האלפיני הגדול באירופה — כרי דשא, מרמיטות ופסגות מסביב", coords: [46.5416, 11.6209], place: "alpedisiusi" },
       { time: "16:30", kind: "kids", title: "אופציה: אורטיזיי — E-Bike / גילוף עץ", note: "אופני הרים חשמליים בתחנה העליונה, וגלריות גילוף עץ בעיירה", coords: [46.5766, 11.6710], kids: true },
-      { time: "19:30", kind: "food", title: "ארוחת ערב · Ristorante Zirm", note: "Str. Col Alt 95 · ✓ מאושר (עם אנצו)", coords: [46.5470, 11.8790], status: "ok" }
+      { time: "19:30", kind: "food", title: "ארוחת ערב · Ristorante Zirm", note: "Str. Col Alt 95 · ✓ מאושר (עם אנצו)", coords: [46.5470, 11.8790], leg: { from: "אורטיזיי", km: 28, min: 40 }, status: "ok" }
     ],
     dining: {
       lunch: [
@@ -148,6 +148,7 @@ window.TRIP_DATA = [
       { icon: "🍦", name: "Pasticceria Langgartner", note: "אורטיזיי — גלידה, אפוגאטו, שטרודל ומאפים.", q: "Pasticceria Langgartner Ortisei" }
     ],
     know: [
+      "⛽ תדלוק: כדאי למלא דלק בקורוורה לפני היציאה — במעברי ההרים יש מעט תחנות.",
       "יום עם שני רכבלים (Seceda ואז Alpe di Siusi) — לתכנן ולצאת בזמן.",
       "רפוג׳ואים לצהריים מתמלאים ביולי — כדאי להזמין מראש.",
       "המעבר Gardena מתפתל — למי שרגיש לסחרחורת."
@@ -164,10 +165,10 @@ window.TRIP_DATA = [
     schedule: [
       { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מקורוורה", note: "לארוז הכל — עוברים מלון", tsoft: true },
       { time: "09:30", kind: "drive", title: "נסיעה דרך מעבר פלצרגו", note: "31.5 ק״מ · ~46 דק׳ · המעבר בגובה 2,105 מ׳", tsoft: true },
-      { time: "10:00", kind: "cable", title: "רכבל Lagazuoi", note: "ל-Piccolo Lagazuoi · תצפית 360°, מנהרות ועמדות מהמלחמה · כרטיס במקום", coords: [46.5187, 12.0000], book: "שכבה חמה — קר למעלה גם בקיץ!", place: "lagazuoi" },
+      { time: "10:00", kind: "cable", title: "רכבל Lagazuoi", note: "ל-Piccolo Lagazuoi · תצפית 360°, מנהרות ועמדות מהמלחמה · כרטיס במקום", coords: [46.5187, 12.0000], book: "שכבה חמה — קר למעלה גם בקיץ!", place: "lagazuoi", leg: { from: "קורוורה", km: 32, min: 46 } },
       { time: "13:00", kind: "food", title: "צהריים ב-Rifugio Lagazuoi", note: "אחת מבקתות ההרים היפות בדולומיטים · אוכל איטלקי־אלפיני", q: "Rifugio Lagazuoi" },
-      { time: "15:00", kind: "activity", title: "עיקוף אגם מיזורינה", note: "טיילת סביב אגם פוטוגני (~1 ש׳) · השתקפויות מושלמות", coords: [46.5817, 12.2536], place: "misurina" },
-      { time: "16:30", kind: "checkin", title: "צ׳ק־אין בקורטינה", note: "Hotel Villa Argentina, Pocol", coords: [46.5169, 12.1160], tsoft: true },
+      { time: "15:00", kind: "activity", title: "עיקוף אגם מיזורינה", note: "טיילת סביב אגם פוטוגני (~1 ש׳) · השתקפויות מושלמות", coords: [46.5817, 12.2536], place: "misurina", leg: { from: "לאגאזוי", km: 35, min: 50 } },
+      { time: "16:30", kind: "checkin", title: "צ׳ק־אין בקורטינה", note: "Hotel Villa Argentina, Pocol", coords: [46.5169, 12.1160], leg: { from: "מיזורינה", km: 15, min: 25 }, tsoft: true },
       { time: "ערב", kind: "food", title: "ארוחת ערב · 5 Torri", note: "Largo delle Poste 13 · ● ממתין לאישור", coords: [46.5405, 12.1357], status: "pending" }
     ],
     dining: {
@@ -194,7 +195,7 @@ window.TRIP_DATA = [
     image: "sorapis.jpg", coords: [46.5289, 12.2178], hotel: 1, difficulty: "בינונית פלוס",
     summary: "האתגר הגדול — אגם בצבע תכלת־חלב מהפנט, מוסתר בין צוקים",
     schedule: [
-      { time: "07:30", kind: "drive", title: "יציאה מוקדמת", note: "~15 דק׳ לחניית הפתיחה ב-Passo Tre Croci · המסלול מתמלא", coords: [46.5822, 12.1897], tsoft: true },
+      { time: "07:30", kind: "drive", title: "יציאה מוקדמת", note: "לחניית הפתיחה ב-Passo Tre Croci · המסלול מתמלא", coords: [46.5822, 12.1897], leg: { from: "קורטינה", km: 9, min: 15 }, tsoft: true },
       { time: "08:00", kind: "hike", title: "תחילת טרק Lago di Sorapis", note: "~12 ק״מ הלוך־חזור · 4–5 שעות · קטעים צרים עם כבלי מתכת לאחיזה", coords: [46.5822, 12.1897] },
       { time: "13:00", kind: "food", title: "צהריים ליד האגם", note: "מהתרמיל, או ב-Rifugio Vandelli ליד האגם", q: "Rifugio Vandelli Sorapis" },
       { time: "16:00", kind: "hike", title: "חזרה לחניה", note: "אותו מסלול חזרה" },
@@ -225,7 +226,7 @@ window.TRIP_DATA = [
     summary: "המסלול המעגלי המפורסם ביותר בדולומיטים — שלוש הפסגות",
     schedule: [
       { time: "08:00", kind: "drive", title: "יציאה דרך מיזורינה", note: "כביש אגרה לרפוג׳ו אאורונצו · שער האגרה צפונית לאגם Antorno", tsoft: true },
-      { time: "09:00", kind: "hike", title: "מסלול מעגלי סביב טרה צ׳ימה", note: "~10 ק״מ · 3–4 שעות · קל–בינוני · רפוג׳ואים בדרך", coords: [46.6186, 12.3050], place: "trecime" },
+      { time: "09:00", kind: "hike", title: "מסלול מעגלי סביב טרה צ׳ימה", note: "~10 ק״מ · 3–4 שעות · קל–בינוני · רפוג׳ואים בדרך", coords: [46.6186, 12.3050], place: "trecime", leg: { from: "קורטינה", km: 25, min: 40 } },
       { time: "12:30", kind: "food", title: "צהריים ב-Rifugio Locatelli", note: "הבקתה עם הנוף הקלאסי לשלוש הפסגות", q: "Rifugio Locatelli Tre Cime" },
       { time: "ערב", kind: "food", title: "ארוחת ערב", note: "לעדכון", status: "none" }
     ],
@@ -256,7 +257,7 @@ window.TRIP_DATA = [
     schedule: [
       { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מהמלון", note: "לארוז הכל · דרכונים במקום נגיש", tsoft: true },
       { time: "09:30", kind: "drive", title: "נסיעה לונציה", note: "~162 ק״מ · ~2 שעות", tsoft: true },
-      { time: "12:00", kind: "sight", title: "ונציה", note: "כיכר סן מרקו, גשר הריאלטו וסמטאות התעלות", coords: [45.4342, 12.3388], place: "venice", tsoft: true },
+      { time: "12:00", kind: "sight", title: "ונציה", note: "כיכר סן מרקו, גשר הריאלטו וסמטאות התעלות", coords: [45.4342, 12.3388], place: "venice", leg: { from: "קורטינה", km: 162, min: 120 }, tsoft: true },
       { time: "אחה״צ", kind: "drive", title: "המשך המסע חזרה", note: "לבדוק שעת הגעה נדרשת ליעד הסופי" }
     ],
     dining: {
@@ -268,6 +269,7 @@ window.TRIP_DATA = [
     ],
     know: [
       "✏️ יום בתכנון ראשוני — ניתן לעדכן.",
+      "⛽ תדלוק: נסיעה ארוכה — למלא דלק לפני היציאה מקורטינה או בתחנת אוטוסטרדה בדרך.",
       "ברכב לוונציה: החניה בפריפריה (Tronchetto / Piazzale Roma) — העיר להולכי רגל בלבד.",
       "לבדוק שעת הגעה נדרשת ליעד הסופי / לטיסה."
     ],
