@@ -35,4 +35,7 @@
 - **assets/braies-path.jpg** — Luca Bravo lucabravo · CC0  
   <https://commons.wikimedia.org/wiki/File:Boathouse_on_a_mountain_lake_(Unsplash).jpg>
 
+- **assets/iceclub.jpg** — Annanaïg · CC0 (תמונת אילוסטרציה)  
+  <https://commons.wikimedia.org/wiki/File:Ice_skating_rink_-_Rockefeller_center.jpg>
+
 האפליקציה עצמה, האייקונים והטקסטים נוצרו במיוחד לטיול הזה.
