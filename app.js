@@ -20,6 +20,7 @@ const voucherPath = date => `vouchers/${date}.pdf`;
 const telUrl = p => "tel:" + String(p).replace(/[^\d+]/g, "");
 const parseMin = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(t)); return m ? +m[1] * 60 + +m[2] : null; };
 const fmtDur = m => m >= 60 ? `${Math.floor(m / 60)}:${pad(m % 60)} ש׳` : `${m} דק׳`;
+const forecastUrl = c => `https://www.meteoblue.com/en/weather/week/${(+c[0]).toFixed(4)}N${(+c[1]).toFixed(4)}E`;
 const nowMin = () => { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); };
 
 function tripPhase() { const t = todayISO(); if (t < DAYS[0].date) return "before"; if (t > DAYS[DAYS.length - 1].date) return "after"; return "during"; }
@@ -41,8 +42,7 @@ async function loadWeather(d) {
     const w = await (await fetch(url, { signal: ctrl.signal })).json(); clearTimeout(to);
     const dd = w.daily, hi = Math.round(dd.temperature_2m_max[0]), rain = dd.precipitation_probability_max[0] ?? 0, emoji = wcode(dd.weather_code[0]);
     el.textContent = (isToday && w.current) ? `${emoji} ${Math.round(w.current.temperature_2m)}° · גשם ${rain}%` : `${emoji} מקס׳ ${hi}° · גשם ${rain}%`;
-    updateRainTop(d, rain);
-  } catch (e) { el.textContent = "מזג אוויר עם קליטה"; }
+  } catch (e) { el.textContent = "מזג אוויר · הקישו לתחזית"; }
 }
 
 /* ---------- day chips ---------- */
@@ -139,21 +139,22 @@ function weatherAlert(kind, pp, code, wind, time) {
   }
   return null;
 }
-function weatherSummary(byType) {
+function weatherSummary(byType, coords) {
   const parts = [];
   if (byType.storm && byType.storm.length) parts.push(`⛈️ סופות: ${byType.storm.join(", ")}`);
   if (byType.rain && byType.rain.length) parts.push(`🌧️ גשם: ${byType.rain.join(", ")}`);
   if (byType.wind && byType.wind.length) parts.push(`💨 רוח: ${byType.wind.join(", ")}`);
   if (!parts.length) return "";
   const sev = (byType.storm && byType.storm.length) ? "high" : "med";
-  return `<div class="wx-summary ${sev}"><b>שימו לב למזג האוויר</b> · ${parts.join(" · ")}<span class="wx-src">מבוסס תחזית Open-Meteo · ייתכנו הבדלים מאפליקציות אחרות</span></div>`;
+  const link = coords ? ` · <a target="_blank" rel="noopener" href="${forecastUrl(coords)}">תחזית מלאה ›</a>` : "";
+  return `<div class="wx-summary ${sev}"><b>שימו לב למזג האוויר</b> · ${parts.join(" · ")}<span class="wx-src">מבוסס תחזית Open-Meteo · ייתכנו הבדלים מאפליקציות אחרות${link}</span></div>`;
 }
 async function loadActivityWeather(d) {
   const items = (d.schedule || []).map((x, i) => ({ x, i, m: parseMin(x.time) })).filter(o => o.m != null);
   if (!items.length) return;
   const key = c => `${c[0].toFixed(3)},${c[1].toFixed(3)}`;
   const locs = [], locIndex = {};
-  for (const o of items) { const c = o.x.coords || d.coords; const k = key(c); if (!(k in locIndex)) { locIndex[k] = locs.length; locs.push(c); } o.loc = k; }
+  for (const o of items) { const c = o.x.coords || d.coords; o.coords = c; const k = key(c); if (!(k in locIndex)) { locIndex[k] = locs.length; locs.push(c); } o.loc = k; }
   try {
     const lat = locs.map(c => c[0]).join(","), lon = locs.map(c => c[1]).join(",");
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=precipitation_probability,weather_code,wind_speed_10m&timezone=auto&start_date=${d.date}&end_date=${d.date}`;
@@ -168,11 +169,11 @@ async function loadActivityWeather(d) {
       const pp = (H.precipitation_probability || [])[idx] ?? 0, code = (H.weather_code || [])[idx] ?? 0, wind = Math.round((H.wind_speed_10m || [])[idx] ?? 0);
       const al = weatherAlert(o.x.kind, pp, code, wind, o.x.time);
       const el = document.getElementById(`wa-${d.date}-${o.i}`);
-      if (el && al) el.innerHTML = `<div class="wx-alert ${al.sev}">${esc(al.msg)}</div>`;
+      if (el && al) el.innerHTML = `<a class="wx-alert ${al.sev}" target="_blank" rel="noopener" href="${forecastUrl(o.coords)}">${esc(al.msg)} <span class="wx-more">תחזית ›</span></a>`;
       if (al && byType[al.type] && !byType[al.type].includes(o.x.time)) byType[al.type].push(o.x.time);
     }
     const sumEl = document.getElementById("wxSummary");
-    if (sumEl) sumEl.innerHTML = weatherSummary(byType);
+    if (sumEl) sumEl.innerHTML = weatherSummary(byType, d.coords);
   } catch (e) { /* אין קליטה — בלי התראות */ }
 }
 
@@ -255,17 +256,7 @@ function rainRowsHTML(d) {
 }
 function rainSection(d) {
   if (!(d.rainPlan || []).length) return "";
-  return `<div class="section rain-sec" id="rainNormal"><div class="section-label">☔ תוכנית לגשם · חלופות</div>${rainRowsHTML(d)}</div>`;
-}
-function updateRainTop(d, pct) {
-  const top = document.getElementById("rainTop"), normal = document.getElementById("rainNormal");
-  if (!top) return;
-  if (pct >= 60 && (d.rainPlan || []).length) {
-    top.innerHTML = `<div class="rain-top"><div class="rain-top-h">☔ צפוי יום גשום${pct ? ` · ~${pct}% גשם` : ""} — חלופות מקורות מוכנות</div>${rainRowsHTML(d)}</div>`;
-    if (normal) normal.style.display = "none";
-  } else {
-    top.innerHTML = ""; if (normal) normal.style.display = "";
-  }
+  return `<div class="section rain-sec"><div class="section-label">☔ תוכנית לגשם · חלופות (רק אם יורד)</div>${rainRowsHTML(d)}</div>`;
 }
 function checklist(items) { return `<ul class="checklist">${items.map(t => `<li>${esc(t)}</li>`).join("")}</ul>`; }
 function packSection(d) {
@@ -280,18 +271,17 @@ function renderToday() {
   const d = selected;
   const tent = d.tentative ? `<div class="notice">✏️ יום בתכנון ראשוני — ניתן לעדכן</div>` : "";
   $("#today").innerHTML = `${chipsHTML()}<div class="wrap">
-    <div class="daymeta"><span class="eyebrow">יום ${d.n} · ${esc(fmtDate(d.date))}</span><span class="wx" id="wx">מזג אוויר…</span></div>
+    <div class="daymeta"><span class="eyebrow">יום ${d.n} · ${esc(fmtDate(d.date))}</span><a class="wx" id="wx" target="_blank" rel="noopener" href="${forecastUrl(d.coords)}">מזג אוויר…</a></div>
     ${focusHTML(d)}
     <div id="wxSummary"></div>
-    <div id="rainTop"></div>
     ${tent}
     <div class="section"><div class="section-label">כל היום · לפי שעות</div><div class="timeline">${(d.schedule || []).map((x, i) => legConnector(x) + scheduleItem(x, i, d.date)).join("")}</div></div>
     ${diningSection(d)}
     ${stopsSection(d)}
-    ${rainSection(d)}
     ${knowSection(d)}
     ${packSection(d)}
-    <div class="section" style="padding-bottom:6px"><div class="tl-actions"><a class="chip-link" target="_blank" rel="noopener" href="${voucherPath(d.date)}">🎟 שובר היום</a></div></div>
+    <div class="section"><div class="tl-actions"><a class="chip-link" target="_blank" rel="noopener" href="${voucherPath(d.date)}">🎟 שובר היום</a></div></div>
+    ${rainSection(d)}
   </div>`;
   loadWeather(d);
   loadActivityWeather(d);
