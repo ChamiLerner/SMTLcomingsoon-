@@ -243,16 +243,26 @@ function diningSection(d) {
   }
   return html ? `<div class="section"><div class="section-label">איפה לאכול</div>${html}</div>` : "";
 }
+function metaChips(parts) {
+  const p = parts.filter(Boolean);
+  return p.length ? `<p class="row-meta">${p.join(" · ")}</p>` : "";
+}
 function stopsSection(d) {
   if (!(d.stops || []).length) return "";
-  return `<div class="section"><div class="section-label">שווה עצירה בדרך</div>` + d.stops.map(s => `<div class="row"><div class="row-ic">${s.icon || "📍"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p></div>${navUrl(s) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(s)}">📍</a></div>` : ""}</div>`).join("") + `</div>`;
+  return `<div class="section"><div class="section-label">שווה עצירה בדרך</div>` + d.stops.map(s => {
+    const meta = metaChips([s.when ? `🕐 ${esc(s.when)}` : "", s.dur ? `⏱️ ${esc(s.dur)}` : "", s.adds ? `🚗 ${esc(s.adds)}` : ""]);
+    return `<div class="row"><div class="row-ic">${s.icon || "📍"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p>${meta}</div>${navUrl(s) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(s)}">📍</a></div>` : ""}</div>`;
+  }).join("") + `</div>`;
 }
 function knowSection(d) {
   if (!(d.know || []).length) return "";
   return `<div class="section"><div class="section-label">טוב לדעת</div><ul class="know">${d.know.map(k => `<li>${esc(k)}</li>`).join("")}</ul></div>`;
 }
 function rainRowsHTML(d) {
-  return d.rainPlan.map(s => `<div class="row"><div class="row-ic rain-ic">${s.icon || "☂️"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p></div>${navUrl(s) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(s)}">📍</a></div>` : ""}</div>`).join("");
+  return d.rainPlan.map(s => {
+    const meta = metaChips([s.replaces ? `↔︎ במקום ${esc(s.replaces)}` : "", s.hours ? `🕐 ${esc(s.hours)}` : ""]);
+    return `<div class="row"><div class="row-ic rain-ic">${s.icon || "☂️"}</div><div class="row-main"><div class="row-title">${esc(s.name)}</div><p class="row-note">${esc(s.note || "")}</p>${meta}</div>${navUrl(s) ? `<div class="row-side"><a class="icon-btn" target="_blank" rel="noopener" href="${navUrl(s)}">📍</a></div>` : ""}</div>`;
+  }).join("");
 }
 function rainSection(d) {
   if (!(d.rainPlan || []).length) return "";

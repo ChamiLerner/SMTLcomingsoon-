@@ -119,6 +119,7 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .row-title{font-size:14.5px;font-weight:620;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dinner-row .row-title{font-size:16px}
 .row-note{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.row-meta{margin:6px 0 0;font-size:11.5px;font-weight:600;color:#9fb0c0;line-height:1.5}
 .row-side{display:flex;align-items:center;gap:6px;flex:none;align-self:center}
 .icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line2);background:var(--glass);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text)}
 .icon-btn:active{transform:scale(.95)}

@@ -43,7 +43,7 @@ window.TRIP_DATA = [
       dinner: { name: "חופשי / במלון", status: "none" }
     },
     stops: [
-      { icon: "📸", name: "בורגטו סול מינצ׳ו", note: "אחת העיירות היפות באיטליה — טחנות מים וגשר ויסקונטי מהמאה ה־14. שווה טיול קצר בסמטאות אחרי הצהריים.", q: "Borghetto sul Mincio" }
+      { icon: "📸", name: "בורגטו סול מינצ׳ו", note: "אחת העיירות היפות באיטליה — טחנות מים וגשר ויסקונטי מהמאה ה־14. שווה טיול קצר בסמטאות אחרי הצהריים.", q: "Borghetto sul Mincio", when: "צהריים (עצירת הדרך)", dur: "שעה–שעה וחצי", adds: "מתוכנן על המסלול" }
     ],
     know: [
       "יום נסיעה ארוך — למלא דלק לפני עליית ההרים ולתכנן עצירות קצרות.",
@@ -74,8 +74,8 @@ window.TRIP_DATA = [
         addr: "Str. Col Alt 24, Corvara", phone: "+39 329 712 7354", coords: [46.5490, 11.8770] }
     },
     stops: [
-      { icon: "🚵", name: "אופציה: פארקי Movimënt", note: "מעל 2,000 מ׳ — מסלולי אופניים, קיר טיפוס ומשחקי איזון. מבוגרים €38 · נוער €30.30. פתוח 08:30–17:30.", q: "Moviment Piz La Ila Alta Badia", kids: true },
-      { icon: "🍦", name: "גלידה: Table Café / Da Ricky", note: "שתי כתובות אהובות בקורוורה לגלידה ומאפים ביתיים.", q: "Table Cafe Patisserie Gelateria Corvara" }
+      { icon: "🚵", name: "אופציה: פארקי Movimënt", note: "מעל 2,000 מ׳ — מסלולי אופניים, קיר טיפוס ומשחקי איזון. מבוגרים €38 · נוער €30.30. פתוח 08:30–17:30.", q: "Moviment Piz La Ila Alta Badia", kids: true, when: "אחר הצהריים", dur: "2–3 שעות", adds: "~15 דק׳ מהכפר" },
+      { icon: "🍦", name: "גלידה: Table Café / Da Ricky", note: "שתי כתובות אהובות בקורוורה לגלידה ומאפים ביתיים.", q: "Table Cafe Patisserie Gelateria Corvara", when: "בערב / אחרי הפעילות", dur: "20–30 דק׳", adds: "במרכז קורוורה" }
     ],
     know: [
       "רכבלים באזור פועלים בערך 08:30–16:45 — לתכנן לפי זה.",
@@ -83,9 +83,9 @@ window.TRIP_DATA = [
       "שתי אופציות לאחה״צ (חבלים / Movimënt) — לבחור לפי מצב הרוח של הילדים."
     ],
     rainPlan: [
-      { icon: "🏰", name: "טירת ברוניקו + מוזיאון ההרים (MMM Ripa)", note: "מוזיאון מקורה של ריינהולד מסנר על עמי ההרים — מעולה ליום גשום", q: "Messner Mountain Museum Ripa Bruneck" },
-      { icon: "🏛️", name: "מוזיאון Ladin Ćiastel de Tor", note: "תרבות לדינית · ~20 דק׳ מקורוורה · מקורה", q: "Museum Ladin Ciastel de Tor San Martin de Tor" },
-      { icon: "🏊", name: "ספא / בריכה מקורה", note: "יום רגוע בפנים · לבדוק במלון או Cascade" }
+      { icon: "🏰", name: "טירת ברוניקו + מוזיאון ההרים (MMM Ripa)", note: "מוזיאון מקורה של ריינהולד מסנר על עמי ההרים — מעולה ליום גשום", q: "Messner Mountain Museum Ripa Bruneck", replaces: "פארק החבלים / רכבל", hours: "אחה״צ" },
+      { icon: "🏛️", name: "מוזיאון Ladin Ćiastel de Tor", note: "תרבות לדינית · ~20 דק׳ מקורוורה · מקורה", q: "Museum Ladin Ciastel de Tor San Martin de Tor", replaces: "פעילות אחה״צ", hours: "אחה״צ" },
+      { icon: "🏊", name: "ספא / בריכה מקורה", note: "יום רגוע בפנים · לבדוק במלון או Cascade", replaces: "אחה״צ בחוץ", hours: "אחה״צ" }
     ],
     pack: ["נעליים סגורות", "שכבה חמה לרכבל", "מים וכובע"]
   },
@@ -112,8 +112,8 @@ window.TRIP_DATA = [
       ]
     },
     stops: [
-      { icon: "⛪", name: "כנסיית Stiftskirche", note: "כנסייה רומנסקית מרשימה משנת 1143 במרכז סן קנדידו.", q: "Stiftskirche San Candido" },
-      { icon: "🍦", name: "גלידה במדרחוב סן קנדידו", note: "כמה גלאטריות ביתיות באזור ההולכי־רגל — עצירה מושלמת אחרי המגלשה.", q: "gelato San Candido Innichen" }
+      { icon: "⛪", name: "כנסיית Stiftskirche", note: "כנסייה רומנסקית מרשימה משנת 1143 במרכז סן קנדידו.", q: "Stiftskirche San Candido", when: "בסיבוב במרכז (15:15)", dur: "15–20 דק׳", adds: "במרכז סן קנדידו" },
+      { icon: "🍦", name: "גלידה במדרחוב סן קנדידו", note: "כמה גלאטריות ביתיות באזור ההולכי־רגל — עצירה מושלמת אחרי המגלשה.", q: "gelato San Candido Innichen", when: "אחרי המגלשה (13:00–15:00)", dur: "20–30 דק׳", adds: "על הדרך" }
     ],
     know: [
       "⛽ מומלץ לתדלק לפני היציאה (בקורוורה) או בברוניקו בדרך — בעמקים יש פחות תחנות דלק.",
@@ -122,9 +122,9 @@ window.TRIP_DATA = [
       "רכבל Haunold ל-Funbob — אין צורך להזמין."
     ],
     rainPlan: [
-      { icon: "🦖", name: "מוזיאון DoloMythos, סן קנדידו", note: "אגדות הדולומיטים, מאובנים ודינוזאורים — מושלם לילדים ביום גשום (מקורה)", q: "DoloMythos San Candido" },
-      { icon: "⛪", name: "כנסיית סן קנדידו + לואקר", note: "שתי עצירות מקורות שכבר בתוכנית", q: "Stiftskirche San Candido" },
-      { icon: "🏰", name: "ברוניקו + מוזיאון ההרים (MMM Ripa)", note: "בדרך חזרה · טירה ומוזיאון מקורים", q: "Messner Mountain Museum Ripa Bruneck" }
+      { icon: "🦖", name: "מוזיאון DoloMythos, סן קנדידו", note: "אגדות הדולומיטים, מאובנים ודינוזאורים — מושלם לילדים ביום גשום (מקורה)", q: "DoloMythos San Candido", replaces: "FunBob (נסגר בגשם)", hours: "13:00–16:00" },
+      { icon: "⛪", name: "כנסיית סן קנדידו + לואקר", note: "שתי עצירות מקורות שכבר בתוכנית", q: "Stiftskirche San Candido", replaces: "סיבוב בחוץ", hours: "אחה״צ" },
+      { icon: "🏰", name: "ברוניקו + מוזיאון ההרים (MMM Ripa)", note: "בדרך חזרה · טירה ומוזיאון מקורים", q: "Messner Mountain Museum Ripa Bruneck", replaces: "אחה״צ בחוץ", hours: "בדרך חזרה (~16:00)" }
     ],
     pack: ["נעלי הליכה נוחות", "בקבוק מים", "כובע + משקפי שמש + קרם הגנה", "סווטשירט / שכבה קלה", "מטען נייד"],
     packKids: ["בגד ים", "בגדים להחלפה", "מגבת קטנה", "שקית לבגדים רטובים", "חטיף קטן לדרך"]
@@ -153,9 +153,9 @@ window.TRIP_DATA = [
         addr: "Str. Col Alt 95, Corvara", phone: "+39 0471 833894", coords: [46.5470, 11.8790] }
     },
     stops: [
-      { icon: "👀", name: "תצפית Ju de Frara / Dantercepies", note: "עצירת תצפית קלאסית במעבר Gardena — Sella, Sassolungo ופסגות Cir.", q: "Ju de Frara Passo Gardena" },
-      { icon: "🎨", name: "גלריית גילוף עץ ART 52", note: "אורטיזיי — מסורת בת מאות שנים · כניסה חופשית 09:00–22:00.", q: "ART 52 Ortisei" },
-      { icon: "🍦", name: "Pasticceria Langgartner", note: "אורטיזיי — גלידה, אפוגאטו, שטרודל ומאפים.", q: "Pasticceria Langgartner Ortisei" }
+      { icon: "👀", name: "תצפית Ju de Frara / Dantercepies", note: "עצירת תצפית קלאסית במעבר Gardena — Sella, Sassolungo ופסגות Cir.", q: "Ju de Frara Passo Gardena", when: "בבוקר, במעבר Gardena", dur: "10–15 דק׳", adds: "עצירה קצרה על הדרך" },
+      { icon: "🎨", name: "גלריית גילוף עץ ART 52", note: "אורטיזיי — מסורת בת מאות שנים · כניסה חופשית 09:00–22:00.", q: "ART 52 Ortisei", when: "אחה״צ באורטיזיי", dur: "30–45 דק׳", adds: "בעיירה" },
+      { icon: "🍦", name: "Pasticceria Langgartner", note: "אורטיזיי — גלידה, אפוגאטו, שטרודל ומאפים.", q: "Pasticceria Langgartner Ortisei", when: "אחה״צ באורטיזיי", dur: "20–30 דק׳", adds: "בעיירה" }
     ],
     know: [
       "⛽ תדלוק: כדאי למלא דלק בקורוורה לפני היציאה — במעברי ההרים יש מעט תחנות.",
@@ -164,9 +164,9 @@ window.TRIP_DATA = [
       "המעבר Gardena מתפתל — למי שרגיש לסחרחורת."
     ],
     rainPlan: [
-      { icon: "🎨", name: "גלריות גילוף עץ + מוזיאון Gherdëina, אורטיזיי", note: "אמנות לדינית מסורתית · מקורה", q: "Museum Gherdeina Ortisei" },
-      { icon: "🧊", name: "מוזיאון אוצי (איש הקרח), בולצאנו", note: "האטרקציה המקורה המפורסמת של דרום טירול · ~1:15 נסיעה", q: "South Tyrol Museum of Archaeology Bolzano" },
-      { icon: "🏊", name: "ספא / בריכה מקורה", note: "בסצ'דה/סיוזי אין נוף בגשם — יום פנים רגוע" }
+      { icon: "🎨", name: "גלריות גילוף עץ + מוזיאון Gherdëina, אורטיזיי", note: "אמנות לדינית מסורתית · מקורה", q: "Museum Gherdeina Ortisei", replaces: "רכבל Seceda (אין נוף בגשם)", hours: "בוקר–צהריים" },
+      { icon: "🧊", name: "מוזיאון אוצי (איש הקרח), בולצאנו", note: "האטרקציה המקורה המפורסמת של דרום טירול · ~1:15 נסיעה", q: "South Tyrol Museum of Archaeology Bolzano", replaces: "היום ההררי", hours: "כל היום (~1:15 נסיעה)" },
+      { icon: "🏊", name: "ספא / בריכה מקורה", note: "בסצ'דה/סיוזי אין נוף בגשם — יום פנים רגוע", replaces: "אחה״צ בחוץ", hours: "אחה״צ" }
     ],
     pack: ["נעליים נוחות", "שכבה חמה", "משקפי שמש וקרם הגנה"]
   },
@@ -192,8 +192,8 @@ window.TRIP_DATA = [
         addr: "Largo delle Poste 13, Cortina", phone: "+39 0436 866301", coords: [46.5405, 12.1357] }
     },
     stops: [
-      { icon: "👀", name: "עצירת תצפית במעבר פלצרגו", note: "אחד ממעברי ההרים היפים בדולומיטים (2,105 מ׳) — עוצרים לצילום.", q: "Passo Falzarego" },
-      { icon: "💧", name: "אגם Limides (הליכה קצרה)", note: "למי שיש זמן — אגם קטן עם השתקפות פסגת Tofana, ממש ליד המעבר.", q: "Lago di Limides Falzarego" }
+      { icon: "👀", name: "עצירת תצפית במעבר פלצרגו", note: "אחד ממעברי ההרים היפים בדולומיטים (2,105 מ׳) — עוצרים לצילום.", q: "Passo Falzarego", when: "בדרך לקורטינה", dur: "10–15 דק׳", adds: "על הדרך" },
+      { icon: "💧", name: "אגם Limides (הליכה קצרה)", note: "למי שיש זמן — אגם קטן עם השתקפות פסגת Tofana, ממש ליד המעבר.", q: "Lago di Limides Falzarego", when: "מהמעבר, למי שיש זמן", dur: "1.5–2 ש׳ (הליכה)", adds: "~40 דק׳ הליכה לכל כיוון" }
     ],
     know: [
       "יום מעבר בין מלונות — לארוז את החדר לפני היציאה.",
@@ -201,9 +201,9 @@ window.TRIP_DATA = [
       "לאשר סופית את ההזמנה ב-5 Torri (ממתין)."
     ],
     rainPlan: [
-      { icon: "🛍️", name: "מרכז קורטינה — Corso Italia", note: "יום מעבר ממילא · חנויות ובתי קפה מקורים", q: "Corso Italia Cortina d'Ampezzo" },
-      { icon: "⛸️", name: "אצטדיון הקרח האולימפי", note: "החלקה על הקרח — כיף לכל המשפחה ביום גשום", q: "Cortina Olympic Ice Stadium" },
-      { icon: "🖼️", name: "מוזיאון Mario Rimoldi לאמנות מודרנית", note: "מקורה · במרכז קורטינה", q: "Museo Mario Rimoldi Cortina" }
+      { icon: "🛍️", name: "מרכז קורטינה — Corso Italia", note: "יום מעבר ממילא · חנויות ובתי קפה מקורים", q: "Corso Italia Cortina d'Ampezzo", replaces: "רכבל לאגאזוי", hours: "אחה״צ (אחרי המעבר)" },
+      { icon: "⛸️", name: "אצטדיון הקרח האולימפי", note: "החלקה על הקרח — כיף לכל המשפחה ביום גשום", q: "Cortina Olympic Ice Stadium", replaces: "פעילות בחוץ", hours: "אחה״צ/ערב" },
+      { icon: "🖼️", name: "מוזיאון Mario Rimoldi לאמנות מודרנית", note: "מקורה · במרכז קורטינה", q: "Museo Mario Rimoldi Cortina", replaces: "עיקוף מיזורינה", hours: "אחה״צ" }
     ],
     pack: ["שכבה חמה", "נעליים נוחות", "מצלמה — יום של תצפיות"]
   },
@@ -227,8 +227,8 @@ window.TRIP_DATA = [
         addr: "Località Lacedel 1, Cortina", phone: "+39 0436 863026", coords: [46.5330, 12.1170] }
     },
     stops: [
-      { icon: "🚡", name: "אלטרנטיבה למבוגרים: Freccia nel Cielo", note: "למי שמעדיף יום רגוע — רכבל מקורטינה לתצפיות, בלי הטרק המאתגר.", q: "Freccia nel Cielo Cortina" },
-      { icon: "🍦", name: "Gelateria Al Soler", note: "בקורטינה — נחשבת מהגלידות הכי טובות בדולומיטים (טעמי עונה). מגיע אחרי הטרק!", q: "Gelateria Al Soler Cortina" }
+      { icon: "🚡", name: "אלטרנטיבה למבוגרים: Freccia nel Cielo", note: "למי שמעדיף יום רגוע — רכבל מקורטינה לתצפיות, בלי הטרק המאתגר.", q: "Freccia nel Cielo Cortina", when: "כל היום (חלופה לטרק)", dur: "כמה שעות", adds: "מקורטינה" },
+      { icon: "🍦", name: "Gelateria Al Soler", note: "בקורטינה — נחשבת מהגלידות הכי טובות בדולומיטים (טעמי עונה). מגיע אחרי הטרק!", q: "Gelateria Al Soler Cortina", when: "בערב, אחרי הטרק", dur: "20–30 דק׳", adds: "במרכז קורטינה" }
     ],
     know: [
       "המסלול מאתגר — קטעים צרים עם כבלי מתכת. לא מומלץ למי שסובל מגובה/סחרחורת.",
@@ -236,9 +236,9 @@ window.TRIP_DATA = [
       "מבוגרים שלא רוצים את הטרק — אלטרנטיבת Freccia nel Cielo."
     ],
     rainPlan: [
-      { icon: "⚠️", name: "לא לצאת לטרק סוראפיס בגשם", note: "קטעי הכבלים על הסלע נעשים חלקלקים ומסוכנים — לדחות/לוותר", q: "Passo Tre Croci" },
-      { icon: "🚡", name: "אלטרנטיבה: Freccia nel Cielo", note: "רכבל מקורטינה (חלקו מקורה) — נוף בלי הטרק", q: "Freccia nel Cielo Cortina" },
-      { icon: "⛸️", name: "יום עיר בקורטינה", note: "אצטדיון קרח, ספא, חנויות ומוזיאונים", q: "Cortina d'Ampezzo center" }
+      { icon: "⚠️", name: "לא לצאת לטרק סוראפיס בגשם", note: "קטעי הכבלים על הסלע נעשים חלקלקים ומסוכנים — לדחות/לוותר", q: "Passo Tre Croci", replaces: "טרק סוראפיס", hours: "כל היום" },
+      { icon: "🚡", name: "אלטרנטיבה: Freccia nel Cielo", note: "רכבל מקורטינה (חלקו מקורה) — נוף בלי הטרק", q: "Freccia nel Cielo Cortina", replaces: "טרק סוראפיס", hours: "בוקר–צהריים" },
+      { icon: "⛸️", name: "יום עיר בקורטינה", note: "אצטדיון קרח, ספא, חנויות ומוזיאונים", q: "Cortina d'Ampezzo center", replaces: "טרק סוראפיס", hours: "כל היום" }
     ],
     pack: ["נעליים לטרק", "הרבה מים", "כובע", "חטיפים", "קרם הגנה"]
   },
@@ -263,7 +263,7 @@ window.TRIP_DATA = [
       dinner: { name: "לעדכון", status: "none", note: "טרם נקבע" }
     },
     stops: [
-      { icon: "💧", name: "אגם מיזורינה", note: "בדרך — אגם אלפיני פוטוגני עם השתקפויות. שווה עצירה קצרה.", q: "Lago di Misurina" }
+      { icon: "💧", name: "אגם מיזורינה", note: "בדרך — אגם אלפיני פוטוגני עם השתקפויות. שווה עצירה קצרה.", q: "Lago di Misurina", when: "בבוקר, בדרך לטרה צ׳ימה", dur: "~שעה", adds: "על הדרך" }
     ],
     know: [
       "✏️ יום בתכנון ראשוני — ניתן לעדכן.",
@@ -271,8 +271,8 @@ window.TRIP_DATA = [
       "להגיע מוקדם — החניה (700 מקום) מתמלאת בשיא."
     ],
     rainPlan: [
-      { icon: "🏞️", name: "אגם דוביאקו (Lago di Dobbiaco)", note: "טיילת קצרה וקלה, פחות חשופה מטרה צ'ימה", q: "Lago di Dobbiaco" },
-      { icon: "🛍️", name: "קורטינה — חנויות ומוזיאונים", note: "יום עיר מקורה אם טרה צ'ימה בערפל/גשם", q: "Cortina d'Ampezzo center" }
+      { icon: "🏞️", name: "אגם דוביאקו (Lago di Dobbiaco)", note: "טיילת קצרה וקלה, פחות חשופה מטרה צ'ימה", q: "Lago di Dobbiaco", replaces: "טרה צ׳ימה", hours: "בוקר–צהריים" },
+      { icon: "🛍️", name: "קורטינה — חנויות ומוזיאונים", note: "יום עיר מקורה אם טרה צ'ימה בערפל/גשם", q: "Cortina d'Ampezzo center", replaces: "טרה צ׳ימה", hours: "כל היום" }
     ],
     pack: ["נעליים נוחות", "שכבה חמה", "מים וחטיפים"]
   },
@@ -294,7 +294,7 @@ window.TRIP_DATA = [
       dinner: { name: "לעדכון", status: "none", note: "טרם נקבע" }
     },
     stops: [
-      { icon: "🍦", name: "גלידה בוונציה", note: "עצירת גלידה בסמטאות לפני המשך הדרך.", q: "gelato Venice San Marco" }
+      { icon: "🍦", name: "גלידה בוונציה", note: "עצירת גלידה בסמטאות לפני המשך הדרך.", q: "gelato Venice San Marco", when: "בסיבוב בעיר", dur: "20–30 דק׳", adds: "בעיר" }
     ],
     know: [
       "✏️ יום בתכנון ראשוני — ניתן לעדכן.",
@@ -303,8 +303,8 @@ window.TRIP_DATA = [
       "לבדוק שעת הגעה נדרשת ליעד הסופי / לטיסה."
     ],
     rainPlan: [
-      { icon: "⛪", name: "בזיליקת סן מרקו + ארמון הדוג'ים", note: "אתרים מקורים מרהיבים — ונציה יפה גם בגשם עם מטרייה", q: "St Mark's Basilica Venice" },
-      { icon: "🖼️", name: "מוזיאונים בוונציה", note: "גלריה דל'אקדמיה / פאלאצו דוקאלה", q: "Gallerie dell'Accademia Venice" }
+      { icon: "⛪", name: "בזיליקת סן מרקו + ארמון הדוג'ים", note: "אתרים מקורים מרהיבים — ונציה יפה גם בגשם עם מטרייה", q: "St Mark's Basilica Venice", replaces: "סיבוב בחוץ", hours: "צהריים" },
+      { icon: "🖼️", name: "מוזיאונים בוונציה", note: "גלריה דל'אקדמיה / פאלאצו דוקאלה", q: "Gallerie dell'Accademia Venice", replaces: "סיבוב בחוץ", hours: "צהריים–אחה״צ" }
     ],
     pack: ["לארוז הכל", "דרכונים", "מים ליום החם"]
   }
