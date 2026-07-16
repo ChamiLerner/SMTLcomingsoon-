@@ -95,17 +95,64 @@ function focusHTML(d) {
 }
 
 /* ---------- sections ---------- */
-function scheduleItem(x) {
+function scheduleItem(x, i, dayDate) {
   const ic = KIND_ICON[x.kind] || "•";
   const kids = x.kids ? `<span class="badge-kids">נוער</span>` : "";
   const st = x.status && x.status !== "none" ? `<span class="sdot ${STATUS[x.status].d}"></span>` : "";
   const note = x.note ? `<p class="tl-note">${esc(x.note)}</p>` : "";
   const book = x.book ? `<div class="tl-book">ℹ︎ ${esc(x.book)}</div>` : "";
   const nav = navUrl(x);
-  const acts = nav ? `<div class="tl-actions"><a class="chip-link" target="_blank" rel="noopener" href="${nav}">📍 ניווט</a>${x.url ? `<a class="chip-link" target="_blank" rel="noopener" href="${esc(x.url)}">🔗 אתר</a>` : ""}</div>` : "";
+  const acts = `<div class="tl-actions">
+    <button class="chip-link primary" onclick="openDetail('${dayDate}',${i})">פרטים ותמונות ›</button>
+    ${nav ? `<a class="chip-link" target="_blank" rel="noopener" href="${nav}">📍 ניווט</a>` : ""}</div>`;
   return `<div class="tl-item"><div class="tl-time ${x.tsoft ? "soft" : ""}"><span class="tl-dot"></span>${esc(x.time)}</div>
     <div class="tl-body"><div class="tl-title"><span class="tl-ic">${ic}</span>${esc(x.title)}${kids}${st}</div>${note}${book}${acts}</div></div>`;
 }
+
+/* ---------- Place detail view ---------- */
+function resolvePlace(item, day) {
+  if (item.place && window.PLACES && PLACES[item.place]) return PLACES[item.place];
+  return {
+    title: item.title, sub: day.title,
+    gallery: [day.image],
+    about: [item.note || day.summary || ""],
+    facts: [], tips: [],
+    coords: item.coords, q: item.q, url: item.url, urlLabel: "עוד מידע"
+  };
+}
+function openDetail(dayDate, idx) {
+  const day = DAYS.find(d => d.date === dayDate); if (!day) return;
+  const item = day.schedule[idx]; if (!item) return;
+  const p = resolvePlace(item, day);
+  const gallery = (p.gallery || []).filter(Boolean);
+  const galleryHTML = gallery.length
+    ? `<div class="dt-gallery">${gallery.map(g => `<img src="assets/${esc(g)}" alt="" loading="lazy">`).join("")}</div>`
+    : `<div class="dt-noimg">${KIND_ICON[item.kind] || "📍"}</div>`;
+  const navHref = p.coords ? coordUrl(p.coords) : (p.q ? queryUrl(p.q) : (item.coords ? coordUrl(item.coords) : (item.q ? queryUrl(item.q) : null)));
+  const btns = `<div class="dt-btns">
+    ${navHref ? `<a class="btn-nav" target="_blank" rel="noopener" href="${navHref}">📍 ניווט</a>` : ""}
+    ${p.url ? `<a class="btn-link" target="_blank" rel="noopener" href="${esc(p.url)}">🔗 ${esc(p.urlLabel || "אתר")}</a>` : ""}</div>`;
+  const about = (p.about || []).filter(Boolean).map(t => `<p>${esc(t)}</p>`).join("");
+  const facts = (p.facts || []).length ? `<div class="dt-facts">${p.facts.map(f => `<div class="dt-fact"><span class="fk">${esc(f.k)}</span><span class="fv">${esc(f.v)}</span></div>`).join("")}</div>` : "";
+  const tips = (p.tips || []).length ? `<div class="dt-tips"><div class="section-label">טיפים</div><ul class="know">${p.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>` : "";
+  $("#detailBody").innerHTML = `
+    <div class="dt-head">
+      <button class="dt-back" onclick="closeDetail()">‹ חזרה</button>
+      <span class="dt-time">${esc(item.time)}</span>
+    </div>
+    ${galleryHTML}
+    <div class="dt-content">
+      <h1 class="dt-title">${esc(p.title)}</h1>
+      ${p.sub ? `<p class="dt-sub">${esc(p.sub)}</p>` : ""}
+      ${btns}
+      <div class="dt-about">${about}</div>
+      ${facts}${tips}
+    </div>`;
+  const el = $("#detail"); el.classList.add("open"); el.setAttribute("aria-hidden", "false");
+  el.scrollTop = 0;
+}
+function closeDetail() { const el = $("#detail"); el.classList.remove("open"); el.setAttribute("aria-hidden", "true"); }
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
 function diningSection(d) {
   const din = d.dining || {}; let html = "";
   if (din.dinner) {
@@ -130,6 +177,13 @@ function knowSection(d) {
   if (!(d.know || []).length) return "";
   return `<div class="section"><div class="section-label">טוב לדעת</div><ul class="know">${d.know.map(k => `<li>${esc(k)}</li>`).join("")}</ul></div>`;
 }
+function checklist(items) { return `<ul class="checklist">${items.map(t => `<li>${esc(t)}</li>`).join("")}</ul>`; }
+function packSection(d) {
+  if (!d.pack) return "";
+  const main = Array.isArray(d.pack) ? checklist(d.pack) : `<p class="muted-p">${esc(d.pack)}</p>`;
+  const kids = (d.packKids || []).length ? `<div class="section-label" style="margin-top:14px">להורים עם ילדים</div>${checklist(d.packKids)}` : "";
+  return `<div class="section"><div class="section-label">מה להביא</div>${main}${kids}</div>`;
+}
 
 /* ---------- Today ---------- */
 function renderToday() {
@@ -139,12 +193,12 @@ function renderToday() {
     <div class="daymeta"><span class="eyebrow">יום ${d.n} · ${esc(fmtDate(d.date))}</span><span class="wx" id="wx">מזג אוויר…</span></div>
     ${focusHTML(d)}
     ${tent}
-    <div class="section"><div class="section-label">כל היום · לפי שעות</div><div class="timeline">${(d.schedule || []).map(scheduleItem).join("")}</div></div>
+    <div class="section"><div class="section-label">כל היום · לפי שעות</div><div class="timeline">${(d.schedule || []).map((x, i) => scheduleItem(x, i, d.date)).join("")}</div></div>
     ${diningSection(d)}
     ${stopsSection(d)}
     ${knowSection(d)}
-    <div class="section" style="padding-bottom:6px"><div class="section-label">מה לקחת</div><p class="muted-p">${esc(d.pack || "—")}</p>
-      <div class="tl-actions" style="margin-top:12px"><a class="chip-link" target="_blank" rel="noopener" href="${voucherPath(d.date)}">🎟 שובר היום</a></div></div>
+    ${packSection(d)}
+    <div class="section" style="padding-bottom:6px"><div class="tl-actions"><a class="chip-link" target="_blank" rel="noopener" href="${voucherPath(d.date)}">🎟 שובר היום</a></div></div>
   </div>`;
   loadWeather(d);
 }

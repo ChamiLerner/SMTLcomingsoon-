@@ -9,8 +9,16 @@
   <https://commons.wikimedia.org/wiki/File:Piz_Ciampac_Piz_Ciampai_Sassongher_Corvara_S%C3%BCdtirol.jpg>
 - **assets/braies.jpg** — kallerna · CC BY-SA 4.0  
   <https://commons.wikimedia.org/wiki/File:Lago_di_Braies_South_Tyrol_3.jpg>
+- **assets/braies-boats.jpg** — kallerna · CC BY-SA 4.0  
+  <https://commons.wikimedia.org/wiki/File:Lago_di_Braies_South_Tyrol_6.jpg>
 - **assets/funbob.jpg** — Murray Foubister · CC BY-SA 2.0  
   <https://commons.wikimedia.org/wiki/File:Dolomites_-_San_Candido_area_-_(11059253185).jpg>
+- **assets/haunold.jpg** — Robert J Heath · CC BY 2.0  
+  <https://commons.wikimedia.org/wiki/File:Dreischuster_Spitze-Punta_Dei_Tre_Scarperi_-_Flickr_-_Robert_J_Heath.jpg>
+- **assets/sancandido.jpg** — Llorenzi · CC BY-SA 4.0  
+  <https://commons.wikimedia.org/wiki/File:San_Candido_-_i_due_campanili.jpg>
+- **assets/loacker.jpg** — Gerd Fahrenhorst · CC BY 4.0  
+  <https://commons.wikimedia.org/wiki/File:Loacker_Unterinn_0536.jpg>
 - **assets/corvara.jpg** — Wolfgang Moroder · CC BY-SA 3.0  
   <https://commons.wikimedia.org/wiki/File:Odles_da_Seceda_da_duman_tl_nibl_Gherd%C3%ABina.jpg>
 - **assets/lagazuoi.jpg** — Wolfgang Moroder · CC BY-SA 3.0  

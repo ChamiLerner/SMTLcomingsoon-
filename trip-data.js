@@ -60,9 +60,9 @@ window.TRIP_DATA = [
     image: "col-alt.jpg", coords: [46.5486, 11.8746], hotel: 0, difficulty: "קל",
     summary: "בוקר רגוע ברכבל מעל הכפר · אחה״צ אדרנלין לנוער",
     schedule: [
-      { time: "09:30", kind: "cable", title: "רכבל Col Alt ממרכז הכפר", note: "עולים לאחו פתוח ותצפית על גוש הסֶלָה · כרטיס במקום · הליכה נינוחה", coords: [46.5486, 11.8746] },
+      { time: "09:30", kind: "cable", title: "רכבל Col Alt ממרכז הכפר", note: "עולים לאחו פתוח ותצפית על גוש הסֶלָה · כרטיס במקום · הליכה נינוחה", coords: [46.5486, 11.8746], place: "colalt" },
       { time: "12:30", kind: "food", title: "צהריים ברפוג׳ו בהר", note: "Rifugio Col Alt בתחנה העליונה או Piz Boé Alpine Lounge (נוף לסאסונגר)", q: "Rifugio Col Alt Corvara" },
-      { time: "14:00", kind: "kids", title: "פארק חבלים · Colfosco", note: "אומגות, גשרים מתנדנדים ומכשולים בין העצים · פתוח 10:00–19:00 · ~10 דק׳ מהכפר", coords: [46.5583, 11.8869], book: "מומלץ להזמין כרטיסים מראש בקיץ", kids: true },
+      { time: "14:00", kind: "kids", title: "פארק חבלים · Colfosco", note: "אומגות, גשרים מתנדנדים ומכשולים בין העצים · פתוח 10:00–19:00 · ~10 דק׳ מהכפר", coords: [46.5583, 11.8869], book: "מומלץ להזמין כרטיסים מראש בקיץ", place: "colfosco", kids: true },
       { time: "19:30", kind: "food", title: "ארוחת ערב · Adlerkeller", note: "Str. Col Alt 24 · ✓ מאושר", coords: [46.5490, 11.8770], status: "ok" }
     ],
     dining: {
@@ -92,13 +92,14 @@ window.TRIP_DATA = [
     image: "braies.jpg", gallery: ["funbob.jpg"], coords: [46.6947, 12.0855], hotel: 0, difficulty: "קל",
     summary: "פנינת הטורקיז של הדולומיטים בבוקר · אקשן לנוער אחה״צ",
     schedule: [
-      { time: "07:30", kind: "drive", title: "יציאה מוקדמת מהמלון", note: "~1:15 לאגם דרך ברוניקו · המטרה: להגיע לפני 09:00", tsoft: true },
-      { time: "08:45", kind: "hike", title: "הקפת אגם ברייס", note: "~3.5 ק״מ · כשעה · שביל נוח · אופציה לשייט בסירת עץ", coords: [46.6947, 12.0855] },
-      { time: "11:30", kind: "drive", title: "נסיעה לסן קנדידו (Innichen)", note: "~30–45 דק׳ · עמק פוסטריה", tsoft: true },
-      { time: "12:30", kind: "food", title: "צהריים במדרחוב סן קנדידו", note: "עיירה אלגנטית סמוך לגבול אוסטריה", q: "San Candido Innichen center" },
-      { time: "14:00", kind: "kids", title: "מגלשת Funbob · Haunold", note: "רכבל Haunold למעלה, ירידה במגלשת הרים מהירה על מסילת מתכת · ירצו פעמיים!", coords: [46.7326, 12.2789], kids: true },
-      { time: "16:00", kind: "sight", title: "אופציה בדרך חזרה: ברוניקו", note: "עיירה מימי הביניים עם טירה מהמאה ה־13", coords: [46.7961, 11.9366], tsoft: true },
-      { time: "19:00", kind: "food", title: "ארוחת ערב · Pizzeria Fornella", note: "Str. Rütort 1 · ללא צורך בהזמנה", coords: [46.5503, 11.8735], status: "none" }
+      { time: "09:00", kind: "drive", title: "יציאה מהמלון", note: "יוצאים לכיוון אגם ברייס", coords: [46.5506, 11.8730], place: "ciasademunt" },
+      { time: "10:15", kind: "boat", title: "אגם ברייס", note: "10:15–12:15 · שיט בסירות (אם התור סביר) + זמן להליכה קצרה סביב האגם למי שרוצה", coords: [46.6947, 12.0855], place: "braies" },
+      { time: "12:45", kind: "kids", title: "FunBob בסן קנדידו", note: "רכבל Haunold ומגלשת הרים מהירה על מסילת מתכת · ירצו פעמיים!", coords: [46.7326, 12.2789], place: "funbob", kids: true },
+      { time: "14:00", kind: "food", title: "ארוחת צהריים", note: "בסן קנדידו · מסעדות ובתי קפה במדרחוב", coords: [46.7326, 12.2789], place: "sancandido" },
+      { time: "15:15", kind: "sight", title: "סיבוב קצר במרכז סן קנדידו", note: "מדרחוב צבעוני, כנסיית Stiftskirche והרים ברקע", coords: [46.7326, 12.2789], place: "sancandido" },
+      { time: "16:00", kind: "food", title: "לואקר — קפה, קינוח וקניות", note: "בית הקפה והחנות של לואקר · כיף גדול לילדים 🍫", q: "Loacker Moserhof Café Heinfels", place: "loacker" },
+      { time: "18:00", kind: "checkin", title: "חזרה למלון", note: "18:00–18:30 · זמן להתרענן לפני הערב", coords: [46.5506, 11.8730], place: "ciasademunt", tsoft: true },
+      { time: "19:30", kind: "food", title: "ארוחת ערב · Pizzeria Fornella", note: "Str. Rütort 1 · ללא צורך בהזמנה", coords: [46.5503, 11.8735], place: "fornella", status: "none" }
     ],
     dining: {
       lunch: [
@@ -117,7 +118,8 @@ window.TRIP_DATA = [
       "שייט הסירות בתור בלבד (אי אפשר להזמין) — ~20€ לאדם בסירה משותפת, ותורים של 1–2 ש׳ בשיא. להגיע מוקדם!",
       "רכבל Haunold ל-Funbob — אין צורך להזמין."
     ],
-    pack: "נעליים נוחות · כובע ומצלמה · מעיל דק (קריר ליד האגם בבוקר)"
+    pack: ["נעלי הליכה נוחות", "בקבוק מים", "כובע + משקפי שמש + קרם הגנה", "סווטשירט / שכבה קלה", "מטען נייד"],
+    packKids: ["בגד ים", "בגדים להחלפה", "מגבת קטנה", "שקית לבגדים רטובים", "חטיף קטן לדרך"]
   },
 
   /* ===== יום 4 · שבת 18.7 ===== */
@@ -128,9 +130,9 @@ window.TRIP_DATA = [
     summary: "רכס המצוקים המצולם בדולומיטים + האחו האלפיני הגדול באירופה",
     schedule: [
       { time: "08:30", kind: "drive", title: "יציאה דרך מעבר Gardena", note: "~40 דק׳ · כביש מתפתל ומרהיב · עצירת תצפית בדרך", tsoft: true },
-      { time: "09:30", kind: "cable", title: "רכבל Seceda (מאורטיזיי)", note: "הליכת רכס קצרה מול המצוקים המחודדים — הנוף המצולם בדולומיטים", coords: [46.5772, 11.6740], book: "אפשר להזמין כרטיס מראש" },
+      { time: "09:30", kind: "cable", title: "רכבל Seceda (מאורטיזיי)", note: "הליכת רכס קצרה מול המצוקים המחודדים — הנוף המצולם בדולומיטים", coords: [46.5772, 11.6740], book: "אפשר להזמין כרטיס מראש", place: "seceda" },
       { time: "12:30", kind: "food", title: "צהריים ברפוג׳ו בהר", note: "Baita Curona (Seceda) או Gostner Schwaige (Alpe di Siusi)", q: "Baita Curona Seceda", book: "רפוג׳ואים מתמלאים ביולי — להזמין מראש" },
-      { time: "14:00", kind: "activity", title: "Alpe di Siusi · Seiser Alm", note: "האחו האלפיני הגדול באירופה — כרי דשא, מרמיטות ופסגות מסביב", coords: [46.5416, 11.6209] },
+      { time: "14:00", kind: "activity", title: "Alpe di Siusi · Seiser Alm", note: "האחו האלפיני הגדול באירופה — כרי דשא, מרמיטות ופסגות מסביב", coords: [46.5416, 11.6209], place: "alpedisiusi" },
       { time: "16:30", kind: "kids", title: "אופציה: אורטיזיי — E-Bike / גילוף עץ", note: "אופני הרים חשמליים בתחנה העליונה, וגלריות גילוף עץ בעיירה", coords: [46.5766, 11.6710], kids: true },
       { time: "19:30", kind: "food", title: "ארוחת ערב · Ristorante Zirm", note: "Str. Col Alt 95 · ✓ מאושר (עם אנצו)", coords: [46.5470, 11.8790], status: "ok" }
     ],
@@ -164,9 +166,9 @@ window.TRIP_DATA = [
     schedule: [
       { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מקורוורה", note: "לארוז הכל — עוברים מלון", tsoft: true },
       { time: "09:30", kind: "drive", title: "נסיעה דרך מעבר פלצרגו", note: "31.5 ק״מ · ~46 דק׳ · המעבר בגובה 2,105 מ׳", tsoft: true },
-      { time: "10:00", kind: "cable", title: "רכבל Lagazuoi", note: "ל-Piccolo Lagazuoi · תצפית 360°, מנהרות ועמדות מהמלחמה · כרטיס במקום", coords: [46.5187, 12.0000], book: "שכבה חמה — קר למעלה גם בקיץ!" },
+      { time: "10:00", kind: "cable", title: "רכבל Lagazuoi", note: "ל-Piccolo Lagazuoi · תצפית 360°, מנהרות ועמדות מהמלחמה · כרטיס במקום", coords: [46.5187, 12.0000], book: "שכבה חמה — קר למעלה גם בקיץ!", place: "lagazuoi" },
       { time: "13:00", kind: "food", title: "צהריים ב-Rifugio Lagazuoi", note: "אחת מבקתות ההרים היפות בדולומיטים · אוכל איטלקי־אלפיני", q: "Rifugio Lagazuoi" },
-      { time: "15:00", kind: "activity", title: "עיקוף אגם מיזורינה", note: "טיילת סביב אגם פוטוגני (~1 ש׳) · השתקפויות מושלמות", coords: [46.5817, 12.2536] },
+      { time: "15:00", kind: "activity", title: "עיקוף אגם מיזורינה", note: "טיילת סביב אגם פוטוגני (~1 ש׳) · השתקפויות מושלמות", coords: [46.5817, 12.2536], place: "misurina" },
       { time: "16:30", kind: "checkin", title: "צ׳ק־אין בקורטינה", note: "Hotel Villa Argentina, Pocol", coords: [46.5169, 12.1160], tsoft: true },
       { time: "ערב", kind: "food", title: "ארוחת ערב · 5 Torri", note: "Largo delle Poste 13 · ● ממתין לאישור", coords: [46.5405, 12.1357], status: "pending" }
     ],
@@ -225,7 +227,7 @@ window.TRIP_DATA = [
     summary: "המסלול המעגלי המפורסם ביותר בדולומיטים — שלוש הפסגות",
     schedule: [
       { time: "08:00", kind: "drive", title: "יציאה דרך מיזורינה", note: "כביש אגרה לרפוג׳ו אאורונצו · שער האגרה צפונית לאגם Antorno", tsoft: true },
-      { time: "09:00", kind: "hike", title: "מסלול מעגלי סביב טרה צ׳ימה", note: "~10 ק״מ · 3–4 שעות · קל–בינוני · רפוג׳ואים בדרך", coords: [46.6186, 12.3050] },
+      { time: "09:00", kind: "hike", title: "מסלול מעגלי סביב טרה צ׳ימה", note: "~10 ק״מ · 3–4 שעות · קל–בינוני · רפוג׳ואים בדרך", coords: [46.6186, 12.3050], place: "trecime" },
       { time: "12:30", kind: "food", title: "צהריים ב-Rifugio Locatelli", note: "הבקתה עם הנוף הקלאסי לשלוש הפסגות", q: "Rifugio Locatelli Tre Cime" },
       { time: "ערב", kind: "food", title: "ארוחת ערב", note: "לעדכון", status: "none" }
     ],
@@ -256,7 +258,7 @@ window.TRIP_DATA = [
     schedule: [
       { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מהמלון", note: "לארוז הכל · דרכונים במקום נגיש", tsoft: true },
       { time: "09:30", kind: "drive", title: "נסיעה לונציה", note: "~162 ק״מ · ~2 שעות", tsoft: true },
-      { time: "12:00", kind: "sight", title: "ונציה", note: "כיכר סן מרקו, גשר הריאלטו וסמטאות התעלות", coords: [45.4342, 12.3388], tsoft: true },
+      { time: "12:00", kind: "sight", title: "ונציה", note: "כיכר סן מרקו, גשר הריאלטו וסמטאות התעלות", coords: [45.4342, 12.3388], place: "venice", tsoft: true },
       { time: "אחה״צ", kind: "drive", title: "המשך המסע חזרה", note: "לבדוק שעת הגעה נדרשת ליעד הסופי" }
     ],
     dining: {
