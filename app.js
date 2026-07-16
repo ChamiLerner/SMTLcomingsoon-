@@ -18,7 +18,7 @@ const navUrl = o => o && o.coords ? coordUrl(o.coords) : (o && o.q ? queryUrl(o.
 const dayNavUrl = d => d.coords ? coordUrl(d.coords) : queryUrl(d.place || d.title);
 /* ---------- ניווט לפי שם מקום · Google Maps + Waze ---------- */
 const encq = q => encodeURIComponent(q);
-const gmapsUrl = q => `https://www.google.com/maps/dir/?api=1&destination=${encq(q)}`;
+const gmapsUrl = q => `https://www.google.com/maps/search/?api=1&query=${encq(q)}`;
 const wazeUrl = q => `https://www.waze.com/ul?q=${encq(q)}&navigate=yes`;
 function navName(o, day) {
   if (!o) return null;
