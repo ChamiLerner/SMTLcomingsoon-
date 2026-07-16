@@ -21,6 +21,7 @@ const telUrl = p => "tel:" + String(p).replace(/[^\d+]/g, "");
 const parseMin = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(t)); return m ? +m[1] * 60 + +m[2] : null; };
 const fmtDur = m => m >= 60 ? `${Math.floor(m / 60)}:${pad(m % 60)} ש׳` : `${m} דק׳`;
 const forecastUrl = c => `https://www.meteoblue.com/en/weather/week/${(+c[0]).toFixed(4)}N${(+c[1]).toFixed(4)}E`;
+const weatherComUrl = c => `https://weather.com/weather/tenday/l/${(+c[0]).toFixed(3)},${(+c[1]).toFixed(3)}`;
 const nowMin = () => { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); };
 
 function tripPhase() { const t = todayISO(); if (t < DAYS[0].date) return "before"; if (t > DAYS[DAYS.length - 1].date) return "after"; return "during"; }
@@ -41,7 +42,7 @@ async function loadWeather(d) {
     const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 7000);
     const w = await (await fetch(url, { signal: ctrl.signal })).json(); clearTimeout(to);
     const dd = w.daily, hi = Math.round(dd.temperature_2m_max[0]), rain = dd.precipitation_probability_max[0] ?? 0, emoji = wcode(dd.weather_code[0]);
-    el.textContent = (isToday && w.current) ? `${emoji} ${Math.round(w.current.temperature_2m)}° · גשם ${rain}%` : `${emoji} מקס׳ ${hi}° · גשם ${rain}%`;
+    el.textContent = (isToday && w.current) ? `${emoji} ${Math.round(w.current.temperature_2m)}° · עד ${rain}% גשם` : `${emoji} מקס׳ ${hi}° · עד ${rain}% גשם`;
   } catch (e) { el.textContent = "מזג אוויר · הקישו לתחזית"; }
 }
 
@@ -146,8 +147,8 @@ function weatherSummary(byType, coords) {
   if (byType.wind && byType.wind.length) parts.push(`💨 רוח: ${byType.wind.join(", ")}`);
   if (!parts.length) return "";
   const sev = (byType.storm && byType.storm.length) ? "high" : "med";
-  const link = coords ? ` · <a target="_blank" rel="noopener" href="${forecastUrl(coords)}">תחזית מלאה ›</a>` : "";
-  return `<div class="wx-summary ${sev}"><b>שימו לב למזג האוויר</b> · ${parts.join(" · ")}<span class="wx-src">מבוסס תחזית Open-Meteo · ייתכנו הבדלים מאפליקציות אחרות${link}</span></div>`;
+  const link = coords ? ` · השוו: <a target="_blank" rel="noopener" href="${forecastUrl(coords)}">meteoblue</a> · <a target="_blank" rel="noopener" href="${weatherComUrl(coords)}">weather.com</a>` : "";
+  return `<div class="wx-summary ${sev}"><b>שימו לב למזג האוויר</b> · ${parts.join(" · ")}<span class="wx-src">האחוזים הם שיא הסיכוי במהלך היום (Open-Meteo)${link}</span></div>`;
 }
 async function loadActivityWeather(d) {
   const items = (d.schedule || []).map((x, i) => ({ x, i, m: parseMin(x.time) })).filter(o => o.m != null);
