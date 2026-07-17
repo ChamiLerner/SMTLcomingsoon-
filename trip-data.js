@@ -98,7 +98,7 @@ window.TRIP_DATA = [
     image: "braies.jpg", gallery: ["funbob.jpg"], coords: [46.6947, 12.0855], hotel: 0, difficulty: "קל",
     summary: "פנינת הטורקיז של הדולומיטים בבוקר · אקשן לנוער אחה״צ",
     schedule: [
-      { time: "09:00", kind: "drive", title: "יציאה מהמלון", note: "יוצאים לכיוון אגם ברייס", coords: [46.5506, 11.8730], place: "ciasademunt" },
+      { time: "09:00", kind: "drive", title: "יציאה מהמלון", note: "יוצאים לכיוון אגם ברייס", coords: [46.5506, 11.8730], place: "ciasademunt", noNav: true },
       { time: "10:15", kind: "boat", title: "אגם ברייס", note: "10:15–12:15 · שיט בסירות (אם התור סביר) + זמן להליכה קצרה סביב האגם למי שרוצה", coords: [46.6947, 12.0855], place: "braies", leg: { from: "המלון", km: 48, min: 65 } },
       { time: "12:45", kind: "kids", title: "FunBob בסן קנדידו", note: "רכבל Haunold ומגלשת הרים מהירה על מסילת מתכת · ירצו פעמיים!", coords: [46.7326, 12.2789], place: "funbob", leg: { from: "ברייס", km: 30, min: 35 }, kids: true },
       { time: "14:00", kind: "food", title: "ארוחת צהריים", note: "בסן קנדידו · מסעדות ובתי קפה במדרחוב", coords: [46.7326, 12.2789], place: "sancandido" },
@@ -181,7 +181,7 @@ window.TRIP_DATA = [
     image: "lagazuoi.jpg", coords: [46.5192, 12.0093], hotel: 1, difficulty: "קל–בינוני",
     summary: "מעבר מלון לקורטינה · תצפית 360° ומנהרות מלחמת העולם הראשונה",
     schedule: [
-      { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מקורוורה", note: "לארוז הכל — עוברים מלון", tsoft: true, q: "Ciasa de Munt Corvara" },
+      { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מקורוורה", note: "לארוז הכל — עוברים מלון", tsoft: true, q: "Ciasa de Munt Corvara", noNav: true },
       { time: "09:30", kind: "drive", title: "נסיעה דרך מעבר פלצרגו", note: "31.5 ק״מ · ~46 דק׳ · המעבר בגובה 2,105 מ׳", tsoft: true },
       { time: "10:00", kind: "cable", title: "רכבל Lagazuoi", note: "ל-Piccolo Lagazuoi · תצפית 360°, מנהרות ועמדות מהמלחמה · כרטיס במקום", coords: [46.5187, 12.0000], book: "שכבה חמה — קר למעלה גם בקיץ!", place: "lagazuoi", leg: { from: "קורוורה", km: 32, min: 46 } },
       { time: "13:00", kind: "food", title: "צהריים ב-Rifugio Lagazuoi", note: "אחת מבקתות ההרים היפות בדולומיטים · אוכל איטלקי־אלפיני", q: "Rifugio Lagazuoi" },
@@ -287,7 +287,7 @@ window.TRIP_DATA = [
     image: "venice.jpg", coords: [45.4408, 12.3155], hotel: null, tentative: true,
     summary: "צ׳ק־אאוט ונסיעה חזרה · עצירה בעיר התעלות",
     schedule: [
-      { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מהמלון", note: "לארוז הכל · דרכונים במקום נגיש", tsoft: true, q: "Hotel Villa Argentina Pocol Cortina" },
+      { time: "09:00", kind: "checkin", title: "צ׳ק־אאוט מהמלון", note: "לארוז הכל · דרכונים במקום נגיש", tsoft: true, q: "Hotel Villa Argentina Pocol Cortina", noNav: true },
       { time: "09:30", kind: "drive", title: "נסיעה לונציה", note: "~162 ק״מ · ~2 שעות", tsoft: true },
       { time: "12:00", kind: "sight", title: "ונציה", note: "כיכר סן מרקו, גשר הריאלטו וסמטאות התעלות", coords: [45.4342, 12.3388], place: "venice", leg: { from: "קורטינה", km: 162, min: 120 }, tsoft: true },
       { time: "אחה״צ", kind: "drive", title: "המשך המסע חזרה", note: "לבדוק שעת הגעה נדרשת ליעד הסופי" }

@@ -1,10 +1,31 @@
 /* ============================================================
    קופה משותפת — חלוקת הוצאות בטיול
-   נשמר ב-localStorage במכשיר. שיתוף סיכום דרך כפתור השיתוף.
+   משותף לכל הקבוצה דרך here.now Site Data.
+   כל אחד מוסיף — כולם מתעדכנים. עובד גם אופליין (מסתנכרן כשחוזרים).
    ============================================================ */
 "use strict";
 (function () {
-  const KEY = "dolomites_expenses_v1";
+  /* ---------- רשימת החברים בטיול ---------- */
+  /* מזהה קבוע (id) + שם לתצוגה. אפשר להוסיף עוד דרך הכפתור באפליקציה. */
+  const MEMBERS = [
+    { id: "m01", name: "יסמין ישראל" },
+    { id: "m02", name: "איתמר סולימני" },
+    { id: "m03", name: "רז" },
+    { id: "m04", name: "יהלי לב" },
+    { id: "m05", name: "איתמר אוזן" },
+    { id: "m06", name: "דליה אוזן" },
+    { id: "m07", name: "אלון" },
+    { id: "m08", name: "מיה" },
+    { id: "m09", name: "שרון מאיר" },
+    { id: "m10", name: "נייט מאיר" },
+    { id: "m11", name: "לקס" },
+    { id: "m12", name: "מרינה פיינגולד" },
+    { id: "m13", name: "איילת גורמן" },
+    { id: "m14", name: "אורי לוקץ׳" },
+    { id: "m15", name: "משה" },
+    { id: "m16", name: "גור אוזן" }
+  ];
+
   const CATS = [
     { id: "food", ic: "🍽️", label: "אוכל" },
     { id: "fuel", ic: "⛽", label: "דלק" },
@@ -14,39 +35,210 @@
     { id: "other", ic: "💶", label: "אחר" }
   ];
   const catOf = id => CATS.find(c => c.id === id) || CATS[CATS.length - 1];
+
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const eur = cents => "€" + (cents / 100).toFixed(2);
-  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const uid = () => "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
-  let state = load();
-  function load() {
-    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.people && s.expenses) return s; } catch (e) {}
-    return { people: [], expenses: [] };
+  /* ---------- כתובת ה-Site Data (יחסית לאתר) ---------- */
+  const DATA_BASE = location.origin + "/.herenow/data";
+  const CACHE_KEY = "dolomites_exp_v2";
+
+  /* ---------- מצב ---------- */
+  // כל הוצאה: { xid, id?, title, cents, cat, payer, parts[], ts, rev, deleted, dirty }
+  let expenses = [];          // מפתח לוגי = xid
+  let remoteMembers = [];     // { id(xid), name, deleted, dirty }
+  let sync = { state: "idle", pending: 0, lastOk: 0, err: "" };
+  let pollTimer = null, flushing = false;
+
+  loadCache();
+
+  function loadCache() {
+    try {
+      const s = JSON.parse(localStorage.getItem(CACHE_KEY));
+      if (s && Array.isArray(s.expenses)) expenses = s.expenses;
+      if (s && Array.isArray(s.members)) remoteMembers = s.members;
+      if (s && s.sync) { sync.lastOk = s.sync.lastOk || 0; }
+    } catch (e) {}
   }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  function saveCache() {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ expenses, members: remoteMembers, sync: { lastOk: sync.lastOk } })); } catch (e) {}
+  }
 
-  /* ---------- חישוב ---------- */
+  /* ---------- רוסטר (חברים מקוד + חברים שנוספו בענן) ---------- */
+  function roster() {
+    const list = MEMBERS.map(m => ({ id: m.id, name: m.name }));
+    const seen = new Set(list.map(m => m.id));
+    remoteMembers.forEach(m => { if (!m.deleted && !seen.has(m.id)) { list.push({ id: m.id, name: m.name }); seen.add(m.id); } });
+    return list;
+  }
+  function nameOf(id) { const m = roster().find(x => x.id === id); return m ? m.name : "—"; }
+  function isCustom(id) { return !MEMBERS.some(m => m.id === id); }
+
+  function activeExpenses() { return expenses.filter(e => !e.deleted); }
+  function pendingCount() {
+    return expenses.filter(e => e.dirty).length + remoteMembers.filter(m => m.dirty).length;
+  }
+
+  /* ============================================================
+     סנכרון עם here.now Site Data
+     ============================================================ */
+  async function pull() {
+    const [ex, mem] = await Promise.all([
+      fetchAll("expenses"),
+      fetchAll("members")
+    ]);
+    // חברים
+    mem.forEach(rec => {
+      const d = rec.data || {}; const xid = d.xid; if (!xid) return;
+      const local = remoteMembers.find(m => m.id === xid);
+      if (local && local.dirty) return; // יש שינוי מקומי שממתין
+      const entry = { id: xid, name: d.name, deleted: !!d.deleted, recId: rec.id, dirty: false };
+      if (local) Object.assign(local, entry); else remoteMembers.push(entry);
+    });
+    // הוצאות
+    ex.forEach(rec => {
+      const d = rec.data || {}; const xid = d.xid; if (!xid) return;
+      const srv = {
+        xid, id: rec.id,
+        title: d.title || "", cents: d.cents | 0, cat: d.cat || "other",
+        payer: d.payer || "", parts: Array.isArray(d.parts) ? d.parts : [],
+        ts: d.ts || Date.parse(rec.createdAt) || 0, rev: d.rev | 0, deleted: !!d.deleted
+      };
+      const local = expenses.find(e => e.xid === xid);
+      if (!local) { srv.dirty = false; expenses.push(srv); return; }
+      // יש רשומה מקומית — פתרון קונפליקט לפי rev; שינוי מקומי שממתין מנצח בשוויון
+      if (local.dirty) {
+        if (srv.rev > local.rev) { Object.assign(local, srv, { dirty: false }); } // הצד השני עדכן אחרינו
+        // אחרת: שומרים על המקומי (יידחף)
+      } else {
+        Object.assign(local, srv, { dirty: false });
+      }
+    });
+    sync.lastOk = Date.now();
+  }
+
+  async function fetchAll(coll) {
+    let out = [], cursor = "";
+    for (let guard = 0; guard < 20; guard++) {
+      const u = DATA_BASE + "/" + coll + "?limit=100" + (cursor ? "&cursor=" + encodeURIComponent(cursor) : "");
+      const r = await fetch(u, { headers: { "accept": "application/json" } });
+      if (!r.ok) throw new Error(coll + " " + r.status);
+      const j = await r.json();
+      out = out.concat(j.records || []);
+      if (!j.nextCursor) break;
+      cursor = j.nextCursor;
+    }
+    return out;
+  }
+
+  async function push() {
+    // חברים חדשים / שינויים
+    for (const m of remoteMembers.filter(x => x.dirty)) {
+      try {
+        if (!m.recId) {
+          const rec = await postRec("members", { xid: m.id, name: m.name, ts: Date.now(), deleted: !!m.deleted }, m.id);
+          m.recId = rec.id; m.dirty = false;
+        } else {
+          await patchRec("members", m.recId, { name: m.name, deleted: !!m.deleted });
+          m.dirty = false;
+        }
+      } catch (e) { throw e; }
+    }
+    // הוצאות
+    for (const e of expenses.filter(x => x.dirty)) {
+      const body = { xid: e.xid, title: e.title, cents: e.cents | 0, cat: e.cat, payer: e.payer, parts: e.parts, ts: e.ts || Date.now(), rev: e.rev | 0, deleted: !!e.deleted };
+      if (!e.id) {
+        const rec = await postRec("expenses", body, e.xid);
+        e.id = rec.id; e.dirty = false;
+      } else {
+        await patchRec("expenses", e.id, { title: e.title, cents: e.cents | 0, cat: e.cat, payer: e.payer, parts: e.parts, rev: e.rev | 0, deleted: !!e.deleted });
+        e.dirty = false;
+      }
+    }
+    // ניקוי טומבסטונים שסונכרנו
+    expenses = expenses.filter(e => !(e.deleted && !e.dirty && e.id));
+    remoteMembers = remoteMembers.filter(m => !(m.deleted && !m.dirty));
+  }
+
+  async function postRec(coll, body, idem) {
+    const r = await fetch(DATA_BASE + "/" + coll, {
+      method: "POST",
+      headers: { "content-type": "application/json", "Idempotency-Key": idem || uid() },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error("POST " + coll + " " + r.status);
+    const j = await r.json();
+    return j.record;
+  }
+  async function patchRec(coll, id, body) {
+    const r = await fetch(DATA_BASE + "/" + coll + "/" + id, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error("PATCH " + coll + " " + r.status);
+    return (await r.json()).record;
+  }
+
+  async function syncNow(opts) {
+    opts = opts || {};
+    if (flushing) return;
+    flushing = true;
+    const had = pendingCount();
+    sync.state = "sync";
+    if (opts.render !== false) renderStatus();
+    try {
+      await push();      // דחיפת שינויים מקומיים קודם
+      await pull();      // ואז משיכת המצב המעודכן
+      await push();      // ודחיפת מה שאולי נוצר בינתיים
+      sync.err = "";
+      sync.state = "ok";
+      saveCache();
+      render();          // רענון מלא (יכול להשתנות המצב)
+    } catch (e) {
+      sync.err = (e && e.message) || "network";
+      sync.state = navigator.onLine ? "err" : "offline";
+      saveCache();
+      renderStatus();
+    } finally {
+      flushing = false;
+      sync.pending = pendingCount();
+      renderStatus();
+      if (had && !pendingCount() && sync.state === "ok") render();
+    }
+  }
+
+  function startPolling() {
+    if (pollTimer) return;
+    pollTimer = setInterval(() => { if (document.visibilityState === "visible") syncNow({ render: false }); }, 15000);
+  }
+
+  /* ============================================================
+     חישוב מאזן וסליקה
+     ============================================================ */
   function compute() {
+    const ids = roster().map(m => m.id);
     const paid = {}, owed = {};
-    state.people.forEach(p => { paid[p] = 0; owed[p] = 0; });
+    ids.forEach(id => { paid[id] = 0; owed[id] = 0; });
     let total = 0;
-    for (const e of state.expenses) {
-      const cents = Math.round(e.amount * 100);
+    for (const e of activeExpenses()) {
+      const cents = e.cents | 0;
       total += cents;
       if (paid[e.payer] == null) paid[e.payer] = 0;
       paid[e.payer] += cents;
-      const parts = e.parts.filter(p => state.people.includes(p));
+      const parts = e.parts.filter(p => ids.includes(p));
       const n = parts.length || 1;
       const base = Math.floor(cents / n), rem = cents - base * n;
       parts.forEach((p, i) => { if (owed[p] == null) owed[p] = 0; owed[p] += base + (i < rem ? 1 : 0); });
     }
     const net = {};
-    state.people.forEach(p => net[p] = (paid[p] || 0) - (owed[p] || 0));
+    Object.keys(paid).forEach(id => net[id] = (paid[id] || 0) - (owed[id] || 0));
     return { paid, owed, net, total };
   }
   function settlement(net) {
     const debt = [], cred = [];
-    Object.keys(net).forEach(p => { if (net[p] < -0) debt.push({ p, a: -net[p] }); else if (net[p] > 0) cred.push({ p, a: net[p] }); });
+    Object.keys(net).forEach(p => { if (net[p] < 0) debt.push({ p, a: -net[p] }); else if (net[p] > 0) cred.push({ p, a: net[p] }); });
     debt.sort((x, y) => y.a - x.a); cred.sort((x, y) => y.a - x.a);
     const out = []; let i = 0, j = 0;
     while (i < debt.length && j < cred.length) {
@@ -58,96 +250,114 @@
     return out;
   }
 
-  /* ---------- render ---------- */
+  /* ============================================================
+     תצוגה
+     ============================================================ */
+  function statusChip() {
+    const p = pendingCount();
+    let cls = "ok", txt = "מסונכרן";
+    if (sync.state === "sync") { cls = "sync"; txt = "מסנכרן…"; }
+    else if (sync.state === "offline" || !navigator.onLine) { cls = "off"; txt = p ? `אופליין · ${p} ממתינים` : "אופליין"; }
+    else if (sync.state === "err") { cls = "off"; txt = p ? `לא סונכרן · ${p} ממתינים` : "שגיאת רשת"; }
+    else if (p) { cls = "sync"; txt = `${p} ממתינים לסנכרון`; }
+    return `<button class="exp-sync ${cls}" onclick="expSync()" title="לחצו לסנכרון">${cls === "ok" ? "☁︎" : cls === "sync" ? "⟳" : "⚠︎"} ${txt}</button>`;
+  }
+  function renderStatus() {
+    const el = document.getElementById("expSyncSlot"); if (el) el.innerHTML = statusChip();
+  }
+
   function render() {
     const el = document.getElementById("expensesBody"); if (!el) return;
     const c = compute();
-    const peopleChips = state.people.map(p =>
-      `<span class="exp-chip">${esc(p)}<button class="x" onclick="expRemovePerson('${esc(p)}')" aria-label="הסרה">×</button></span>`).join("");
+    const list = roster();
+    const acts = activeExpenses();
 
     const tiles = `<div class="exp-tiles">
       <div class="exp-tile"><b>${eur(c.total)}</b><span>סה״כ הוצאות</span></div>
-      <div class="exp-tile"><b>${state.expenses.length}</b><span>רישומים</span></div>
-      <div class="exp-tile"><b>${state.people.length}</b><span>משתתפים</span></div>
+      <div class="exp-tile"><b>${acts.length}</b><span>רישומים</span></div>
+      <div class="exp-tile"><b>${list.length}</b><span>משתתפים</span></div>
     </div>`;
 
     let listHTML;
-    if (!state.expenses.length) {
-      listHTML = `<div class="exp-empty">אין עדיין הוצאות. הוסיפו את המשתתפים ואז הוצאה ראשונה 👆</div>`;
+    if (!acts.length) {
+      listHTML = `<div class="exp-empty">אין עדיין הוצאות. הוסיפו הוצאה ראשונה 👆<br><span class="exp-hint">כל מי שמוסיף — כולם רואים.</span></div>`;
     } else {
-      listHTML = state.expenses.slice().reverse().map(e => {
+      listHTML = acts.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(e => {
         const cat = catOf(e.cat);
-        const cents = Math.round(e.amount * 100);
         const n = e.parts.length || 1;
-        const per = Math.round(cents / n);
-        return `<div class="exp-item">
+        const per = Math.round((e.cents | 0) / n);
+        const names = e.parts.map(nameOf);
+        const shown = names.slice(0, 6).join(" · ") + (names.length > 6 ? ` +${names.length - 6}` : "");
+        return `<div class="exp-item${e.dirty ? " pend" : ""}">
           <div class="exp-ic">${cat.ic}</div>
           <div class="exp-main">
-            <div class="exp-row1"><b>${esc(e.desc || cat.label)}</b><span class="exp-amt">${eur(cents)}</span></div>
-            <p class="exp-sub">שילם/ה <b>${esc(e.payer)}</b> · חולק בין ${n} · ${eur(per)} לאחד</p>
-            <p class="exp-parts">${e.parts.map(esc).join(" · ")}</p>
+            <div class="exp-row1"><b>${esc(e.title || cat.label)}</b><span class="exp-amt">${eur(e.cents | 0)}</span></div>
+            <p class="exp-sub">שילם/ה <b>${esc(nameOf(e.payer))}</b> · חולק בין ${n} · ${eur(per)} לאחד${e.dirty ? ' · <span class="exp-pendtag">ממתין</span>' : ""}</p>
+            <p class="exp-parts">${esc(shown)}</p>
           </div>
           <div class="exp-actions">
-            <button class="icon-btn" onclick="expEdit('${e.id}')">✎</button>
-            <button class="icon-btn" onclick="expDelete('${e.id}')">🗑</button>
+            <button class="icon-btn" onclick="expEdit('${e.xid}')" aria-label="עריכה">✎</button>
+            <button class="icon-btn" onclick="expDelete('${e.xid}')" aria-label="מחיקה">🗑</button>
           </div>
         </div>`;
       }).join("");
     }
 
     let balHTML = "";
-    if (state.expenses.length) {
+    if (acts.length) {
+      const rows = list.map(m => ({ m, v: c.net[m.id] || 0 })).filter(r => r.v !== 0 || c.paid[r.m.id] || c.owed[r.m.id]);
       balHTML = `<div class="section"><div class="section-label">מאזן לכל אחד</div>` +
-        state.people.map(p => {
-          const v = c.net[p] || 0;
-          const cls = v > 0 ? "up" : v < 0 ? "down" : "even";
-          const txt = v > 0 ? `מקבל/ת ${eur(v)}` : v < 0 ? `משלם/ת ${eur(-v)}` : "מאוזן";
-          return `<div class="exp-bal"><span>${esc(p)}</span><span class="exp-bal-v ${cls}">${txt}</span></div>`;
-        }).join("") + `</div>`;
+        (rows.length ? rows.map(r => {
+          const cls = r.v > 0 ? "up" : r.v < 0 ? "down" : "even";
+          const txt = r.v > 0 ? `מקבל/ת ${eur(r.v)}` : r.v < 0 ? `משלם/ת ${eur(-r.v)}` : "מאוזן";
+          return `<div class="exp-bal"><span>${esc(r.m.name)}</span><span class="exp-bal-v ${cls}">${txt}</span></div>`;
+        }).join("") : `<div class="exp-empty">אין נתונים</div>`) + `</div>`;
 
       const trans = settlement(c.net);
       const setHTML = trans.length
-        ? trans.map(t => `<div class="exp-settle"><b>${esc(t.from)}</b> <span class="s-mid">משלם/ת ל־</span> <b>${esc(t.to)}</b><span class="exp-settle-a">${eur(t.a)}</span></div>`).join("")
+        ? trans.map(t => `<div class="exp-settle"><b>${esc(nameOf(t.from))}</b> <span class="s-mid">משלם/ת ל־</span> <b>${esc(nameOf(t.to))}</b><span class="exp-settle-a">${eur(t.a)}</span></div>`).join("")
         : `<div class="exp-empty">הכל מאוזן 🎉</div>`;
       balHTML += `<div class="section"><div class="section-label">מי מעביר למי</div>${setHTML}
         <p class="exp-hint">כך מסלקים את החוב במינימום העברות.</p></div>`;
     }
 
     el.innerHTML = `<div class="wrap">
+      <div class="exp-topbar"><div id="expSyncSlot">${statusChip()}</div></div>
       ${tiles}
-      <div class="section"><div class="section-label">מי בקבוצה</div>
-        <div class="exp-people">${peopleChips || `<span class="exp-hint">עדיין אין משתתפים</span>`}
-          <button class="exp-addp" onclick="expAddPerson()">＋ משתתף</button></div>
-      </div>
       <button class="go exp-newbtn" onclick="expOpenForm()">＋ הוצאה חדשה</button>
       <div id="expFormWrap"></div>
       <div class="section"><div class="section-label">ההוצאות</div><div class="exp-list">${listHTML}</div></div>
       ${balHTML}
-      ${state.expenses.length ? `<div class="exp-foot">
-        <button class="btn ghost" onclick="expShare()">📤 שיתוף סיכום</button>
-        <button class="btn ghost danger" onclick="expReset()">איפוס</button></div>` : ""}
-      <p class="exp-note">🔒 הנתונים נשמרים במכשיר הזה בלבד. כדי לעדכן את הקבוצה — ״שיתוף סיכום״ שולח את החישוב לוואטסאפ.</p>
+      ${acts.length ? `<div class="exp-foot">
+        <button class="btn ghost" onclick="expShare()">📤 שיתוף סיכום</button></div>` : ""}
+      <div class="section"><div class="section-label">מי בקבוצה (${list.length})</div>
+        <div class="exp-people">${list.map(m => `<span class="exp-chip">${esc(m.name)}${isCustom(m.id) ? `<button class="x" onclick="expRemovePerson('${m.id}')" aria-label="הסרה">×</button>` : ""}</span>`).join("")}
+          <button class="exp-addp" onclick="expAddPerson()">＋ משתתף</button></div>
+      </div>
+      <p class="exp-note">☁︎ משותף לכל הקבוצה — כל אחד מוסיף וכולם מתעדכנים. עובד גם בלי רשת, ומסתנכרן אוטומטית כשחוזרים לקליטה.</p>
     </div>`;
   }
 
-  /* ---------- form ---------- */
+  /* ============================================================
+     טופס הוצאה
+     ============================================================ */
   function formHTML(edit) {
-    const e = edit || { desc: "", amount: "", cat: "food", payer: state.people[0] || "", parts: state.people.slice() };
+    const list = roster();
+    const e = edit || { title: "", amount: "", cat: "food", payer: (list[0] && list[0].id) || "", parts: list.map(m => m.id) };
     const cats = CATS.map(c => `<button type="button" class="exp-cat${c.id === e.cat ? " sel" : ""}" data-cat="${c.id}" onclick="expPickCat('${c.id}')">${c.ic} ${c.label}</button>`).join("");
-    const payers = state.people.map(p => `<button type="button" class="exp-payer${p === e.payer ? " sel" : ""}" data-p="${esc(p)}" onclick="expPickPayer(this)">${esc(p)}</button>`).join("");
-    const parts = state.people.map(p => `<button type="button" class="exp-part${e.parts.includes(p) ? " sel" : ""}" data-p="${esc(p)}" onclick="this.classList.toggle('sel')">${esc(p)}</button>`).join("");
-    return `<div class="exp-form" id="expForm" data-edit="${edit ? edit.id : ""}">
-      <input class="exp-input" id="expDesc" placeholder="על מה? (למשל: ארוחת ערב)" value="${esc(e.desc)}">
+    const payers = list.map(m => `<button type="button" class="exp-payer${m.id === e.payer ? " sel" : ""}" data-p="${m.id}" onclick="expPickPayer(this)">${esc(m.name)}</button>`).join("");
+    const parts = list.map(m => `<button type="button" class="exp-part${e.parts.includes(m.id) ? " sel" : ""}" data-p="${m.id}" onclick="this.classList.toggle('sel')">${esc(m.name)}</button>`).join("");
+    return `<div class="exp-form" id="expForm" data-edit="${edit ? edit.xid : ""}">
+      <input class="exp-input" id="expDesc" placeholder="על מה? (למשל: ארוחת ערב)" value="${esc(e.title)}">
       <input class="exp-input" id="expAmount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="סכום ב-€" value="${e.amount}">
       <div class="exp-flabel">קטגוריה</div><div class="exp-cats">${cats}</div>
-      <div class="exp-flabel">מי שילם/ה</div><div class="exp-choose">${payers || `<span class="exp-hint">הוסיפו משתתפים קודם</span>`}</div>
+      <div class="exp-flabel">מי שילם/ה</div><div class="exp-choose">${payers}</div>
       <div class="exp-flabel">מי השתתף/ה <button type="button" class="exp-mini" onclick="expAllParts(true)">הכל</button> <button type="button" class="exp-mini" onclick="expAllParts(false)">נקה</button></div>
       <div class="exp-choose" id="expParts">${parts}</div>
       <div class="exp-fbtns"><button class="go" onclick="expSave()">שמירה</button><button class="btn ghost" onclick="expCloseForm()">ביטול</button></div>
     </div>`;
   }
   window.expOpenForm = function (edit) {
-    if (!state.people.length) { alert("קודם הוסיפו משתתפים לקבוצה 🙂"); return; }
     document.getElementById("expFormWrap").innerHTML = formHTML(edit || null);
     document.getElementById("expForm").scrollIntoView({ behavior: "smooth", block: "center" });
   };
@@ -157,49 +367,70 @@
   window.expAllParts = function (on) { document.querySelectorAll("#expParts .exp-part").forEach(b => b.classList.toggle("sel", on)); };
 
   window.expSave = function () {
-    const desc = document.getElementById("expDesc").value.trim();
+    const title = document.getElementById("expDesc").value.trim();
     const amount = parseFloat(document.getElementById("expAmount").value);
-    const cat = (document.querySelector(".exp-cat.sel") || {}).dataset ? document.querySelector(".exp-cat.sel").dataset.cat : "other";
+    const catEl = document.querySelector(".exp-cat.sel");
+    const cat = catEl ? catEl.dataset.cat : "other";
     const payerEl = document.querySelector(".exp-payer.sel");
     const parts = [...document.querySelectorAll("#expParts .exp-part.sel")].map(b => b.dataset.p);
     if (!(amount > 0)) { alert("נא להזין סכום תקין"); return; }
     if (!payerEl) { alert("מי שילם/ה?"); return; }
     if (!parts.length) { alert("בחרו מי השתתף/ה בהוצאה"); return; }
-    const editId = document.getElementById("expForm").dataset.edit;
-    const rec = { id: editId || uid(), desc, amount, cat, payer: payerEl.dataset.p, parts, ts: Date.now() };
-    if (editId) { const i = state.expenses.findIndex(x => x.id === editId); if (i >= 0) state.expenses[i] = rec; }
-    else state.expenses.push(rec);
-    save(); expCloseForm(); render();
+    const cents = Math.round(amount * 100);
+    const editXid = document.getElementById("expForm").dataset.edit;
+    if (editXid) {
+      const e = expenses.find(x => x.xid === editXid);
+      if (e) { e.title = title; e.cents = cents; e.cat = cat; e.payer = payerEl.dataset.p; e.parts = parts; e.rev = (e.rev | 0) + 1; e.dirty = true; }
+    } else {
+      expenses.push({ xid: uid(), title, cents, cat, payer: payerEl.dataset.p, parts, ts: Date.now(), rev: 0, deleted: false, dirty: true });
+    }
+    saveCache(); expCloseForm(); render(); syncNow();
   };
-  window.expEdit = function (id) { const e = state.expenses.find(x => x.id === id); if (e) expOpenForm(e); };
-  window.expDelete = function (id) { if (!confirm("למחוק את ההוצאה?")) return; state.expenses = state.expenses.filter(x => x.id !== id); save(); render(); };
+  window.expEdit = function (xid) { const e = expenses.find(x => x.xid === xid); if (e) expOpenForm({ xid: e.xid, title: e.title, amount: (e.cents / 100), cat: e.cat, payer: e.payer, parts: e.parts.slice() }); };
+  window.expDelete = function (xid) {
+    if (!confirm("למחוק את ההוצאה? (יתעדכן לכולם)")) return;
+    const e = expenses.find(x => x.xid === xid); if (!e) return;
+    if (!e.id) { expenses = expenses.filter(x => x.xid !== xid); } // עוד לא נוצרה בשרת
+    else { e.deleted = true; e.rev = (e.rev | 0) + 1; e.dirty = true; }
+    saveCache(); render(); syncNow();
+  };
 
   window.expAddPerson = function () {
-    const name = (prompt("שם המשתתף/ת (או משפחה/רכב):") || "").trim();
+    const name = (prompt("שם המשתתף/ת (או משפחה / רכב):") || "").trim();
     if (!name) return;
-    if (state.people.includes(name)) { alert("כבר קיים ברשימה"); return; }
-    state.people.push(name); save(); render();
+    if (roster().some(m => m.name === name)) { alert("כבר קיים ברשימה"); return; }
+    remoteMembers.push({ id: uid(), name, deleted: false, dirty: true });
+    saveCache(); render(); syncNow();
   };
-  window.expRemovePerson = function (name) {
-    const used = state.expenses.some(e => e.payer === name || e.parts.includes(name));
-    if (used) { alert("אי אפשר להסיר — המשתתף/ת מופיע/ה בהוצאות קיימות."); return; }
-    state.people = state.people.filter(p => p !== name); save(); render();
+  window.expRemovePerson = function (id) {
+    if (!isCustom(id)) return;
+    const used = activeExpenses().some(e => e.payer === id || e.parts.includes(id));
+    if (used) { alert("אי אפשר להסיר — מופיע/ה בהוצאות קיימות."); return; }
+    const m = remoteMembers.find(x => x.id === id); if (!m) return;
+    m.deleted = true; m.dirty = true;
+    saveCache(); render(); syncNow();
   };
-  window.expReset = function () {
-    if (!confirm("לאפס את כל ההוצאות? (המשתתפים יישארו)")) return;
-    state.expenses = []; save(); render();
-  };
+
+  window.expSync = function () { syncNow(); };
+
   window.expShare = function () {
     const c = compute(), trans = settlement(c.net);
-    let t = `💰 קופה משותפת — נפלאות הדולומיטים\nסה״כ: ${eur(c.total)} · ${state.expenses.length} הוצאות\n\nמי מעביר למי:\n`;
-    t += trans.length ? trans.map(x => `• ${x.from} משלם/ת ל-${x.to}: ${eur(x.a)}`).join("\n") : "הכל מאוזן 🎉";
-    t += `\n\nנכון ל-${new Date().toLocaleDateString("he-IL")}`;
+    let t = `💰 קופה משותפת — נפלאות הדולומיטים\nסה״כ: ${eur(c.total)} · ${activeExpenses().length} הוצאות\n\nמי מעביר למי:\n`;
+    t += trans.length ? trans.map(x => `• ${nameOf(x.from)} משלם/ת ל-${nameOf(x.to)}: ${eur(x.a)}`).join("\n") : "הכל מאוזן 🎉";
+    t += `\n\nהקופה המשותפת: ${location.origin}/\nנכון ל-${new Date().toLocaleDateString("he-IL")}`;
     if (navigator.share) navigator.share({ text: t }).catch(() => {});
     else if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => alert("הסיכום הועתק — הדביקו בוואטסאפ 📋")).catch(() => prompt("העתיקו את הסיכום:", t));
     else prompt("העתיקו את הסיכום:", t);
   };
 
-  // render once on load (the tab reveals the ready section)
-  if (document.readyState !== "loading") render();
-  else document.addEventListener("DOMContentLoaded", render);
+  /* ---------- אתחול ---------- */
+  function boot() {
+    render();
+    syncNow();
+    startPolling();
+    window.addEventListener("online", () => syncNow());
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") syncNow({ render: false }); });
+  }
+  if (document.readyState !== "loading") boot();
+  else document.addEventListener("DOMContentLoaded", boot);
 })();

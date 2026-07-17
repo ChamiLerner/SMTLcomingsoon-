@@ -1,5 +1,5 @@
 /* Service Worker — עבודה אופליין על ההר */
-const CACHE = "dolomites-2026-v26";
+const CACHE = "dolomites-2026-v27";
 const ASSETS = [
   "./", "index.html", "styles.css", "app.js", "trip-data.js", "places.js", "expenses.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/favicon-32.png",
@@ -22,6 +22,11 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  // Site Data (קופה משותפת) — תמיד מהרשת, בלי מטמון, כדי שכולם יראו את המצב העדכני
+  if (url.pathname.startsWith("/.herenow/")) {
+    e.respondWith(fetch(req).catch(() => new Response('{"records":[],"nextCursor":null}', { status: 200, headers: { "Content-Type": "application/json" } })));
+    return;
+  }
   // מזג אוויר וקריאות רשת חיצוניות — רשת קודם, בלי לשמור במטמון האפליקציה
   if (url.origin !== location.origin) {
     e.respondWith(fetch(req).catch(() => new Response("", { status: 504 })));

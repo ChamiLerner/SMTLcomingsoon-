@@ -1,0 +1,4 @@
+.herenow/state.json
+.herenow/fork-meta.json
+node_modules/
+.DS_Store

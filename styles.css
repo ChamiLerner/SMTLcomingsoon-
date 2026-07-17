@@ -318,6 +318,15 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .exp-foot .btn{flex:1;cursor:pointer}
 .btn.ghost.danger{color:#ff8f8f;border-color:rgba(255,107,107,.3)}
 
+/* sync status (קופה משותפת) */
+.exp-topbar{display:flex;justify-content:flex-end;margin-top:2px}
+.exp-sync{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer}
+.exp-sync.ok{color:var(--accent);border-color:rgba(52,224,161,.28)}
+.exp-sync.sync{color:#22b8ff;border-color:rgba(34,184,255,.3)}
+.exp-sync.off{color:#ffb454;border-color:rgba(255,180,84,.32)}
+.exp-item.pend{border-style:dashed;opacity:.92}
+.exp-pendtag{color:#ffb454;font-weight:700}
+
 /* narrower tabs for 5 items */
 .tabbar button{min-width:56px}
 

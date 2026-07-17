@@ -22,6 +22,7 @@ const gmapsUrl = q => `https://www.google.com/maps/search/?api=1&query=${encq(q)
 const wazeUrl = q => `https://www.waze.com/ul?q=${encq(q)}&navigate=yes`;
 function navName(o, day) {
   if (!o) return null;
+  if (o.noNav) return null;
   if (o.q) return o.q;
   const p = o.place && window.PLACES && PLACES[o.place];
   if (p && (p.navq || p.q)) return p.navq || p.q;

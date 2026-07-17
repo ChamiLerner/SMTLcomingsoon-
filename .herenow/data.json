@@ -1,0 +1,29 @@
+{
+  "collections": {
+    "expenses": {
+      "fields": {
+        "xid":     { "type": "string",  "required": true, "maxLength": 40 },
+        "title":   { "type": "string",  "maxLength": 120, "trim": true },
+        "cents":   { "type": "integer", "required": true, "minimum": 0, "maximum": 100000000 },
+        "cat":     { "type": "string",  "maxLength": 24 },
+        "payer":   { "type": "string",  "required": true, "maxLength": 40 },
+        "parts":   { "type": "array", "items": { "type": "string", "maxLength": 40 }, "maxItems": 60 },
+        "ts":      { "type": "number" },
+        "rev":     { "type": "integer", "default": 0 },
+        "deleted": { "type": "boolean", "default": false }
+      },
+      "access": { "read": "public", "insert": "public", "update": "public", "delete": "public" },
+      "publicMutation": "open"
+    },
+    "members": {
+      "fields": {
+        "xid":     { "type": "string",  "required": true, "maxLength": 40 },
+        "name":    { "type": "string",  "required": true, "maxLength": 60, "trim": true },
+        "ts":      { "type": "number" },
+        "deleted": { "type": "boolean", "default": false }
+      },
+      "access": { "read": "public", "insert": "public", "update": "public", "delete": "public" },
+      "publicMutation": "open"
+    }
+  }
+}
