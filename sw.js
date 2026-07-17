@@ -1,10 +1,11 @@
 /* Service Worker — עבודה אופליין על ההר */
-const CACHE = "dolomites-2026-v38";
+const CACHE = "dolomites-2026-v39";
 const ASSETS = [
   "./", "index.html", "styles.css", "app.js", "trip-data.js", "places.js", "expenses.js",
   "members.js", "puzzles.js", "quiz-italy.js", "spotdiff.js", "game.js", "manifest.webmanifest",
   "assets/sd-braies-a.jpg", "assets/sd-braies-b.jpg", "assets/sd-borghetto-a.jpg", "assets/sd-borghetto-b.jpg",
   "assets/sd-mountain-a.jpg", "assets/sd-mountain-b.jpg",
+  "assets/seceda-ridge.jpg", "assets/seceda-meadow.jpg", "assets/seceda-pieralongia.jpg",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/favicon-32.png",
   "assets/arrival.jpg", "assets/col-alt.jpg", "assets/braies.jpg", "assets/funbob.jpg",
   "assets/corvara.jpg", "assets/lagazuoi.jpg", "assets/sorapis.jpg", "assets/tre-cime.jpg", "assets/venice.jpg",

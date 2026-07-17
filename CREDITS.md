@@ -39,3 +39,8 @@
   <https://commons.wikimedia.org/wiki/File:Ice_skating_rink_-_Rockefeller_center.jpg>
 
 האפליקציה עצמה, האייקונים והטקסטים נוצרו במיוחד לטיול הזה.
+
+## Seceda (detail gallery)
+- seceda-ridge.jpg — "Ridge at Seceda" / "Sweeping Seceda" by Eric Kilby, CC BY-SA 2.0 (Wikimedia Commons)
+- seceda-meadow.jpg — "Secëda Odles Sass Rigais Stevia Juac", CC BY-SA 3.0 (Wikimedia Commons)
+- seceda-pieralongia.jpg — "Cisles da Pieralongia Gherdeina", CC BY-SA 3.0 (Wikimedia Commons)
