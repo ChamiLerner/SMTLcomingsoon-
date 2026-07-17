@@ -32,6 +32,11 @@
     <div id="daysList" class="days-list"></div>
   </section>
 
+  <section id="game" class="view">
+    <div class="page-title"><span class="eyebrow">חידה יומית · תחרות</span><h1>מה הקשר?</h1></div>
+    <div id="gameBody"></div>
+  </section>
+
   <section id="expenses" class="view">
     <div class="page-title"><span class="eyebrow">חלוקה הוגנת</span><h1>קופה משותפת</h1></div>
     <div id="expensesBody"></div>
@@ -52,6 +57,7 @@
 
 <nav class="tabbar">
   <button data-view="today" class="active"><span class="ic">☀︎</span><span class="lb">היום</span></button>
+  <button data-view="game"><span class="ic">🧩</span><span class="lb">חידה</span></button>
   <button data-view="days"><span class="ic">❖</span><span class="lb">הימים</span></button>
   <button data-view="expenses"><span class="ic">💰</span><span class="lb">קופה</span></button>
   <button data-view="vouchers"><span class="ic">🎟</span><span class="lb">שוברים</span></button>
@@ -60,7 +66,10 @@
 
 <script src="trip-data.js"></script>
 <script src="places.js"></script>
+<script src="members.js"></script>
+<script src="puzzles.js"></script>
 <script src="app.js"></script>
 <script src="expenses.js"></script>
+<script src="game.js"></script>
 </body>
 </html>

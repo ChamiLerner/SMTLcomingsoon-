@@ -327,7 +327,55 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .exp-item.pend{border-style:dashed;opacity:.92}
 .exp-pendtag{color:#ffb454;font-weight:700}
 
-/* narrower tabs for 5 items */
-.tabbar button{min-width:56px}
+/* ============ מה הקשר? (חידה יומית) ============ */
+.game-hero{text-align:center;padding:18px 10px 6px}
+.game-hero-emoji{font-size:44px}
+.game-hero h2{font-size:24px;font-weight:800;margin:6px 0}
+.game-hero p{color:var(--muted);font-size:13.5px;line-height:1.6}
+.game-people{display:flex;flex-wrap:wrap;gap:8px}
+.game-me{border:1px solid var(--line2);background:var(--card);color:var(--text);border-radius:999px;padding:9px 14px;font-size:13.5px;font-weight:700;cursor:pointer}
+.game-me:active{background:var(--accentW)}
+.game-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-top:4px}
+.game-head-t h2{font-size:20px;font-weight:800;margin-top:2px}
+.game-switch{flex:none;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:999px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer}
+.game-days{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.game-day{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:10px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer}
+.game-day.sel{background:var(--grad);color:#04120c;border-color:transparent}
+.game-day.played{color:var(--accent)}
+.game-board{margin-top:6px}
+.game-group{border-radius:14px;padding:11px 12px;margin-bottom:8px;text-align:center;color:#08120e}
+.game-group b{display:block;font-size:14px;font-weight:800}
+.game-group span{font-size:12px;opacity:.85}
+.game-group.d1{background:#ffd35c} .game-group.d2{background:#7ee08a} .game-group.d3{background:#6cc6ff} .game-group.d4{background:#c79bff}
+.game-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.game-tile{aspect-ratio:1/1;border:1px solid var(--line2);background:var(--card2,#141b24);color:var(--text);border-radius:12px;font-size:12px;font-weight:700;line-height:1.15;padding:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;word-break:break-word;-webkit-tap-highlight-color:transparent;transition:transform .06s}
+.game-tile.sel{background:var(--accent);color:#04120c;border-color:transparent;transform:translateY(-2px)}
+.game-tile:active{transform:scale(.96)}
+.game-miss{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:12.5px;margin:14px 0 10px}
+.miss-dot{width:11px;height:11px;border-radius:50%;background:var(--line2);display:inline-block}
+.miss-dot.used{background:#ff6b6b}
+.game-ctrls{display:flex;gap:8px;justify-content:center}
+.game-btn{flex:1;max-width:130px;border:1px solid var(--line2);background:var(--card);color:var(--text);border-radius:999px;padding:11px 6px;font-size:13.5px;font-weight:700;cursor:pointer}
+.game-btn.go{background:var(--grad);color:#04120c;border:0}
+.game-btn.go.off{opacity:.4;pointer-events:none}
+.game-result{text-align:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 14px;margin-top:6px}
+.game-result-emoji{font-size:42px}
+.game-result b{display:block;font-size:17px;margin:6px 0 2px}
+.game-result span{color:var(--muted);font-size:13px}
+.game-result.win{border-color:rgba(52,224,161,.4)}
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);font-size:14px}
+.lb-row:last-child{border-bottom:0}
+.lb-row.me{background:var(--accentW);border-radius:10px;padding-inline:10px}
+.lb-rank{flex:none;width:26px;text-align:center;font-size:15px}
+.lb-name{flex:1;font-weight:700}
+.lb-perf{color:#ffd35c;font-size:12px;font-weight:800}
+.lb-pts{flex:none;color:var(--muted);font-size:12.5px}
+.lb-pts b{color:var(--accent);font-size:15px}
+.game-toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);background:#0f1620;border:1px solid var(--line2);color:var(--text);padding:10px 18px;border-radius:999px;font-size:13.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+.game-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* narrower tabs for 6 items */
+.tabbar button{min-width:52px;padding-inline:2px}
+.tabbar .lb{font-size:10.5px}
 
 @media(min-width:480px){ .focus-big{font-size:52px} .page-title h1{font-size:32px} }
