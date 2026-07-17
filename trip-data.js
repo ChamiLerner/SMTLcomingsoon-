@@ -136,42 +136,45 @@ window.TRIP_DATA = [
   /* ===== יום 4 · שבת 18.7 ===== */
   {
     date: "2026-07-18", day: "שבת", n: 4,
-    title: "Seceda + Alpe di Siusi", place: "קורוורה → אורטיזיי", base: "קורוורה",
-    image: "corvara.jpg", coords: [46.5772, 11.6740], hotel: 0, difficulty: "קל",
-    summary: "רכס המצוקים המצולם בדולומיטים + האחו האלפיני הגדול באירופה",
+    title: "רכס Seceda + פארק חבלים", place: "קורוורה → Seceda", base: "קורוורה",
+    image: "corvara.jpg", coords: [46.5772, 11.6740], hotel: 0, difficulty: "קל–בינוני",
+    summary: "אחד משיאי הטיול — עלייה ברכבל לרכס Seceda המצולם, טיול תצפיות וצהריים בבקתת הר, ואחה״צ פארק חבלים (לבחירה)",
     schedule: [
-      { time: "08:30", kind: "drive", title: "יציאה דרך מעבר Gardena", note: "~40 דק׳ · כביש מתפתל ומרהיב · עצירת תצפית בדרך", tsoft: true },
-      { time: "09:30", kind: "cable", title: "רכבל Seceda (מאורטיזיי)", note: "הליכת רכס קצרה מול המצוקים המחודדים — הנוף המצולם בדולומיטים", coords: [46.5772, 11.6740], book: "אפשר להזמין כרטיס מראש", place: "seceda", leg: { from: "קורוורה", km: 28, min: 40 } },
-      { time: "12:30", kind: "food", title: "צהריים ברפוג׳ו בהר", note: "Baita Curona (Seceda) או Gostner Schwaige (Alpe di Siusi)", q: "Baita Curona Seceda", book: "רפוג׳ואים מתמלאים ביולי — להזמין מראש" },
-      { time: "14:00", kind: "activity", title: "Alpe di Siusi · Seiser Alm", note: "האחו האלפיני הגדול באירופה — כרי דשא, מרמיטות ופסגות מסביב", coords: [46.5416, 11.6209], place: "alpedisiusi" },
-      { time: "16:30", kind: "kids", title: "אופציה: אורטיזיי — E-Bike / גילוף עץ", note: "אופני הרים חשמליים בתחנה העליונה, וגלריות גילוף עץ בעיירה", coords: [46.5766, 11.6710], kids: true, q: "Ortisei Val Gardena" },
-      { time: "19:30", kind: "food", title: "ארוחת ערב · Ristorante Zirm", note: "Str. Col Alt 95 · ✓ מאושר (עם אנצו)", coords: [46.5470, 11.8790], leg: { from: "אורטיזיי", km: 28, min: 40 }, status: "ok", q: "Ristorante Zirm Corvara" }
+      { time: "08:30", kind: "food", title: "ארוחת בוקר במלון", note: "מתחילים את היום עם ארוחה טובה", tsoft: true, noNav: true },
+      { time: "09:30", kind: "drive", title: "יציאה מהמלון", note: "יוצאים לכיוון רכבל Seceda", noNav: true },
+      { time: "10:30", kind: "cable", title: "עלייה ברכבל Seceda", note: "עולים לרכס בגובה ~2,500 מ׳ — הנוף המצולם בדולומיטים", place: "seceda", status: "ok", book: "🎟️ הכרטיסים הוזמנו מראש ל־10:30 בדיוק — חשוב להגיע בזמן!", leg: { from: "קורוורה", km: 28, min: 40 } },
+      { time: "11:00", kind: "hike", title: "טיול לאורך רכס Seceda", note: "הליכה לאורך הרכס עד התצפיות המרהיבות מול המצוקים המחודדים · עצירות לצילומים (עד ~15:00)", place: "seceda" },
+      { time: "13:00", kind: "food", title: "צהריים בבקתת הר", note: "אחת מבקתות ההר על הרכס — Baita Curona ומסביב", q: "Baita Curona Seceda", tsoft: true, book: "רפוג׳ואים מתמלאים ביולי — כדאי להזמין" },
+      { time: "16:00", kind: "drive", title: "נסיעה לפארק החבלים", note: "יורדים ברכבל ונוסעים לפארק — לפי האופציה שנבחרה (ראו למטה)", tsoft: true },
+      { time: "16:30", kind: "kids", title: "פארק חבלים — למי שרוצה", note: "16:30–18:30 · אדרנלין בין העצים · בוחרים אחת משתי האופציות למטה 👇", place: "colfosco", kids: true, tsoft: true, noNav: true },
+      { time: "בערב", kind: "checkin", title: "חזרה למלון", note: "חוזרים לקורוורה · ארוחת ערב בכפר", tsoft: true, noNav: true }
     ],
     dining: {
       lunch: [
-        { name: "Baita Curona (Seceda)", note: "מגש הבית: גבינות, שפק וקמינוורצן מהחווה של המשפחה", q: "Baita Curona Seceda" },
-        { name: "Gostner Schwaige (Alpe di Siusi)", note: "מפורסמת על מרק החציר, גבינות מקומיות ושטרודל תפוחים", q: "Gostner Schwaige Alpe di Siusi" }
+        { name: "Baita Curona (Seceda)", note: "בקתה על הרכס — גבינות, שפק וקמינוורצן מהחווה של המשפחה", q: "Baita Curona Seceda" },
+        { name: "Sofie Hütte (Seceda)", note: "בקתה מפורסמת עם נוף לרכס — מטבח מקומי ושטרודל", q: "Rifugio Sofie Seceda" }
       ],
-      dinner: { name: "Ristorante Zirm", time: "19:30", status: "ok", note: "עם אנצו",
+      dinner: { name: "Ristorante Zirm", time: "בערב", status: "ok", note: "בקורוורה, אחרי החזרה · עם אנצו",
         addr: "Str. Col Alt 95, Corvara", phone: "+39 0471 833894", coords: [46.5470, 11.8790] }
     },
     stops: [
-      { icon: "👀", name: "תצפית Ju de Frara / Dantercepies", note: "עצירת תצפית קלאסית במעבר Gardena — Sella, Sassolungo ופסגות Cir.", q: "Ju de Frara Passo Gardena", when: "בבוקר, במעבר Gardena", dur: "10–15 דק׳", adds: "עצירה קצרה על הדרך" },
-      { icon: "🎨", name: "גלריית גילוף עץ ART 52", note: "אורטיזיי — מסורת בת מאות שנים · כניסה חופשית 09:00–22:00.", q: "ART 52 Ortisei", when: "אחה״צ באורטיזיי", dur: "30–45 דק׳", adds: "בעיירה" },
-      { icon: "🍦", name: "Pasticceria Langgartner", note: "אורטיזיי — גלידה, אפוגאטו, שטרודל ומאפים.", q: "Pasticceria Langgartner Ortisei", when: "אחה״צ באורטיזיי", dur: "20–30 דק׳", adds: "בעיירה" }
+      { icon: "🧗", name: "אופציה 1 · Adventure Park Colfosco", note: "פארק חבלים מוכר ליד קורוורה · ⭐4.3 (603) · פותח 10:00 · אומגות, גשרים מתנדנדים ומכשולים בין העצים.", q: "Adventure Park Colfosco", when: "אחה״צ · 16:30–18:30", dur: "~2 שעות", adds: "~5 דק׳ מקורוורה" },
+      { icon: "🚡", name: "אופציה 2 · Adventure Park & Fly Line “Emozion Col de Flam”", note: "פארק גדול עם ‏Fly Line‏ (אומגת ענק על הכפר) · ⭐4.3 (806) · פותח 09:30 · בעמק גרדנה, קרוב ל-Seceda.", q: "Adventure Park Fly Line Col de Flam Santa Cristina", when: "אחה״צ · 16:30–18:30", dur: "~2 שעות", adds: "קרוב ל-Seceda (בעמק גרדנה)" }
     ],
     know: [
-      "⛽ תדלוק: כדאי למלא דלק בקורוורה לפני היציאה — במעברי ההרים יש מעט תחנות.",
-      "יום עם שני רכבלים (Seceda ואז Alpe di Siusi) — לתכנן ולצאת בזמן.",
-      "רפוג׳ואים לצהריים מתמלאים ביולי — כדאי להזמין מראש.",
-      "המעבר Gardena מתפתל — למי שרגיש לסחרחורת."
+      "🎟️ כרטיסי הרכבל ל-Seceda הוזמנו מראש ל־10:30 בדיוק — חשוב להגיע בזמן.",
+      "⛽ כדאי למלא דלק בקורוורה לפני היציאה.",
+      "🧥 בגובה (~2,500 מ׳) קריר גם בקיץ — לקחת מעיל או פליז דק.",
+      "🥾 טיול הרכס קל–בינוני, בעיקר מישורי — נעליים נוחות.",
+      "🧗 לפארק החבלים חובה נעליים סגורות; הפעילות למי שרוצה (לא חובה)."
     ],
     rainPlan: [
       { icon: "🎨", name: "גלריות גילוף עץ + מוזיאון Gherdëina, אורטיזיי", note: "אמנות לדינית מסורתית · מקורה", q: "Museum Gherdeina Ortisei", replaces: "רכבל Seceda (אין נוף בגשם)", hours: "בוקר–צהריים" },
       { icon: "🧊", name: "מוזיאון אוצי (איש הקרח), בולצאנו", note: "האטרקציה המקורה המפורסמת של דרום טירול · ~1:15 נסיעה", q: "South Tyrol Museum of Archaeology Bolzano", replaces: "היום ההררי", hours: "כל היום (~1:15 נסיעה)" },
-      { icon: "🏊", name: "ספא / בריכה מקורה", note: "בסצ'דה/סיוזי אין נוף בגשם — יום פנים רגוע", replaces: "אחה״צ בחוץ", hours: "אחה״צ" }
+      { icon: "🏊", name: "ספא / בריכה מקורה", note: "בגשם אין נוף ברכס — יום פנים רגוע", replaces: "אחה״צ בחוץ", hours: "אחה״צ" }
     ],
-    pack: ["נעליים נוחות", "שכבה חמה", "משקפי שמש וקרם הגנה"]
+    pack: ["נעלי הליכה נוחות", "מעיל / פליז דק (קריר בגובה)", "כובע", "משקפי שמש", "קרם הגנה", "בקבוק מים", "חטיפים ופירות לדרך"],
+    packKids: ["נעלי ספורט סגורות — חובה לפארק החבלים", "בגדים נוחים לתנועה"]
   },
 
   /* ===== יום 5 · ראשון 19.7 ===== */
