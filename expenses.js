@@ -10,6 +10,8 @@
   const MEMBERS = window.TRIP_MEMBERS || [];
   const KIDS = new Set(MEMBERS.filter(m => m.kid).map(m => m.id));   // ילדים — לא ברשימת המשלמים
   const isKid = id => KIDS.has(id);
+  const HH = {}; MEMBERS.forEach(m => { if (m.hh) HH[m.id] = m.hh; });  // ילד/בן־זוג → ראש משק בית
+  const hhRep = id => HH[id] || id;
 
   const CATS = [
     { id: "food", ic: "🍽️", label: "אוכל" },
@@ -292,15 +294,23 @@
 
     let balHTML = "";
     if (acts.length) {
-      const rows = list.map(m => ({ m, v: c.net[m.id] || 0 })).filter(r => r.v !== 0 || c.paid[r.m.id] || c.owed[r.m.id]);
-      balHTML = `<div class="section"><div class="section-label">מאזן לכל אחד</div>` +
-        (rows.length ? rows.map(r => {
-          const cls = r.v > 0 ? "up" : r.v < 0 ? "down" : "even";
-          const txt = r.v > 0 ? `מקבל/ת ${eur(r.v)}` : r.v < 0 ? `משלם/ת ${eur(-r.v)}` : "מאוזן";
-          return `<div class="exp-bal"><span>${esc(r.m.name)}</span><span class="exp-bal-v ${cls}">${txt}</span></div>`;
+      // איחוד לפי משק בית (הורים + ילדים/בני־זוג יחד)
+      const hPaid = {}, hOwed = {}, hNet = {};
+      Object.keys(c.paid).forEach(id => { const r = hhRep(id); hPaid[r] = (hPaid[r] || 0) + c.paid[id]; });
+      Object.keys(c.owed).forEach(id => { const r = hhRep(id); hOwed[r] = (hOwed[r] || 0) + c.owed[id]; });
+      const repIds = [...new Set([...Object.keys(hPaid), ...Object.keys(hOwed)])];
+      repIds.forEach(r => hNet[r] = (hPaid[r] || 0) - (hOwed[r] || 0));
+
+      const rows = repIds.map(r => ({ r, v: hNet[r] || 0 })).filter(x => x.v !== 0 || hPaid[x.r] || hOwed[x.r])
+        .sort((a, b) => b.v - a.v);
+      balHTML = `<div class="section"><div class="section-label">מאזן לכל משפחה</div>` +
+        (rows.length ? rows.map(x => {
+          const cls = x.v > 0 ? "up" : x.v < 0 ? "down" : "even";
+          const txt = x.v > 0 ? `מקבל/ת ${eur(x.v)}` : x.v < 0 ? `משלם/ת ${eur(-x.v)}` : "מאוזן";
+          return `<div class="exp-bal"><span>${esc(nameOf(x.r))}</span><span class="exp-bal-v ${cls}">${txt}</span></div>`;
         }).join("") : `<div class="exp-empty">אין נתונים</div>`) + `</div>`;
 
-      const trans = settlement(c.net);
+      const trans = settlement(hNet);
       // קיבוץ לפי מי שמשלם — כדי שיהיה ברור כמה כל אחד משלם בסך הכל
       const byFrom = {};
       trans.forEach(t => { (byFrom[t.from] = byFrom[t.from] || []).push(t); });
