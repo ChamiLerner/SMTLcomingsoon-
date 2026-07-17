@@ -23,12 +23,10 @@ const wazeUrl = q => `https://www.waze.com/ul?q=${encq(q)}&navigate=yes`;
 function navName(o, day) {
   if (!o) return null;
   if (o.noNav) return null;
+  // ניווט רק ליעד עם שם מקום אמיתי — לא לפי כותרת הפעילות (שהיא משפט) או נ״צ
   if (o.q) return o.q;
   const p = o.place && window.PLACES && PLACES[o.place];
   if (p && (p.navq || p.q)) return p.navq || p.q;
-  const nm = o.title || o.name;
-  if (nm) return `${nm}${day && day.base ? ", " + day.base : ""}, Italy`;
-  if (o.coords) return `${o.coords[0]},${o.coords[1]}`;
   return null;
 }
 function navBig(q) { return q ? `<div class="nav-row"><a class="nav-btn gmaps" target="_blank" rel="noopener" href="${gmapsUrl(q)}">🗺️ Google Maps</a><a class="nav-btn waze" target="_blank" rel="noopener" href="${wazeUrl(q)}">Waze</a></div>` : ""; }
