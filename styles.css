@@ -314,6 +314,11 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .exp-settle{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin-bottom:8px;font-size:14px}
 .exp-settle .s-mid{color:var(--muted);font-size:12.5px}
 .exp-settle-a{margin-inline-start:auto;font-weight:800;color:var(--accent)}
+.exp-settle.multi{display:block}
+.exp-settle-head{display:flex;align-items:center;gap:8px}
+.exp-settle-lines{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.exp-settle-line{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.exp-settle-line span:last-child{font-weight:700;color:var(--text)}
 .exp-hint,.exp-note{color:var(--muted);font-size:12px;line-height:1.5}
 .exp-note{margin:16px 2px 2px;text-align:center}
 .exp-foot{display:flex;gap:9px;margin-top:18px}

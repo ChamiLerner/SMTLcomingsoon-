@@ -301,11 +301,21 @@
         }).join("") : `<div class="exp-empty">אין נתונים</div>`) + `</div>`;
 
       const trans = settlement(c.net);
-      const setHTML = trans.length
-        ? trans.map(t => `<div class="exp-settle"><b>${esc(nameOf(t.from))}</b> <span class="s-mid">משלם/ת ל־</span> <b>${esc(nameOf(t.to))}</b><span class="exp-settle-a">${eur(t.a)}</span></div>`).join("")
+      // קיבוץ לפי מי שמשלם — כדי שיהיה ברור כמה כל אחד משלם בסך הכל
+      const byFrom = {};
+      trans.forEach(t => { (byFrom[t.from] = byFrom[t.from] || []).push(t); });
+      const groups = Object.keys(byFrom).map(from => ({ from, list: byFrom[from], total: byFrom[from].reduce((s, t) => s + t.a, 0) }))
+        .sort((a, b) => b.total - a.total);
+      const setHTML = groups.length
+        ? groups.map(g => g.list.length === 1
+          ? `<div class="exp-settle"><b>${esc(nameOf(g.from))}</b> <span class="s-mid">משלם/ת ל־</span> <b>${esc(nameOf(g.list[0].to))}</b><span class="exp-settle-a">${eur(g.total)}</span></div>`
+          : `<div class="exp-settle multi">
+               <div class="exp-settle-head"><b>${esc(nameOf(g.from))}</b><span class="s-mid">משלם/ת סה״כ</span><span class="exp-settle-a">${eur(g.total)}</span></div>
+               <div class="exp-settle-lines">${g.list.map(t => `<div class="exp-settle-line"><span>↩︎ ${esc(nameOf(t.to))}</span><span>${eur(t.a)}</span></div>`).join("")}</div>
+             </div>`).join("")
         : `<div class="exp-empty">הכל מאוזן 🎉</div>`;
       balHTML += `<div class="section"><div class="section-label">מי מעביר למי</div>${setHTML}
-        <p class="exp-hint">כך מסלקים את החוב במינימום העברות.</p></div>`;
+        <p class="exp-hint">מי שמשלם לכמה אנשים — מופיע מקובץ עם הסכום הכולל. כך מסלקים את החוב במינימום העברות.</p></div>`;
     }
 
     el.innerHTML = `<div class="wrap">
