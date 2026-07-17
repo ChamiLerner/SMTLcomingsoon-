@@ -8,6 +8,8 @@
   /* ---------- רשימת החברים בטיול ---------- */
   /* מזהה קבוע (id) + שם לתצוגה. אפשר להוסיף עוד דרך הכפתור באפליקציה. */
   const MEMBERS = window.TRIP_MEMBERS || [];
+  const KIDS = new Set(MEMBERS.filter(m => m.kid).map(m => m.id));   // ילדים — לא ברשימת המשלמים
+  const isKid = id => KIDS.has(id);
 
   const CATS = [
     { id: "food", ic: "🍽️", label: "אוכל" },
@@ -328,9 +330,10 @@
      ============================================================ */
   function formHTML(edit) {
     const list = roster();
-    const e = edit || { title: "", amount: "", cat: "food", payer: (list[0] && list[0].id) || "", parts: list.map(m => m.id) };
+    const payerList = list.filter(m => !isKid(m.id));   // ילדים לא משלמים
+    const e = edit || { title: "", amount: "", cat: "food", payer: (payerList[0] && payerList[0].id) || "", parts: list.map(m => m.id) };
     const cats = CATS.map(c => `<button type="button" class="exp-cat${c.id === e.cat ? " sel" : ""}" data-cat="${c.id}" onclick="expPickCat('${c.id}')">${c.ic} ${c.label}</button>`).join("");
-    const payers = list.map(m => `<button type="button" class="exp-payer${m.id === e.payer ? " sel" : ""}" data-p="${m.id}" onclick="expPickPayer(this)">${esc(m.name)}</button>`).join("");
+    const payers = payerList.map(m => `<button type="button" class="exp-payer${m.id === e.payer ? " sel" : ""}" data-p="${m.id}" onclick="expPickPayer(this)">${esc(m.name)}</button>`).join("");
     const parts = list.map(m => `<button type="button" class="exp-part${e.parts.includes(m.id) ? " sel" : ""}" data-p="${m.id}" onclick="this.classList.toggle('sel')">${esc(m.name)}</button>`).join("");
     return `<div class="exp-form" id="expForm" data-edit="${edit ? edit.xid : ""}">
       <input class="exp-input" id="expDesc" placeholder="על מה? (למשל: ארוחת ערב)" value="${esc(e.title)}">

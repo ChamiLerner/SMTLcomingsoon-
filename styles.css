@@ -353,6 +353,22 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .game-help summary::-webkit-details-marker{display:none}
 .game-help[open] summary{border-bottom:1px solid var(--line)}
 .game-help .game-rules{padding:12px 28px 14px}
+.game-modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
+.game-mode{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:12px;padding:11px 6px;font-size:14px;font-weight:750;cursor:pointer}
+.game-mode.sel{background:var(--grad);color:#04120c;border-color:transparent}
+.quiz-wrap{margin-top:6px}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12.5px;margin-bottom:10px}
+.qdots{display:flex;gap:5px}
+.qdot{width:9px;height:9px;border-radius:50%;background:var(--line2);display:inline-block}
+.qdot.ok{background:var(--accent)} .qdot.no{background:#ff6b6b} .qdot.cur{outline:2px solid var(--accent2);outline-offset:1px}
+.quiz-q{font-size:18px;font-weight:750;line-height:1.4;margin-bottom:14px}
+.quiz-opts{display:flex;flex-direction:column;gap:9px}
+.quiz-opt{text-align:right;border:1px solid var(--line2);background:var(--card);color:var(--text);border-radius:13px;padding:14px 16px;font-size:15px;font-weight:650;cursor:pointer}
+.quiz-opt:active{background:var(--glass)}
+.quiz-opt.correct{background:rgba(52,224,161,.18);border-color:var(--accent);color:#d6ffef}
+.quiz-opt.wrong{background:rgba(255,107,107,.16);border-color:#ff6b6b;color:#ffd9d9}
+.quiz-opt[disabled]{cursor:default}
+.quiz-next{width:100%;margin-top:16px;border:0}
 .game-board{margin-top:6px}
 .game-group{border-radius:14px;padding:11px 12px;margin-bottom:8px;text-align:center;color:#08120e}
 .game-group b{display:block;font-size:14px;font-weight:800}

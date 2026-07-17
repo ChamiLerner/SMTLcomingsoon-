@@ -29,6 +29,7 @@
       "fields": {
         "xid":      { "type": "string",  "required": true, "maxLength": 40 },
         "player":   { "type": "string",  "required": true, "maxLength": 40 },
+        "game":     { "type": "string",  "maxLength": 20, "default": "connect" },
         "pdate":    { "type": "string",  "required": true, "maxLength": 20 },
         "solved":   { "type": "boolean", "default": false },
         "mistakes": { "type": "integer", "minimum": 0, "maximum": 100 },
