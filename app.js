@@ -74,6 +74,9 @@ function chipsHTML() {
 }
 
 /* ---------- focus (now / next / preview) ---------- */
+// היעד הבא לניווט: הפעילות הקרובה הבאה עם מיקום אמיתי (לא ״איפה שאנחנו״)
+function nextNavqAfter(d, timed, m0) { for (const o of timed) { if (o.m > m0) { const q = navName(o.x, d); if (q) return q; } } return null; }
+function firstNavq(d, timed) { for (const o of timed) { const q = navName(o.x, d); if (q) return q; } return null; }
 function buildFocus(d) {
   const isToday = d.date === todayISO(), phase = tripPhase();
   const items = d.schedule || [];
@@ -85,20 +88,22 @@ function buildFocus(d) {
     let curr = null; for (const o of timed) if (o.m <= now) curr = o;
     const nxt = timed.find(o => o.m > now) || null;
     const head = curr ? curr.x : timed[0].x;
+    // כפתור הניווט תמיד ליעד הבא, לא לנקודה שבה אנחנו נמצאים כרגע
+    const navq = nextNavqAfter(d, timed, now) || firstNavq(d, timed);
     return { img: d.image, label: curr ? "● עכשיו" : "● מתחילים", big: head.time,
-      title: icon(head) + head.title, note: head.note || "", navq: navName(head, d),
+      title: icon(head) + head.title, note: head.note || "", navq,
       next: (curr ? (nxt && nxt.x) : (timed[1] && timed[1].x)) || null, nextLabel: "הבא" };
   }
   if (phase === "before" && d.date === DAYS[0].date) {
     const n = daysUntilStart();
     const head0 = timed[0] && timed[0].x || items[0];
     return { img: d.image, label: "✈︎ ליציאה", big: String(n), suf: n === 1 ? "יום" : "ימים",
-      title: `יום 1 · ${d.title}`, note: d.summary || "", navq: navName(head0, d),
+      title: `יום 1 · ${d.title}`, note: d.summary || "", navq: firstNavq(d, timed),
       next: head0 || null, nextLabel: "מתחילים" };
   }
   const head = timed[0] ? timed[0].x : (items[0] || {});
   return { img: d.image, label: "התוכנית", big: head.time || `יום ${d.n}`,
-    title: icon(head) + (head.title || d.title), note: head.note || d.summary || "", navq: navName(head, d),
+    title: icon(head) + (head.title || d.title), note: head.note || d.summary || "", navq: firstNavq(d, timed),
     next: (timed[1] && timed[1].x) || null, nextLabel: "אחר כך" };
 }
 function focusHTML(d) {
