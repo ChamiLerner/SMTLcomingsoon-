@@ -22,6 +22,7 @@
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const eur = cents => "€" + (cents / 100).toFixed(2);
   const uid = () => "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  const formOpen = () => !!document.getElementById("expForm");
 
   /* ---------- כתובת ה-Site Data (יחסית לאתר) ---------- */
   const DATA_BASE = location.origin + "/.herenow/data";
@@ -178,7 +179,8 @@
       sync.err = "";
       sync.state = "ok";
       saveCache();
-      render();          // רענון מלא (יכול להשתנות המצב)
+      if (!formOpen()) render();   // לא לרנדר מחדש בזמן שהטופס פתוח — כדי שלא ייסגר
+      else renderStatus();
     } catch (e) {
       sync.err = (e && e.message) || "network";
       sync.state = navigator.onLine ? "err" : "offline";
@@ -188,7 +190,7 @@
       flushing = false;
       sync.pending = pendingCount();
       renderStatus();
-      if (had && !pendingCount() && sync.state === "ok") render();
+      if (had && !pendingCount() && sync.state === "ok" && !formOpen()) render();
     }
   }
 

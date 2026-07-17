@@ -16,7 +16,6 @@ window.TRIP_MEMBERS = [
   { id: "m13", name: "איילת" },
   { id: "m14", name: "אורי לוקץ׳" },
   { id: "m15", name: "משה" },
-  { id: "m16", name: "גור אוזן" },
   { id: "m18", name: "יואב" },
   { id: "m19", name: "מיכה" }
 ];
