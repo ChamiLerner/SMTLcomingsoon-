@@ -30,6 +30,7 @@
   function addDays(iso, n) { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
   const PUZ = () => window.PUZZLES || {};
   const QUIZ = () => window.ITALY_QUIZ || {};
+  const SPOT = () => window.SPOTDIFF || [];
   function unlockedDates() { const t1 = addDays(isoToday(), 1); const all = new Set([...Object.keys(PUZ()), ...Object.keys(QUIZ())]); return [...all].filter(d => d <= t1).sort(); }
   function defaultDate() {
     const un = unlockedDates(); if (!un.length) return null;
@@ -48,6 +49,8 @@
   let puzzle = null, tiles = [], selected = [], solved = [], mistakes = 0, phase = "play";
   // quiz
   let quiz = null, qi = 0, qsel = [], qphase = "play";
+  // spot the differences
+  let sri = 0, sround = null, sfound = [], smiss = 0, sview = "a", sphase = "play";
   let allScores = null, pollTimer = null, flushing = false;
 
   function loadDone() { try { return JSON.parse(localStorage.getItem(DONE_KEY)) || {}; } catch (e) { return {}; } }
@@ -204,7 +207,77 @@
   }
 
   /* ============================================================
-     טבלת אלופים (משותפת לשני המשחקים)
+     מצא את ההבדלים
+     ============================================================ */
+  function buildSpot(i) {
+    const list = SPOT(); sri = i != null ? i : sri;
+    sround = list[sri] || null; sfound = []; smiss = 0; sview = "a"; sphase = "play";
+    if (sround) { const d = myDone("spot", sround.id); if (d) { sphase = "done"; sfound = sround.diffs.map((_, k) => k); smiss = d.mistakes | 0; } }
+  }
+  window.spotRound = function (i) { buildSpot(i); render(); };
+  window.spotFlip = function () { sview = sview === "a" ? "b" : "a"; render(); };
+  window.spotHint = function () {
+    if (sphase !== "play" || !sround) return;
+    const un = sround.diffs.map((_, k) => k).filter(k => !sfound.includes(k));
+    if (!un.length) return;
+    sfound.push(un[0]); smiss++;
+    if (sfound.length === sround.diffs.length) finishSpot(); else render();
+  };
+  window.spotTap = function (ev) {
+    if (sphase !== "play" || !sround) return;
+    const r = ev.currentTarget.getBoundingClientRect();
+    const nx = (ev.clientX - r.left) / r.width, ny = (ev.clientY - r.top) / r.height;
+    const tol = sround.r * r.width;
+    let hit = -1, best = 1e9;
+    sround.diffs.forEach((d, k) => {
+      if (sfound.includes(k)) return;
+      const dist = Math.hypot((nx - d.x) * r.width, (ny - d.y) * r.height);
+      if (dist < tol && dist < best) { best = dist; hit = k; }
+    });
+    if (hit >= 0) { sfound.push(hit); if (sfound.length === sround.diffs.length) finishSpot(); else render(); }
+    else { smiss++; toast("לא כאן 🙂"); }
+  };
+  function finishSpot() {
+    sphase = "done";
+    const total = sround.diffs.length;
+    const points = total + (smiss === 0 ? 2 : 0);
+    setDone("spot", sround.id, { solved: true, mistakes: smiss, points });
+    if (me) postScore({ xid: uid(), player: me, game: "spot", pdate: sround.id, solved: true, mistakes: smiss, points, ts: Date.now() }).then(refreshLeaderboard);
+    render();
+  }
+  function spotBodyHTML() {
+    const list = SPOT();
+    if (!list.length) return `<div class="exp-empty">בקרוב…</div>`;
+    if (!sround) sround = list[sri] || list[0];
+    const lv = ["קל", "בינוני", "קשה"];
+    const chooser = `<div class="game-days">${list.map((r, i) =>
+      `<button class="game-day${i === sri ? " sel" : ""}${myDone("spot", r.id) ? " played" : ""}" onclick="spotRound(${i})">${lv[r.level - 1] || r.title}${myDone("spot", r.id) ? " ✓" : ""}</button>`).join("")}</div>`;
+    const total = sround.diffs.length;
+    const markers = sfound.map(k => { const d = sround.diffs[k]; return `<div class="sd-mark" style="left:${d.x * 100}%;top:${d.y * 100}%"></div>`; }).join("");
+    if (sphase === "done") {
+      const res = myDone("spot", sround.id) || { mistakes: smiss, points: 0 };
+      const perfect = (res.mistakes | 0) === 0;
+      const nxt = list.findIndex((r, i) => i !== sri && !myDone("spot", r.id));
+      return `${chooser}
+        <div class="game-result win"><div class="game-result-emoji">${perfect ? "🏆" : "🎉"}</div>
+          <b>מצאתם את כל ${total} ההבדלים!</b><span>${res.points} נקודות · ${res.mistakes} טעויות</span>
+          ${nxt >= 0 ? `<button class="go" style="margin-top:12px" onclick="spotRound(${nxt})">לתמונה הבאה ›</button>` : ""}</div>
+        <div class="sd-stage"><img class="sd-img" src="${esc(sround.b)}"><div class="sd-markers">${markers}</div></div>`;
+    }
+    return `${chooser}
+      <div class="sd-bar"><span>נמצאו <b>${sfound.length}</b> / ${total}</span>
+        <button class="game-btn" onclick="spotFlip()">🔄 החלף</button>
+        <button class="game-btn" onclick="spotHint()">💡 רמז</button></div>
+      <div class="sd-stage">
+        <img class="sd-img" src="${esc(sview === "a" ? sround.a : sround.b)}">
+        <div class="sd-markers">${markers}</div>
+        <div class="sd-tap" onclick="spotTap(event)"></div>
+      </div>
+      <p class="exp-hint" style="text-align:center">לחצו ״החלף״ כדי להשוות בין התמונות · לחצו על מקום ההבדל.</p>`;
+  }
+
+  /* ============================================================
+     טבלת אלופים (משותפת לשלושת המשחקים)
      ============================================================ */
   function leaderboard() {
     const agg = {};
@@ -238,6 +311,10 @@
       const mine = (allScores || []).find(s => s.player === me && (s.game || "connect") === g && s.pdate === pdate);
       if (mine && !myDone(g, pdate)) { setDone(g, pdate, { solved: !!mine.solved, mistakes: mine.mistakes | 0, points: mine.points | 0 }); changed = true; }
     });
+    SPOT().forEach(r => {
+      const mine = (allScores || []).find(s => s.player === me && s.game === "spot" && s.pdate === r.id);
+      if (mine && !myDone("spot", r.id)) { setDone("spot", r.id, { solved: true, mistakes: mine.mistakes | 0, points: mine.points | 0 }); changed = true; }
+    });
     if (changed) { syncPhaseFromDone(); render(); } else renderLeaderboardSlot();
   }
   function syncPhaseFromDone() {
@@ -245,6 +322,7 @@
     if (dc && puzzle && phase === "play") { phase = dc.solved ? "won" : "lost"; solved = puzzle.groups.map((_, i) => i); mistakes = dc.mistakes | 0; }
     const dq = myDone("quiz", pdate);
     if (dq && qphase === "play") qphase = "done";
+    if (sround) { const ds = myDone("spot", sround.id); if (ds && sphase === "play") { sphase = "done"; sfound = sround.diffs.map((_, k) => k); smiss = ds.mistakes | 0; } }
   }
 
   /* ============================================================
@@ -255,7 +333,7 @@
   window.gameMode = function (m) { mode = m; render(); };
   window.gameGoto = function (d) { setup(d); refreshLeaderboard(); };
 
-  function setup(d) { pdate = d; buildBoard(); buildQuiz(); render(); }
+  function setup(d) { pdate = d; buildBoard(); buildQuiz(); buildSpot(sri); render(); }
 
   function renderIdentity() {
     const el = document.getElementById("gameBody"); if (!el) return;
@@ -275,22 +353,26 @@
     if (!me) { renderIdentity(); return; }
     if (!pdate) { el.innerHTML = `<div class="wrap"><div class="game-hero"><div class="game-hero-emoji">🧩</div><h2>אזור החידה</h2><p>המשחק הבא ייפתח בקרוב.</p></div></div>`; return; }
     const dl = dayLabel(pdate), un = unlockedDates();
-    const eyebrow = mode === "quiz" ? `חידון איטליה · יום ${dl.n}` : `חידת היום · על יום ${dl.n}`;
-    const title = mode === "quiz" ? "כמה אתם מכירים את איטליה? 🇮🇹" : dl.title;
-    const chooser = un.length > 1 ? `<div class="game-days">${un.map(d => {
+    const eyebrow = mode === "spot" ? "מצא את ההבדלים · תמונות מהטיול"
+      : mode === "quiz" ? `חידון איטליה · יום ${dl.n}` : `חידת היום · על יום ${dl.n}`;
+    const title = mode === "spot" ? "מצא את ההבדלים 🔍"
+      : mode === "quiz" ? "כמה אתם מכירים את איטליה? 🇮🇹" : dl.title;
+    const chooser = mode !== "spot" && un.length > 1 ? `<div class="game-days">${un.map(d => {
       const l = dayLabel(d), played = !!myDone(mode, d);
       return `<button class="game-day${d === pdate ? " sel" : ""}${played ? " played" : ""}" onclick="gameGoto('${d}')">יום ${l.n}${played ? " ✓" : ""}</button>`;
     }).join("")}</div>` : "";
+    const body = mode === "spot" ? spotBodyHTML() : mode === "quiz" ? quizBodyHTML() : connectBodyHTML();
 
     el.innerHTML = `<div class="wrap">
       <div class="game-head"><div class="game-head-t"><span class="eyebrow">${esc(eyebrow)}</span><h2>${esc(title)}</h2></div>
         <button class="game-switch" onclick="gamePick()">${esc(nameOf(me))} ⇄</button></div>
-      <div class="game-modes">
+      <div class="game-modes three">
         <button class="game-mode${mode === "connect" ? " sel" : ""}" onclick="gameMode('connect')">🧩 מה הקשר?</button>
-        <button class="game-mode${mode === "quiz" ? " sel" : ""}" onclick="gameMode('quiz')">🇮🇹 חידון איטליה</button>
+        <button class="game-mode${mode === "quiz" ? " sel" : ""}" onclick="gameMode('quiz')">🇮🇹 חידון</button>
+        <button class="game-mode${mode === "spot" ? " sel" : ""}" onclick="gameMode('spot')">🔍 הבדלים</button>
       </div>
       ${chooser}
-      <div id="gameModeBody">${mode === "quiz" ? quizBodyHTML() : connectBodyHTML()}</div>
+      <div id="gameModeBody">${body}</div>
       <div class="section"><div class="section-label">🏆 טבלת האלופים</div>
         <div id="gameLeaderboard"><div class="exp-empty">טוען…</div></div>
         <p class="exp-hint" style="text-align:center">נקודות משני המשחקים נספרות יחד · בונוס ‎+2‎ לפתרון מושלם.</p>
@@ -311,6 +393,7 @@
     try { me = localStorage.getItem(ME_KEY) || null; } catch (e) {}
     pdate = defaultDate();
     if (pdate) { buildBoard(); buildQuiz(); }
+    buildSpot(0);
     render();
     refreshLeaderboard();
     if (!pollTimer) pollTimer = setInterval(() => { if (document.visibilityState === "visible" && document.getElementById("gameLeaderboard")) refreshLeaderboard(); }, 20000);
