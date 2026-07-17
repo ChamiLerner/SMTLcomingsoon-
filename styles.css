@@ -344,6 +344,15 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .game-day{border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:10px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer}
 .game-day.sel{background:var(--grad);color:#04120c;border-color:transparent}
 .game-day.played{color:var(--accent)}
+.game-help-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.game-rules{margin:0;padding-inline-start:18px;display:flex;flex-direction:column;gap:7px}
+.game-rules li{font-size:13px;line-height:1.5;color:var(--muted)}
+.game-rules b{color:var(--text)}
+.game-help{margin:10px 0 4px;border:1px solid var(--line2);border-radius:12px;background:var(--card);overflow:hidden}
+.game-help summary{list-style:none;cursor:pointer;padding:11px 14px;font-size:13px;font-weight:700;color:var(--accent)}
+.game-help summary::-webkit-details-marker{display:none}
+.game-help[open] summary{border-bottom:1px solid var(--line)}
+.game-help .game-rules{padding:12px 28px 14px}
 .game-board{margin-top:6px}
 .game-group{border-radius:14px;padding:11px 12px;margin-bottom:8px;text-align:center;color:#08120e}
 .game-group b{display:block;font-size:14px;font-weight:800}

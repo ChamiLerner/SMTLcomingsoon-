@@ -13,6 +13,14 @@
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const uid = () => "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const members = () => window.TRIP_MEMBERS || [];
+  const RULES = `<ul class="game-rules">
+    <li>מצאו <b>4 קבוצות של 4</b> אריחים שקשורים ביניהם.</li>
+    <li>בחרו 4 אריחים ולחצו <b>אישור</b>.</li>
+    <li>נכון → הקבוצה נפתחת ונצבעת. טעות → מפסידים ניסיון (עד <b>4 טעויות</b>).</li>
+    <li>הצבעים לפי קושי: 🟨 קל · 🟩 · 🟦 · 🟪 קשה.</li>
+    <li><b>ערבוב</b> מסדר מחדש · <b>נקה</b> מבטל בחירה.</li>
+    <li>נקודה לכל קבוצה שנפתרה + בונוס <b>‎2‎</b> לפתרון מושלם ללא טעויות. השם שלכם עולה לטבלת האלופים 🏆</li>
+  </ul>`;
   const nameOf = id => { const m = members().find(x => x.id === id); return m ? m.name : "משתתף/ת"; };
 
   /* ---------- תאריכים ---------- */
@@ -155,7 +163,9 @@
     const el = document.getElementById("gameBody"); if (!el) return;
     el.innerHTML = `<div class="wrap">
       <div class="game-hero"><div class="game-hero-emoji">🧩</div>
-        <h2>מה הקשר?</h2><p>חידה יומית על הפעילות של מחר — 16 אריחים, 4 קבוצות של 4.<br>פתרו, צברו נקודות, ותהיו מוכנים למחר 😉</p></div>
+        <h2>מה הקשר?</h2><p>חידה יומית על הפעילות של מחר — פתרו, צברו נקודות, ותהיו מוכנים למחר 😉</p></div>
+      <div class="section"><div class="section-label">איך משחקים?</div>
+        <div class="game-help-card">${RULES}</div></div>
       <div class="section"><div class="section-label">מי את/ה?</div>
         <div class="game-people">${members().map(m => `<button class="game-me" onclick="gameSetMe('${m.id}')">${esc(m.name)}</button>`).join("")}</div>
         <p class="exp-hint" style="margin-top:10px">הבחירה נשמרת במכשיר — כדי שהנקודות שלך יופיעו בטבלת האלופים.</p>
@@ -240,6 +250,7 @@
     el.innerHTML = `<div class="wrap">
       ${head}
       ${un.length > 1 ? chooser : ""}
+      ${phase === "play" ? `<details class="game-help"><summary>❓ איך משחקים?</summary>${RULES}</details>` : ""}
       <div class="game-board">${banners}${boardHTML}</div>
       <div class="section"><div class="section-label">🏆 טבלת האלופים</div>
         <div id="gameLeaderboard"><div class="exp-empty">טוען…</div></div>
