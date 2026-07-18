@@ -68,7 +68,7 @@ function chipsHTML() {
   const t = todayISO();
   return `<div class="chips">` + DAYS.map(d =>
     `<button class="chip${d.date === selected.date ? " on" : ""}${d.date === t ? " today" : ""}" onclick="selectDay('${d.date}')">
-      <b>${d.date.slice(8)}</b><span>יום ${d.n}</span></button>`).join("") + `</div>`;
+      <b>${d.date.slice(8)}</b><span>${esc(d.day || "יום " + d.n)}</span></button>`).join("") + `</div>`;
 }
 
 /* ---------- focus (now / next / preview) ---------- */
