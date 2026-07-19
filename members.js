@@ -5,7 +5,7 @@ window.TRIP_MEMBERS = [
   { id: "m01", name: "יסמין" },
   { id: "m17", name: "חמי" },
   { id: "m02", name: "איתמר סולימני" },
-  { id: "m03", name: "רז", kid: true },
+  { id: "m03", name: "רז", kid: true, hh: "m01" },
   { id: "m04", name: "יהלי לב", kid: true, hh: "m12" },
   { id: "m05", name: "איתמר אוזן", hh: "m06" },
   { id: "m06", name: "דליה אוזן" },
@@ -19,5 +19,5 @@ window.TRIP_MEMBERS = [
   { id: "m14", name: "אורי לוקץ׳", kid: true, hh: "m01" },
   { id: "m15", name: "משה" },
   { id: "m18", name: "יואב", kid: true, hh: "m02" },
-  { id: "m19", name: "מיכה", kid: true }
+  { id: "m19", name: "מיכה", kid: true, hh: "m01" }
 ];
