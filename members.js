@@ -13,7 +13,7 @@ window.TRIP_MEMBERS = [
   { id: "m08", name: "מיה", kid: true, hh: "m12" },
   { id: "m09", name: "שרון מאיר", hh: "m10" },
   { id: "m10", name: "נייט מאיר" },
-  { id: "m11", name: "לקס" },
+  { id: "m11", name: "לקס", hh: "m10" },
   { id: "m12", name: "מרינה פיינגולד" },
   { id: "m13", name: "איילת" },
   { id: "m14", name: "אורי לוקץ׳", kid: true, hh: "m01" },
