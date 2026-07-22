@@ -36,6 +36,7 @@
   // כל הוצאה: { xid, id?, title, cents, cat, payer, parts[], ts, rev, deleted, dirty }
   let expenses = [];          // מפתח לוגי = xid
   let remoteMembers = [];     // { id(xid), name, deleted, dirty }
+  let settlePoints = [];      // סגירות חשבון: { id(xid), recId?, ts, deleted, dirty }
   let sync = { state: "idle", pending: 0, lastOk: 0, err: "" };
   let pollTimer = null, flushing = false;
 
@@ -46,11 +47,12 @@
       const s = JSON.parse(localStorage.getItem(CACHE_KEY));
       if (s && Array.isArray(s.expenses)) expenses = s.expenses;
       if (s && Array.isArray(s.members)) remoteMembers = s.members;
+      if (s && Array.isArray(s.settle)) settlePoints = s.settle;
       if (s && s.sync) { sync.lastOk = s.sync.lastOk || 0; }
     } catch (e) {}
   }
   function saveCache() {
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ expenses, members: remoteMembers, sync: { lastOk: sync.lastOk } })); } catch (e) {}
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ expenses, members: remoteMembers, settle: settlePoints, sync: { lastOk: sync.lastOk } })); } catch (e) {}
   }
 
   /* ---------- רוסטר (חברים מקוד + חברים שנוספו בענן) ---------- */
@@ -63,19 +65,32 @@
   function nameOf(id) { const m = roster().find(x => x.id === id); return m ? m.name : "—"; }
   function isCustom(id) { return !MEMBERS.some(m => m.id === id); }
 
-  function activeExpenses() { return expenses.filter(e => !e.deleted); }
+  // נקודת סגירת החשבון האחרונה (חותמת זמן) — הוצאות שלפניה נחשבות ״שולמו״
+  function cutoff() { return settlePoints.filter(s => !s.deleted).reduce((mx, s) => Math.max(mx, s.ts || 0), 0); }
+  function lastSettle() { const a = settlePoints.filter(s => !s.deleted).sort((x, y) => y.ts - x.ts); return a[0] || null; }
+  function activeExpenses() { const c = cutoff(); return expenses.filter(e => !e.deleted && (e.ts || 0) > c); }
+  function settledExpenses() { const c = cutoff(); return expenses.filter(e => !e.deleted && (e.ts || 0) <= c); }
   function pendingCount() {
-    return expenses.filter(e => e.dirty).length + remoteMembers.filter(m => m.dirty).length;
+    return expenses.filter(e => e.dirty).length + remoteMembers.filter(m => m.dirty).length + settlePoints.filter(s => s.dirty).length;
   }
 
   /* ============================================================
      סנכרון עם here.now Site Data
      ============================================================ */
   async function pull() {
-    const [ex, mem] = await Promise.all([
+    const [ex, mem, stl] = await Promise.all([
       fetchAll("expenses"),
-      fetchAll("members")
+      fetchAll("members"),
+      fetchAll("settle")
     ]);
+    // סגירות חשבון
+    stl.forEach(rec => {
+      const d = rec.data || {}; const xid = d.xid; if (!xid) return;
+      const local = settlePoints.find(s => s.id === xid);
+      if (local && local.dirty) return;
+      const entry = { id: xid, ts: d.ts || 0, deleted: !!d.deleted, recId: rec.id, dirty: false };
+      if (local) Object.assign(local, entry); else settlePoints.push(entry);
+    });
     // חברים
     mem.forEach(rec => {
       const d = rec.data || {}; const xid = d.xid; if (!xid) return;
@@ -144,9 +159,20 @@
         e.dirty = false;
       }
     }
+    // סגירות חשבון
+    for (const s of settlePoints.filter(x => x.dirty)) {
+      if (!s.recId) {
+        const rec = await postRec("settle", { xid: s.id, ts: s.ts, deleted: !!s.deleted }, s.id);
+        s.recId = rec.id; s.dirty = false;
+      } else {
+        await patchRec("settle", s.recId, { deleted: !!s.deleted });
+        s.dirty = false;
+      }
+    }
     // ניקוי טומבסטונים שסונכרנו
     expenses = expenses.filter(e => !(e.deleted && !e.dirty && e.id));
     remoteMembers = remoteMembers.filter(m => !(m.deleted && !m.dirty));
+    settlePoints = settlePoints.filter(s => !(s.deleted && !s.dirty && s.recId));
   }
 
   async function postRec(coll, body, idem) {
@@ -260,6 +286,7 @@
     const c = compute();
     const list = roster();
     const acts = activeExpenses();
+    const settled = settledExpenses();
 
     const tiles = `<div class="exp-tiles">
       <div class="exp-tile"><b>${eur(c.total)}</b><span>סה״כ הוצאות</span></div>
@@ -269,7 +296,11 @@
 
     let listHTML;
     if (!acts.length) {
-      listHTML = `<div class="exp-empty">אין עדיין הוצאות. הוסיפו הוצאה ראשונה 👆<br><span class="exp-hint">כל מי שמוסיף — כולם רואים.</span></div>`;
+      if (settled.length) {
+        listHTML = `<div class="exp-empty exp-closed">✅ החשבון סגור — הכול מאוזן 🎉<br><span class="exp-hint">הוצאה חדשה תפתח חשבון חדש. ההיסטוריה שמורה למטה.</span><br><button class="exp-undo" onclick="expUndoSettle()">↺ ביטול סגירה אחרונה</button></div>`;
+      } else {
+        listHTML = `<div class="exp-empty">אין עדיין הוצאות. הוסיפו הוצאה ראשונה 👆<br><span class="exp-hint">כל מי שמוסיף — כולם רואים.</span></div>`;
+      }
     } else {
       listHTML = acts.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(e => {
         const cat = catOf(e.cat);
@@ -325,7 +356,9 @@
              </div>`).join("")
         : `<div class="exp-empty">הכל מאוזן 🎉</div>`;
       balHTML += `<div class="section"><div class="section-label">מי מעביר למי</div>${setHTML}
-        <p class="exp-hint">מי שמשלם לכמה אנשים — מופיע מקובץ עם הסכום הכולל. כך מסלקים את החוב במינימום העברות.</p></div>`;
+        <p class="exp-hint">מי שמשלם לכמה אנשים — מופיע מקובץ עם הסכום הכולל. כך מסלקים את החוב במינימום העברות.</p>
+        <button class="btn exp-close" onclick="expSettle()">✓ סגירת חשבון — כולם שילמו</button>
+        <p class="exp-hint" style="text-align:center">לוחצים אחרי שכולם העבירו — המאזן מתאפס לכולם, וההוצאות עוברות להיסטוריה.</p></div>`;
     }
 
     el.innerHTML = `<div class="wrap">
@@ -337,6 +370,11 @@
       ${balHTML}
       ${acts.length ? `<div class="exp-foot">
         <button class="btn ghost" onclick="expShare()">📤 שיתוף סיכום</button></div>` : ""}
+      ${settled.length ? `<details class="exp-history"><summary>🗄️ היסטוריה · חשבונות שנסגרו (${settled.length})</summary>
+        <div class="exp-hist-list">${settled.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(e => {
+          const cat = catOf(e.cat);
+          return `<div class="exp-hist-row"><span>${cat.ic} ${esc(e.title || cat.label)}</span><span class="exp-hist-sub">${esc(nameOf(e.payer))}</span><span class="exp-hist-amt">${eur(e.cents | 0)}</span></div>`;
+        }).join("")}</div></details>` : ""}
       <div class="section"><div class="section-label">מי בקבוצה (${list.length})</div>
         <div class="exp-people">${list.map(m => `<span class="exp-chip">${esc(m.name)}${isCustom(m.id) ? `<button class="x" onclick="expRemovePerson('${m.id}')" aria-label="הסרה">×</button>` : ""}</span>`).join("")}
           <button class="exp-addp" onclick="expAddPerson()">＋ משתתף</button></div>
@@ -400,6 +438,20 @@
     const e = expenses.find(x => x.xid === xid); if (!e) return;
     if (!e.id) { expenses = expenses.filter(x => x.xid !== xid); } // עוד לא נוצרה בשרת
     else { e.deleted = true; e.rev = (e.rev | 0) + 1; e.dirty = true; }
+    saveCache(); render(); syncNow();
+  };
+
+  window.expSettle = function () {
+    if (!activeExpenses().length) return;
+    if (!confirm("לסגור את החשבון?\nהסכומים הנוכחיים ייחשבו כ׳שולמו׳, המאזן יתאפס לכולם, וההוצאות יעברו להיסטוריה. הוצאות חדשות יתחילו חשבון חדש.")) return;
+    settlePoints.push({ id: uid(), ts: Date.now(), deleted: false, dirty: true });
+    saveCache(); render(); syncNow();
+  };
+  window.expUndoSettle = function () {
+    const ls = lastSettle(); if (!ls) return;
+    if (!confirm("לבטל את הסגירה האחרונה? ההוצאות יחזרו להיות פעילות (לכולם).")) return;
+    if (!ls.recId) { settlePoints = settlePoints.filter(s => s !== ls); }
+    else { ls.deleted = true; ls.dirty = true; }
     saveCache(); render(); syncNow();
   };
 

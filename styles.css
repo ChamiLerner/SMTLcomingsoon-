@@ -315,6 +315,18 @@ main{max-width:480px;margin:auto;padding-bottom:96px}
 .exp-settle .s-mid{color:var(--muted);font-size:12.5px}
 .exp-settle-a{margin-inline-start:auto;font-weight:800;color:var(--accent)}
 .exp-settle.multi{display:block}
+.exp-close{width:100%;margin-top:14px;background:var(--grad);color:#04120c;border:0;font-weight:800;cursor:pointer}
+.exp-closed{border-color:rgba(52,224,161,.4)!important;color:var(--accent)}
+.exp-undo{margin-top:10px;border:1px solid var(--line2);background:var(--card);color:var(--muted);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer}
+.exp-history{margin-top:16px;border:1px solid var(--line2);border-radius:12px;background:var(--card);overflow:hidden}
+.exp-history summary{cursor:pointer;padding:12px 14px;font-size:13px;font-weight:700;color:var(--muted);list-style:none}
+.exp-history summary::-webkit-details-marker{display:none}
+.exp-history[open] summary{border-bottom:1px solid var(--line)}
+.exp-hist-list{padding:6px 14px 12px}
+.exp-hist-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;opacity:.75}
+.exp-hist-row:last-child{border-bottom:0}
+.exp-hist-sub{color:var(--muted);font-size:11.5px}
+.exp-hist-amt{margin-inline-start:auto;font-weight:700}
 .exp-settle-head{display:flex;align-items:center;gap:8px}
 .exp-settle-lines{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
 .exp-settle-line{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
