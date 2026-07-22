@@ -37,6 +37,7 @@
   let expenses = [];          // מפתח לוגי = xid
   let remoteMembers = [];     // { id(xid), name, deleted, dirty }
   let settlePoints = [];      // סגירות חשבון: { id(xid), recId?, ts, deleted, dirty }
+  let paidMarks = [];         // סימוני ״שילמתי״ לפי משק בית חייב: { id(xid), recId?, who, ts, deleted, dirty }
   let sync = { state: "idle", pending: 0, lastOk: 0, err: "" };
   let pollTimer = null, flushing = false;
 
@@ -48,11 +49,12 @@
       if (s && Array.isArray(s.expenses)) expenses = s.expenses;
       if (s && Array.isArray(s.members)) remoteMembers = s.members;
       if (s && Array.isArray(s.settle)) settlePoints = s.settle;
+      if (s && Array.isArray(s.paid)) paidMarks = s.paid;
       if (s && s.sync) { sync.lastOk = s.sync.lastOk || 0; }
     } catch (e) {}
   }
   function saveCache() {
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ expenses, members: remoteMembers, settle: settlePoints, sync: { lastOk: sync.lastOk } })); } catch (e) {}
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ expenses, members: remoteMembers, settle: settlePoints, paid: paidMarks, sync: { lastOk: sync.lastOk } })); } catch (e) {}
   }
 
   /* ---------- רוסטר (חברים מקוד + חברים שנוספו בענן) ---------- */
@@ -70,18 +72,22 @@
   function lastSettle() { const a = settlePoints.filter(s => !s.deleted).sort((x, y) => y.ts - x.ts); return a[0] || null; }
   function activeExpenses() { const c = cutoff(); return expenses.filter(e => !e.deleted && (e.ts || 0) > c); }
   function settledExpenses() { const c = cutoff(); return expenses.filter(e => !e.deleted && (e.ts || 0) <= c); }
+  // סימוני ״שילמתי״ תקפים לחשבון הנוכחי בלבד (אחרי חתך הסגירה האחרון)
+  function activePaid() { const c = cutoff(); return paidMarks.filter(m => !m.deleted && (m.ts || 0) > c); }
+  function isPaid(rep) { return activePaid().some(m => m.who === rep); }
   function pendingCount() {
-    return expenses.filter(e => e.dirty).length + remoteMembers.filter(m => m.dirty).length + settlePoints.filter(s => s.dirty).length;
+    return expenses.filter(e => e.dirty).length + remoteMembers.filter(m => m.dirty).length + settlePoints.filter(s => s.dirty).length + paidMarks.filter(m => m.dirty).length;
   }
 
   /* ============================================================
      סנכרון עם here.now Site Data
      ============================================================ */
   async function pull() {
-    const [ex, mem, stl] = await Promise.all([
+    const [ex, mem, stl, pd] = await Promise.all([
       fetchAll("expenses"),
       fetchAll("members"),
-      fetchAll("settle")
+      fetchAll("settle"),
+      fetchAll("paid")
     ]);
     // סגירות חשבון
     stl.forEach(rec => {
@@ -90,6 +96,14 @@
       if (local && local.dirty) return;
       const entry = { id: xid, ts: d.ts || 0, deleted: !!d.deleted, recId: rec.id, dirty: false };
       if (local) Object.assign(local, entry); else settlePoints.push(entry);
+    });
+    // סימוני ״שילמתי״
+    pd.forEach(rec => {
+      const d = rec.data || {}; const xid = d.xid; if (!xid) return;
+      const local = paidMarks.find(m => m.id === xid);
+      if (local && local.dirty) return;
+      const entry = { id: xid, who: d.who, ts: d.ts || 0, deleted: !!d.deleted, recId: rec.id, dirty: false };
+      if (local) Object.assign(local, entry); else paidMarks.push(entry);
     });
     // חברים
     mem.forEach(rec => {
@@ -169,10 +183,21 @@
         s.dirty = false;
       }
     }
+    // סימוני ״שילמתי״
+    for (const m of paidMarks.filter(x => x.dirty)) {
+      if (!m.recId) {
+        const rec = await postRec("paid", { xid: m.id, who: m.who, ts: m.ts, deleted: !!m.deleted }, m.id);
+        m.recId = rec.id; m.dirty = false;
+      } else {
+        await patchRec("paid", m.recId, { deleted: !!m.deleted });
+        m.dirty = false;
+      }
+    }
     // ניקוי טומבסטונים שסונכרנו
     expenses = expenses.filter(e => !(e.deleted && !e.dirty && e.id));
     remoteMembers = remoteMembers.filter(m => !(m.deleted && !m.dirty));
     settlePoints = settlePoints.filter(s => !(s.deleted && !s.dirty && s.recId));
+    paidMarks = paidMarks.filter(m => !(m.deleted && !m.dirty && m.recId));
   }
 
   async function postRec(coll, body, idem) {
@@ -347,18 +372,22 @@
       trans.forEach(t => { (byFrom[t.from] = byFrom[t.from] || []).push(t); });
       const groups = Object.keys(byFrom).map(from => ({ from, list: byFrom[from], total: byFrom[from].reduce((s, t) => s + t.a, 0) }))
         .sort((a, b) => b.total - a.total);
+      const allPaid = groups.length > 0 && groups.every(g => isPaid(g.from));
       const setHTML = groups.length
-        ? groups.map(g => g.list.length === 1
-          ? `<div class="exp-settle"><b>${esc(nameOf(g.from))}</b> <span class="s-mid">משלם/ת ל־</span> <b>${esc(nameOf(g.list[0].to))}</b><span class="exp-settle-a">${eur(g.total)}</span></div>`
-          : `<div class="exp-settle multi">
-               <div class="exp-settle-head"><b>${esc(nameOf(g.from))}</b><span class="s-mid">משלם/ת סה״כ</span><span class="exp-settle-a">${eur(g.total)}</span></div>
-               <div class="exp-settle-lines">${g.list.map(t => `<div class="exp-settle-line"><span>↩︎ ${esc(nameOf(t.to))}</span><span>${eur(t.a)}</span></div>`).join("")}</div>
-             </div>`).join("")
+        ? groups.map(g => {
+          const paid = isPaid(g.from);
+          const head = g.list.length === 1
+            ? `<div class="exp-settle-head"><b>${esc(nameOf(g.from))}</b> <span class="s-mid">משלם/ת ל־</span> <b>${esc(nameOf(g.list[0].to))}</b><span class="exp-settle-a">${eur(g.total)}</span></div>`
+            : `<div class="exp-settle-head"><b>${esc(nameOf(g.from))}</b><span class="s-mid">משלם/ת סה״כ</span><span class="exp-settle-a">${eur(g.total)}</span></div>
+               <div class="exp-settle-lines">${g.list.map(t => `<div class="exp-settle-line"><span>↩︎ ${esc(nameOf(t.to))}</span><span>${eur(t.a)}</span></div>`).join("")}</div>`;
+          const btn = `<button class="exp-paid-btn${paid ? " on" : ""}" onclick="expTogglePaid('${g.from}')">${paid ? "שולם ✓ · ביטול" : "סמנו: שילמתי"}</button>`;
+          return `<div class="exp-settle multi${paid ? " paid" : ""}">${head}${btn}</div>`;
+        }).join("")
         : `<div class="exp-empty">הכל מאוזן 🎉</div>`;
       balHTML += `<div class="section"><div class="section-label">מי מעביר למי</div>${setHTML}
-        <p class="exp-hint">מי שמשלם לכמה אנשים — מופיע מקובץ עם הסכום הכולל. כך מסלקים את החוב במינימום העברות.</p>
-        <button class="btn exp-close" onclick="expSettle()">✓ סגירת חשבון — כולם שילמו</button>
-        <p class="exp-hint" style="text-align:center">לוחצים אחרי שכולם העבירו — המאזן מתאפס לכולם, וההוצאות עוברות להיסטוריה.</p></div>`;
+        <p class="exp-hint">כל מי שחייב מסמן ״שילמתי״ אחרי שהעביר — הסימון משותף לכל הקבוצה.</p>
+        ${allPaid ? `<div class="exp-allpaid">🎉 כולם שילמו — הכול מסודר!</div>
+          <button class="btn exp-close" onclick="expSettle()">📁 סגירת חשבון (העברה להיסטוריה)</button>` : ""}</div>`;
     }
 
     el.innerHTML = `<div class="wrap">
@@ -441,6 +470,16 @@
     saveCache(); render(); syncNow();
   };
 
+  window.expTogglePaid = function (rep) {
+    const active = activePaid().find(m => m.who === rep);
+    if (active) { // ביטול סימון
+      if (!active.recId) { paidMarks = paidMarks.filter(m => m !== active); }
+      else { active.deleted = true; active.dirty = true; }
+    } else {
+      paidMarks.push({ id: uid(), who: rep, ts: Date.now(), deleted: false, dirty: true });
+    }
+    saveCache(); render(); syncNow();
+  };
   window.expSettle = function () {
     if (!activeExpenses().length) return;
     if (!confirm("לסגור את החשבון?\nהסכומים הנוכחיים ייחשבו כ׳שולמו׳, המאזן יתאפס לכולם, וההוצאות יעברו להיסטוריה. הוצאות חדשות יתחילו חשבון חדש.")) return;

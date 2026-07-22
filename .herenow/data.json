@@ -34,6 +34,16 @@
       "access": { "read": "public", "insert": "public", "update": "public", "delete": "public" },
       "publicMutation": "open"
     },
+    "paid": {
+      "fields": {
+        "xid":     { "type": "string",  "required": true, "maxLength": 40 },
+        "who":     { "type": "string",  "required": true, "maxLength": 40 },
+        "ts":      { "type": "number",  "required": true },
+        "deleted": { "type": "boolean", "default": false }
+      },
+      "access": { "read": "public", "insert": "public", "update": "public", "delete": "public" },
+      "publicMutation": "open"
+    },
     "scores": {
       "fields": {
         "xid":      { "type": "string",  "required": true, "maxLength": 40 },
